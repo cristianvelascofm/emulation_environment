@@ -13,8 +13,10 @@
           class="w-100 pl-4"
           variant="light"
         >
-          <b-dropdown-item class="p-1">Minimal</b-dropdown-item>
-          <b-dropdown-item class="p-1" @click="topologyMaker()"
+          <b-dropdown-item class="p-1" @click="openModal('minimal')"
+            >Minimal</b-dropdown-item
+          >
+          <b-dropdown-item class="p-1" @click="openModal('single')"
             >Single</b-dropdown-item
           >
           <b-dropdown-item class="p-1">Anillo</b-dropdown-item>
@@ -129,16 +131,19 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="play-direct-access"
+        @click="openModal('play')"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="stop-direct-access"
+        @click="stopEmulation"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
+        @click="trafficGenerator"
       ></button>
       <button
         type="button"
@@ -285,16 +290,16 @@
               variant="dark"
               squared
               type="button"
-              id="GuardarButtonFancyHost"
+              id="buttonModal"
               value="Guardar"
               class="m-2"
-              @click="insertElement"
+              @click="element"
               >Ok</b-button
             >
             <b-button
               squared
               variant="dark"
-              id="CancelarButtonFancyHost"
+              id="buttonModal"
               class="m-2"
               value="Cancelar"
               @click="closeModal"
@@ -306,16 +311,110 @@
 
       <!-- <p class="my-4">Vertically centered modal!</p> -->
     </b-modal>
+
+    <!-- Modal Detector IP Usuario -->
+    <b-modal id="modal-IpUser" hide-footer centered title="Configurción IP">
+      <b-container id="containerIpUser" class="">
+        <b-container id="containerForm_IP_xclient">
+          <b-form id="formulario_IP_xclient" class="p-0">
+            <b-row id="containerIp" class="m-0 pt-3">
+              <b-col class="col-3">
+                <label id="labelIP" class="p-0">IP Local:</label>
+              </b-col>
+
+              <b-col class="col-9">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputIP_xclient"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerBtnSave" class="mt-2 p-0 text-right">
+              <b-col class="p-0">
+                <b-button
+                  variant="dark"
+                  squared
+                  type="button"
+                  id="buttonModal"
+                  class="m-2"
+                  @click="starEmulation"
+                  >Ok</b-button
+                >
+
+                <b-button
+                  squared
+                  variant="dark"
+                  id="buttonModal"
+                  class="m-2"
+                  value="Cancelar"
+                  @click="closeModal('play')"
+                  >Cancelar</b-button
+                >
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+      </b-container>
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
+    </b-modal>
+
+    <!-- Modal Template Topology -->
+    <b-modal
+      id="modal-template"
+      hide-footer
+      centered
+      title="Parámetros de la Red"
+    >
+      <b-container class="divFormTemplate">
+        <b-form id="formulario">
+          <b-row>
+            <b-col><label id="labelHost">Número de Host:</label></b-col>
+            <b-col
+              ><b-input
+                type="number"
+                min="2"
+                id="inputHostTemplate"
+                name="fname"
+            /></b-col>
+          </b-row>
+          <b-row
+            id="containerFancyButtonFormTemplate"
+            class="m-0 p-0 text-right"
+          >
+            <b-col class="p-0 mt-2"
+              ><b-button
+                variant="dark"
+                squared
+                type="button"
+                id="buttonModal"
+                value="Guardar"
+                class="m-2"
+                @click="createTopology"
+                >Ok</b-button
+              >
+              <b-button
+                squared
+                variant="dark"
+                id="buttonModal"
+                class="m-2"
+                value="Cancelar"
+                @click="closeModal('single')"
+                >Cancelar</b-button
+              ></b-col
+            >
+          </b-row>
+        </b-form>
+      </b-container>
+    </b-modal>
   </div>
 </template>
+  
 
 <script>
-import MiniNetVue from "../views/MiniNet.vue";
-//import {Vuex} from 'vuex'
-//import { mapState } from "vuex";
-
-//import { mapMutations } from "vuex";
-
+import axios from "axios";
 export default {
   data() {
     // Importamos JQuery
@@ -342,9 +441,17 @@ export default {
       tagController: [],
       netInfo: [],
       link: [],
+
+      //Contiene toda la informacion de la red y su configuración
+      elements: [],
+      netWork: {},
+
+      //Control Modales
+      modalActive: "",
+
       //Varibales para el creador de Topologia desde Plantilla
-      numHost: 10,
-      topologyType: "single",
+      numHost: 0,
+      topologyType: "",
       depth: "",
       fanout: "",
 
@@ -417,6 +524,18 @@ export default {
         fireMiddleClick: true,
       });
 
+      /* -------------------Eventos del Mouse en el Fabric ------------------- */
+
+      //Evita la creacion de grupos en el Fabric
+      this.canvas.on("selection:created", (e) => {
+        if (e.target.type === "activeSelection") {
+          this.canvas.discardActiveObject();
+        } else {
+          //do nothing
+        }
+      });
+
+      //Mouse Down Event
       this.canvas.on("mouse:down", (options) => {
         var pointer = this.canvas.getPointer(options.e);
         this.x0 = pointer.x; //get initial starting point of x
@@ -424,6 +543,9 @@ export default {
         switch (this.herramienta) {
           case "cursor":
             $("#cursor").addClass("active");
+            if (options.target != null) {
+              console.log(options.target.id);
+            }
             break;
           case "controller":
             break;
@@ -432,8 +554,7 @@ export default {
           case "host":
             this.imgElement = require("../assets/img/host.png");
             this.tagElement = "h" + (this.tagHost.length + 1);
-
-            this.$bvModal.show("modal-host");
+            this.openModal("host");
             this.herramienta = "cursor";
             break;
           case "port":
@@ -445,10 +566,8 @@ export default {
           case "delete":
             break;
         }
-        // this.panning = true;
-
-        // canvas.selection = false;
       });
+
       //Mouse up event
       this.canvas.on("mouse:up", (e) => {
         // this.panning = false;
@@ -465,7 +584,304 @@ export default {
       });
     },
 
-    createElement(idElement) {
+    openModal(mod) {
+      var open = mod;
+      if (open == "host") {
+        return this.$bvModal.show("modal-host");
+      }
+
+      if (open == "minimal") {
+        this.topologyType = "minimal";
+        this.createTopology();
+        return 0;
+      }
+      if (open == "single") {
+        this.topologyType = "single";
+        return this.$bvModal.show("modal-template");
+      }
+      if (open == "play") {
+        return this.$bvModal.show("modal-IpUser");
+      }
+    },
+
+    closeModal(mod) {
+      if (mod == "host") {
+        return this.$bvModal.hide("modal-host");
+      }
+      if (mod == "single") {
+      }
+      if (mod == "play") {
+        return this.$bvModal.hide("modal-IpUser");
+      }
+    },
+
+    loadInfoElements() {
+      this.canvas.forEachObject((obj) => {
+        //Recopila la información de cada Host
+        if (obj.id.charAt(0) == "h") {
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            ipHost: obj.ipHost,
+            shedule: obj.sheduler,
+            cpuLimit: obj.cpuLimit,
+            cpuCores: obj.cpuCores,
+          };
+          this.elements.push(element);
+        } else if (obj.id.charAt(0) == "s") {
+          //Recopila la información de cada Switch
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            verbose: obj.verbose,
+            batch: obj.batch,
+            inNameSpace: obj.inNameSpace,
+            inBand: obj.inBand,
+            modej: obj.model,
+            dataPathArgs: obj.dataPathArgs,
+            dataPathIP: obj.dataPathIP,
+            dataPath: obj.dataPath,
+            protocol: obj.protocol,
+            dpctlPort: obj.dpctlPort,
+            ipSwitch: obj.ipSwitch,
+            stpPriority: obj.stpPriority,
+            stp: obj.stp,
+            type: obj.type,
+          };
+          this.elements.push(element);
+        } else if (obj.id.charAt(0) == "c") {
+          //Recopila la información de cada Controlador
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            type: obj.type,
+            iPController: obj.iPController,
+            portController: obj.portController,
+            protocol: obj.protocol,
+          };
+          this.elements.push(element);
+        } else if (obj.id.charAt(0) == "l") {
+          //Recopila la información de cada Asociacion tipo Link
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            loss: obj.loss,
+            queue: obj.queue,
+            jitter: obj.jitter,
+            delay: obj.delay,
+            bw: obj.bw,
+            connection: obj.connectionLink,
+            intfName1: obj.intfName1,
+            intfName2: obj.intfName2,
+          };
+          this.elements.push(element);
+        } else if (obj.id.charAt(1) == "a") {
+          //Para los Labels identifica la letra a de lAbel - Recopila la información de cada Label
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            label: obj.label,
+          };
+          elements.push(element);
+        } else if (obj.id.charAt(0) == "e") {
+          var element = {
+            id: obj.id,
+            rX: obj.left,
+            rY: obj.top,
+            iPPort: obj.iPPort,
+          };
+          this.elements.push(element);
+        }
+      });
+    },
+
+    starEmulation() {
+      this.loadInfoElements();
+      var ipClient = $("#inputIP_xclient").val();
+      this.netWork["items"] = this.elements;
+      this.netWork["IpClient"] = ipClient;
+
+      console.log("Network Info: " + JSON.stringify(this.netWork));
+      var json = JSON.stringify(this.netWork);
+      const path = "http://192.168.56.102:5000/";
+      // axios.get(path).then(function(response){
+      //   console.log(response.data);
+      //   alert(response.data);
+      axios.post(path, this.netWork).then(function (response) {
+        alert(JSON.stringify(response.data));
+      });
+      this.closeModal("play");
+    },
+
+    stopEmulation() {
+      var actionDir = {};
+      actionDir["action"] = "stop";
+      const path = "http://192.168.56.102:5000/";
+      axios.post(path, actionDir).then(function (response) {
+        alert(JSON.stringify(response.data));
+      });
+    },
+
+    trafficGenerator(){
+      var trafficDir = {};
+      trafficDir['TCP'] = 'true';
+      trafficDir['t'] = '60';
+      trafficDir['global'] = 'true';
+      const path = "http://192.168.56.102:5000/";
+      axios.post(path, trafficDir).then(function (response) {
+        console.log(JSON.stringify(response.data));
+      });
+    },
+
+    // Creacion elementos Fabric
+    makeLink(coords, linkType) {
+      if (linkType == "normal") {
+        return new fabric.Line(coords, {
+          fill: "red",
+          stroke: "#9733FA",
+          strokeWidth: 2,
+          selectable: false,
+          hasBorders: false,
+          hasControls: false,
+          /*   lockMovementX: true,
+               lockMovementY: true,
+               lockScalingX: true,
+               lockScalingY: true,
+               lockUniScaling: true,
+               lockRotation: true,*/
+          // evented: false,
+          id: "normal",
+        });
+      } else if (linkType == "portHost") {
+        return new fabric.Line(coords, {
+          fill: "yellow",
+          stroke: "#E1B13C",
+          strokeWidth: 2,
+          selectable: false,
+          hasBorders: false,
+          hasControls: false,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          lockUniScaling: true,
+          lockRotation: true,
+          // evented: false,
+          id: "portHost",
+        });
+      } else if (linkType == "link") {
+        return new fabric.Line(coords, {
+          fill: "green",
+          stroke: "#2AFE00",
+          strokeWidth: 2,
+          selectable: false,
+          hasBorders: false,
+          hasControls: false,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          lockUniScaling: true,
+          lockRotation: true,
+          //evented: false,
+          id: "link",
+        });
+      } else if (linkType == "portSwitch") {
+        return new fabric.Line(coords, {
+          fill: "yellow",
+          stroke: "#57E3EC",
+          strokeWidth: 2,
+          selectable: false,
+          hasBorders: false,
+          hasControls: false,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          lockUniScaling: true,
+          lockRotation: true,
+          //evented: false,
+          id: "portSwitch",
+        });
+      } else {
+        return new fabric.Line(coords, {
+          strokeDashArray: [5, 5],
+          stroke: "blue",
+          strokeWidth: 2,
+          selectable: false,
+          /* lockMovementX: true,
+             lockMovementY: true,
+             lockScalingX: true,
+             lockScalingY: true,
+             lockUniScaling: true,
+             lockRotation: true,*/
+          // evented: false,
+          id: "normal",
+        });
+      }
+
+      return line;
+
+      //
+    },
+
+    linkMaker(topo) {
+      var pareja;
+      var k = [];
+      if (topo == "single") {
+        // Creador de Pares de Conexión según la Red
+        for (var temp = 1; temp <= this.tagHost.length; temp++) {
+          pareja = "(s1," + this.tagHost[temp - 1] + ")";
+          k[temp - 1] = pareja;
+        }
+        // console.log("Conexiones:" + k);
+
+        // puntos iniciales del switch
+        var xInicial = this.netInfo[this.netInfo.length - 1].rX;
+        var yInicial = this.netInfo[this.netInfo.length - 1].rY;
+
+        for (var y = 0; y < this.netInfo.length - 1; y++) {
+          var xFinal = this.netInfo[y].rX;
+          var yFinal = this.netInfo[y].rY;
+          var line = this.makeLink(
+            [xInicial + 25, yInicial, xFinal + 28, yFinal + 25],
+            "normal"
+          );
+          this.link[y] = line;
+
+          //canvas.add(line);
+        }
+      }
+    },
+
+    element() {
+      if (this.tagElement.charAt(0) == "h") {
+        var iPHost = $("#inputFancyIPHost").val();
+        var sheduler = $("#optionShedulerFancyHost option:selected").text();
+        var cpuLimit = $("#inputFancyCpuLimitHost").val();
+        var cpuCores = $("#inputFancyCPUCoresHost").val();
+        this.armElement("h");
+        // this.createElement("h");
+        this.tagHost.push(this.tagElement);
+
+        this.canvas.forEachObject((obj) => {
+          if (obj.id == this.tagElement) {
+            obj.iPHost = iPHost;
+            obj.sheduler = sheduler;
+            obj.cpuLimit = cpuLimit;
+            obj.cpuCores = cpuCores;
+          }
+        });
+        this.closeModal("host");
+      }
+    },
+
+    armElement(idElement) {
       var img = new Image();
 
       img.src = this.imgElement;
@@ -498,12 +914,11 @@ export default {
         fill: "#15435d",
         fontSize: 15,
       });
-
       if (idElement == "h") {
         var groupHost = new fabric.Group([elemento, text], {
           left: this.x0,
           top: this.y0,
-          opacity: 1,
+          // opacity: 1,
           hasControls: false,
           hasBorders: false,
           transparentCorners: false,
@@ -536,7 +951,6 @@ export default {
           var line = elemento.connectionLine[i];
           groupHost.line = line;
         }
-
         var port = new Image();
         port.src = require("../assets/img/port.png");
 
@@ -585,145 +999,35 @@ export default {
             this.canvas.add(groupHost.connection[i]);
             this.canvas.add(groupHostPort);
           }
-          this.canvas.add(groupHost);
         }
+
+        this.canvas.add(groupHost);
       }
+      this.closeModal();
     },
 
-    makeLink(coords, linkType) {
-      if (linkType == "normal") {
-        return new fabric.Line(coords, {
-          fill: "red",
-          stroke: "#9733FA",
-          strokeWidth: 2,
-          selectable: true,
-          hasBorders: false,
-          hasControls: false,
-          /*   lockMovementX: true,
-               lockMovementY: true,
-               lockScalingX: true,
-               lockScalingY: true,
-               lockUniScaling: true,
-               lockRotation: true,*/
-          // evented: false,
-          id: "normal",
-        });
-      } else if (linkType == "portHost") {
-        return new fabric.Line(coords, {
-          fill: "yellow",
-          stroke: "#E1B13C",
-          strokeWidth: 2,
-          selectable: true,
-          hasBorders: false,
-          hasControls: false,
-          lockMovementX: true,
-          lockMovementY: true,
-          lockScalingX: true,
-          lockScalingY: true,
-          lockUniScaling: true,
-          lockRotation: true,
-          // evented: false,
-          id: "portHost",
-        });
-      } else if (linkType == "link") {
-        return new fabric.Line(coords, {
-          fill: "green",
-          stroke: "#2AFE00",
-          strokeWidth: 2,
-          selectable: true,
-          hasBorders: false,
-          hasControls: false,
-          lockMovementX: true,
-          lockMovementY: true,
-          lockScalingX: true,
-          lockScalingY: true,
-          lockUniScaling: true,
-          lockRotation: true,
-          //evented: false,
-          id: "link",
-        });
-      } else if (linkType == "portSwitch") {
-        return new fabric.Line(coords, {
-          fill: "yellow",
-          stroke: "#57E3EC",
-          strokeWidth: 2,
-          selectable: true,
-          hasBorders: false,
-          hasControls: false,
-          lockMovementX: true,
-          lockMovementY: true,
-          lockScalingX: true,
-          lockScalingY: true,
-          lockUniScaling: true,
-          lockRotation: true,
-          //evented: false,
-          id: "portSwitch",
-        });
-      } else {
-        return new fabric.Line(coords, {
-          strokeDashArray: [5, 5],
-          stroke: "blue",
-          strokeWidth: 2,
-          selectable: true,
-          /* lockMovementX: true,
-             lockMovementY: true,
-             lockScalingX: true,
-             lockScalingY: true,
-             lockUniScaling: true,
-             lockRotation: true,*/
-          // evented: false,
-          id: "normal",
-        });
-      }
-    },
+    createTopology() {
+      switch (this.topologyType) {
+        case "minimal":
+          console.log("entras");
+          this.topologyType = "single";
+          this.numHost = 2;
+          this.topologyMaker();
+          break;
 
-    linkMaker(topo) {
-      var pareja;
-      var k = [];
-      if (topo == "single") {
-        // Creador de Pares de Conexión según la Red
-        for (var temp = 1; temp <= this.tagHost.length; temp++) {
-          pareja = "(s1," + this.tagHost[temp - 1] + ")";
-          k[temp - 1] = pareja;
-        }
-        // console.log("Conexiones:" + k);
+        case "single":
+          var numberHost = $("#inputHostTemplate").val();
+          this.numHost = numberHost;
+          this.topologyMaker();
+          this.closeModal("single");
 
-        // puntos iniciales del switch
-        var xInicial = this.netInfo[this.netInfo.length - 1].rX;
-        var yInicial = this.netInfo[this.netInfo.length - 1].rY;
+          break;
 
-        for (var y = 0; y < this.netInfo.length - 1; y++) {
-          var xFinal = this.netInfo[y].rX;
-          var yFinal = this.netInfo[y].rY;
-          var line = this.makeLink(
-            [xInicial + 25, yInicial, xFinal + 28, yFinal + 25],
-            "normal"
-          );
-          this.link[y] = line;
+        case "linear":
+          break;
 
-          //canvas.add(line);
-        }
-      }
-    },
-
-    insertElement() {
-      if (this.tagElement.charAt(0) == "h") {
-        var iPHost = $("#inputFancyIPHost").val();
-        var sheduler = $("#optionShedulerFancyHost option:selected").text();
-        var cpuLimit = $("#inputFancyCpuLimitHost").val();
-        var cpuCores = $("#inputFancyCPUCoresHost").val();
-        this.createElement("h");
-        this.tagHost.push(this.tagElement);
-
-        this.canvas.forEachObject((obj) => {
-          if (obj.id == this.tagElement) {
-            obj.iPHost = iPHost;
-            obj.sheduler = sheduler;
-            obj.cpuLimit = cpuLimit;
-            obj.cpuCores = cpuCores;
-          }
-        });
-        this.closeModal();
+        case "anillo":
+          break;
       }
     },
 
@@ -975,9 +1279,6 @@ export default {
         }
       }
     },
-    closeModal() {
-      this.$bvModal.hide("modal-host");
-    },
 
     obtenerTool(id) {
       // this.$root.$emit('show::modal', 'modal-center');
@@ -986,10 +1287,8 @@ export default {
     },
 
     topologyMaker() {
-      console.log("Topology Maker");
       var posX = [];
       var image = "";
-      //var pSX = (tagHost.length * 68);
       var pSX = 800;
       var pSY = 2 * 58;
       var pCX = this.tagHost.length * 68;
@@ -997,7 +1296,6 @@ export default {
       var h = [];
       var s = [];
 
-      // Creador Topología Single - 1 Conmutador Conectado a N Host
       if (this.topologyType == "single") {
         if (this.numHost < 2) {
           alert("No es Posible Realizar la Red");
@@ -1005,7 +1303,6 @@ export default {
           for (var r = 0; r < this.numHost; r++) {
             var pY = 3 * 60;
             posX[r] = (r + 1) * 100; // Separación entre Host
-            image = "img/host.png";
             var obj = {
               value: this.tagHost[this.tagHost.length + r + 1],
               rX: posX[r],
@@ -1014,15 +1311,14 @@ export default {
             this.netInfo.push(obj);
             h[r] = obj;
           }
-
           //Insert SwitchOF de la Red Single
           var objt = {
             value: "s1",
             rX: pSX + 20,
             rY: pSY + 20, //Valor de distanciamiento en Y del Host
           };
-          this.netInfo.push(objt);
 
+          this.netInfo.push(objt);
           this.linkMaker(this.topologyType);
 
           // Insertar Elementos de Red
@@ -1076,7 +1372,7 @@ export default {
             // Toma los útlimos hosts agregados previamente
 
             id0.push("h" + (i + 1)); //Armamos el id del host necesitado
-            this.canvas.forEachObject( (obj) =>{
+            this.canvas.forEachObject((obj) => {
               if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
                 posX2.push(obj.connection[0].x2);
                 posY2.push(obj.connection[0].y2);
@@ -1084,6 +1380,8 @@ export default {
               }
             });
           }
+
+          console.log("tag " + JSON.stringify(this.tagSwitch));
 
           this.canvas.forEachObject((obj) => {
             id1 = "s" + this.tagSwitch.length;
@@ -1458,14 +1756,14 @@ export default {
 
 /* Modal Host*/
 
-#GuardarButtonFancyHost:hover {
+#buttonModal:hover {
   border: #2ac176 solid 1px;
   outline: none;
   background-color: #2ac176;
   color: white;
 }
 
-#CancelarButtonFancyHost:hover {
+#buttonModal:hover {
   border: #2ac176 solid 1px;
   outline: none;
   background-color: #2ac176;
