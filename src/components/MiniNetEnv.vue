@@ -65,8 +65,7 @@
         <b-dropdown-item href="#" id="wireshark" class="p-1"
           >WireShark</b-dropdown-item
         >
-        <b-dropdown-item href="#" id="genTraffic" class="p-1"
-          >Generador de Tráfico</b-dropdown-item
+        <b-dropdown-item href="#" id="genTraffic" class="p-1">Generador de Tráfico</b-dropdown-item
         >
         <b-dropdown-item href="#" id="graf" class="p-1"
           >Generador de Gráficas</b-dropdown-item
@@ -94,7 +93,7 @@
       </b-dropdown>
     </b-container>
     <!-- Barra de Accesos directos del Menú de Opciones -->
-    <b-container id="direct-access-bar" class="pl-4 col-12">
+    <b-container id="direct-access-bar" class="pl-4 text center col-12">
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
@@ -143,7 +142,7 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
-        @click="trafficGenerator"
+        @click="openModal('traffic')"
       ></button>
       <button
         type="button"
@@ -164,7 +163,7 @@
     <!-- Barra Lateral y Canvas -->
     <b-row class="p-0 m-0 w-100">
       <!-- Barra Lateral Elementos de Red -->
-      <b-col class="col-1 m-0" id="bar-lat">
+      <b-col class="col-1 p-0 m-0" id="bar-lat">
         <b-nav vertical>
           <button
             id="btn-element"
@@ -190,6 +189,38 @@
         </b-container>
       </b-col>
     </b-row>
+
+    <!-- Modal Done -->
+    <b-modal id="modal-done" hide-footer centered title="RESULTADO">
+      <b-container id="containerDone" class="">
+        <b-container id="containerFormDone">
+          <b-form id="formularioFancyDone" class="p-0">
+            <b-row id="containerDone" class="m-0 pt-3">
+              <b-col>
+                <small class="p-0 m-0 text-center text-primary"  id="text-done">{{alertText}}</smnall>
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormDone" class="m-0 p-0 text-right">
+          <b-col class="p-0"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="buttonModal"
+              value="Guardar"
+              class="m-2"
+              @click="closeModal('done')"
+              >Ok</b-button
+            >
+            </b-col
+          >
+        </b-row>
+      </b-container>
+    </b-modal>
+    
 
     <!-- Modal Host -->
     <b-modal id="modal-host" hide-footer centered title="Host">
@@ -409,6 +440,427 @@
         </b-form>
       </b-container>
     </b-modal>
+
+    <!-- Modal Generador de Tráfico -->
+    <b-modal
+      id="modal-traffic"
+      cancel-title="Cancelar"
+      scrollable
+      centered
+      title="Genetador de Tráfico"
+      size="lg"
+    >
+      <b-container id="containerForm_traffic">
+        <b-form id="formulario_traffic" class="p-0">
+          <b-row id="containerSelectorraffic" class="m-0 pt-2">
+            <b-col class="m-0 pt-0 col-6">
+              <label id="labelSelectorTraffic" class="p-0 m-0">
+                Seleccione el tipo de Tráfico:
+              </label>
+            </b-col>
+
+            <b-col class="mt-0 mr-0 pt-0 col-6">
+              <b-select
+                id="optionSelectorTraffic"
+                class="ml-4 text-right"
+                data-default="Ninguno"
+              >
+                <option value="TCP">TCP</option>
+                <option value="UDP">UDP</option>
+              </b-select>
+            </b-col>
+          </b-row>
+          <!-- Label -->
+          <b-row>
+            <b-col
+              ><label
+                id="parameterTraffic"
+                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
+                >Establezca los parametros de tráfico
+              </label>
+            </b-col>
+          </b-row>
+
+          <!-- FILA PARAMETRO DE TIEMPO -->
+          <b-row id="parameterTime" class="m-0 pt-1">
+            <b-col class="p-1 m-0">
+              <b-form-radio name="option-radios" value="time" id="radioTime">
+                Tiempo de Emulación:
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="p-0 ml-5"
+              ><b-input
+                type="number"
+                id="inputTime"
+                step="0.1"
+                min="1"
+                max="100000"
+                class="p-2 ml-2"
+            /></b-col>
+          </b-row>
+
+          <!-- Fila Longitud de Paquete -->
+          <b-row id="parameterLong" class="m-0 pt-2">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-checkbox
+                id="checkboxLong"
+                name="checkbox-Long"
+                value="accepted"
+                unchecked-value="not_accepted"
+              >
+                Longitud del Paquete
+              </b-form-checkbox>
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3"
+              ><b-input
+                type="number"
+                id="inputLong"
+                step="0.1"
+                min="1"
+                max="100000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <b-form-radio
+                  name="option-radios-long"
+                  value="long"
+                  class="col-2 p-2 ml-4 pl-3"
+                  id="radio-kbytes-long"
+                >
+                  KB
+                </b-form-radio>
+                <b-form-radio
+                  name="option-radios-long"
+                  value="long"
+                  class="col-2 p-2 ml-5 mt-0"
+                  id="radio-mbytes-long"
+                >
+                  MB
+                </b-form-radio>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!-- Fila Intervalo de Tiempo -->
+          <b-row id="parameterRange" class="m-0 pt-2">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-checkbox
+                id="checkboxRange"
+                name="checkbox-Range"
+                value="accepted"
+                unchecked-value="not_accepted"
+                >Intervalo de Tiempo</b-form-checkbox
+              >
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3">
+              <b-input
+                type="number"
+                id="inputRange"
+                step="0.01"
+                min="1"
+                max="1000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <label
+                  id="labelFancyHost d-inline text-center"
+                  class="ml-4 mt-2"
+                >
+                  Segundos
+                </label>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!-- Fila Bit Rate -->
+          <b-row id="parameterRate" class="m-0 pt-2">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-checkbox
+                id="checkboxRate"
+                name="checkbox-Rate"
+                value="accepted"
+                unchecked-value="not_accepted"
+                >Ancho de Banda del Destino
+              </b-form-checkbox>
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3"
+              ><b-input
+                type="number"
+                id="inputRate"
+                step="0.01"
+                min="1"
+                max="1000000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <b-form-radio
+                  name="option-radios-rate"
+                  value="rateKb"
+                  class="col-2 p-2 ml-4 pl-3"
+                  id="radioKBitRate"
+                >
+                  Kb/s
+                </b-form-radio>
+                <b-form-radio
+                  name="option-radios-rate"
+                  value="rateMb"
+                  class="col-2 p-2 ml-5 mt-0"
+                  id="radioMBitRae"
+                >
+                  Mb/s
+                </b-form-radio>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!-- Fila Window -->
+          <b-row id="parameterW" class="m-0 pt-2">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-checkbox
+                id="checkboxW"
+                name="checkbox-W"
+                value="accepted"
+                unchecked-value="not_accepted"
+                >Tamaño de la Ventana Deslizante
+              </b-form-checkbox>
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3"
+              ><b-input
+                type="number"
+                id="inputW"
+                step="0.01"
+                min="1"
+                max="1000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <b-form-radio
+                  name="option-radios-w"
+                  value="wkB"
+                  class="col-2 p-2 ml-4 pl-3"
+                  id="radioKBytesW"
+                >
+                  KB
+                </b-form-radio>
+                <b-form-radio
+                  name="option-radios-w"
+                  value="wMb"
+                  class="col-2 p-2 ml-5 mt-0"
+                  id="radioMBytesW"
+                >
+                  MB
+                </b-form-radio>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!-- FILA CANTIDAD DE PAQUETES -->
+          <b-row id="parameterPacket" class="m-0 pt-1">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-radio
+                name="option-radios"
+                value="packet"
+                id="radioPacket"
+              >
+                Cantidad de Paquetes
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3"
+              ><b-input
+                type="number"
+                id="inputPacket"
+                step="0.001"
+                min="1"
+                max="1000000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <b-form-radio
+                  name="option-radios-packet"
+                  value="wkB"
+                  class="col-2 p-2 ml-4 pl-3"
+                  id="radioKBytesPacket"
+                >
+                  KB
+                </b-form-radio>
+                <b-form-radio
+                  name="option-radios-packet"
+                  value="wMb"
+                  class="col-2 p-2 ml-5 mt-0"
+                  id="radioMBytesPacket"
+                >
+                  MB
+                </b-form-radio>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!-- FILA CANTIDAD DE PAQUETES -->
+          <b-row id="parameterBlock" class="m-0 pt-1">
+            <b-col class="p-1 m-0 mr-5 col-5">
+              <b-form-radio name="option-radios" value="packet" id="radioBlock">
+                Número de Bloques
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="p-0 m-0 col-3 ml-4 pl-3"
+              ><b-input
+                type="number"
+                id="inputBlock"
+                step="0.001"
+                min="1"
+                max="1000000"
+                class="p-2 ml-2 mr-3 d-inline"
+              />
+            </b-col>
+
+            <b-col class="col-2">
+              <b-row>
+                <b-form-radio
+                  name="option-radios-Block"
+                  value="wkB"
+                  class="col-2 p-2 ml-4 pl-3"
+                  id="radioKBytesBlock"
+                >
+                  KB
+                </b-form-radio>
+                <b-form-radio
+                  name="option-radios-Block"
+                  value="wMb"
+                  class="col-2 p-2 ml-5 mt-0"
+                  id="radioMBytesBlock"
+                >
+                  MB
+                </b-form-radio>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <b-row>
+            <b-col
+              ><label
+                id="parameterTraffic"
+                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
+              >
+                Seleccione el modo de operación
+              </label>
+            </b-col>
+          </b-row>
+
+          <b-row>
+            <b-col class="col-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="global"
+                id="radioGlobal"
+              >
+                Global
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="col-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="xtreme"
+                id="radioXtreme"
+              >
+                Especifico
+              </b-form-radio>
+            </b-col>
+            <b-col class="col-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="specific"
+                id="radioSpecific"
+              >
+                Extremo a extremo
+              </b-form-radio>
+            </b-col>
+          </b-row>
+
+          <b-row class="m-3">
+            <b-col class="col-4">
+              <label id="parameterHostA"> Desde el Host: h </label>
+            </b-col>
+
+            <b-col class="col-2">
+              <b-input
+                type="number"
+                id="inputHostA"
+                step="1"
+                min="1"
+                max="10000"
+                class="ml-0"
+              />
+            </b-col>
+            <b-col class="col-4">
+              <label id="parameterHostB"> al Host: h </label>
+            </b-col>
+
+            <b-col class="col-2">
+              <b-input
+                type="number"
+                id="inputHostB"
+                step="1"
+                min="1"
+                max="10000"
+                class="ml-0"
+              />
+            </b-col>
+          </b-row>
+        </b-form>
+      </b-container>
+
+      <!-- BTN GUARDAR GENERAR Y CANCELAR -->
+      <template #modal-footer>
+        <b-row id="containerBtnSave" class="p-0 text-right">
+          <b-col class="p-0">
+            <b-button
+              variant="dark"
+              squared
+              type="buttonModal"
+              id="btnSaveIp"
+              class="m-2 ml-5"
+              @click="trafficGenerator"
+              >Generar</b-button
+            >
+
+            <b-button
+              squared
+              variant="dark"
+              id="buttonModal"
+              class="m-2 mr-4"
+              value="Cancelar"
+              @click="closeModal('traffic')"
+              >Cancelar</b-button
+            >
+          </b-col>
+        </b-row>
+      </template>
+    </b-modal>
+
+
   </div>
 </template>
   
@@ -424,7 +876,7 @@ export default {
     return {
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
-
+      
       //Canvas
       canvas: "",
 
@@ -455,6 +907,8 @@ export default {
       depth: "",
       fanout: "",
 
+      //Variable para los Modales de Informacion 
+      alertText : '',
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -535,6 +989,19 @@ export default {
         }
       });
 
+      this.canvas.on("mouse:wheel", (opt) => {
+        if (flag == true) {
+          var delta = opt.e.deltaY;
+          var zoom = canvas.getZoom();
+          zoom *= 0.999 ** delta;
+          if (zoom > 20) zoom = 20;
+          if (zoom < 0.01) zoom = 0.01;
+          this.canvas.setZoom(zoom);
+          opt.e.preventDefault();
+          opt.e.stopPropagation();
+        }
+      });
+
       //Mouse Down Event
       this.canvas.on("mouse:down", (options) => {
         var pointer = this.canvas.getPointer(options.e);
@@ -602,6 +1069,12 @@ export default {
       if (open == "play") {
         return this.$bvModal.show("modal-IpUser");
       }
+      if (open == 'traffic'){
+        return this.$bvModal.show("modal-traffic");
+      }
+      if (open == 'done'){
+        return this.$bvModal.show("modal-done");
+      }
     },
 
     closeModal(mod) {
@@ -609,10 +1082,21 @@ export default {
         return this.$bvModal.hide("modal-host");
       }
       if (mod == "single") {
+        return this.$bvModal.hide("modal-template");
       }
       if (mod == "play") {
         return this.$bvModal.hide("modal-IpUser");
       }
+      if (mod == 'traffic'){
+        return this.$bvModal.hide("modal-traffic");
+      }
+      if (mod == 'done'){
+        return this.$bvModal.hide("modal-done");
+      }
+    },
+
+    disableAll() {
+      $("#play-direct-access").css("disabled","true");
     },
 
     loadInfoElements() {
@@ -708,34 +1192,56 @@ export default {
 
       console.log("Network Info: " + JSON.stringify(this.netWork));
       var json = JSON.stringify(this.netWork);
-      const path = "http://192.168.56.102:5000/";
-      // axios.get(path).then(function(response){
-      //   console.log(response.data);
-      //   alert(response.data);
-      axios.post(path, this.netWork).then(function (response) {
-        alert(JSON.stringify(response.data));
+      const path = "http://10.55.6.188:5000/";
+      axios.post(path, this.netWork).then( (response) => {
+        var h1 = $("#text-done");
+        var validator = Object.keys(response.data).includes('red');
+        console.log(h1.text());
+        if (validator == true){
+          this.alertText = 'Red Creada Exitosamente';
+          this.openModal('done');
+
+        }
       });
       this.closeModal("play");
+      this.disableAll();
     },
 
     stopEmulation() {
       var actionDir = {};
       actionDir["action"] = "stop";
-      const path = "http://192.168.56.102:5000/";
-      axios.post(path, actionDir).then(function (response) {
+      const path = "http://10.55.6.188:5000/";
+      axios.post(path, actionDir).then((response)=> {
         alert(JSON.stringify(response.data));
+        this.elements = [];
+        this.netWork = {};
       });
     },
 
-    trafficGenerator(){
+    trafficGenerator() {
+      var timeEmulation= $('#inputTime').val();
+      var lengthPackage = $('#inputLong').val();
       var trafficDir = {};
-      trafficDir['TCP'] = 'true';
-      trafficDir['t'] = '60';
-      trafficDir['global'] = 'true';
-      const path = "http://192.168.56.102:5000/";
-      axios.post(path, trafficDir).then(function (response) {
-        console.log(JSON.stringify(response.data));
+      trafficDir["TCP"] = "true";
+      trafficDir['n'] = String(lengthPackage)+ 'M'
+      //trafficDir["t"] = String(timeEmulation);
+      trafficDir["global"] = "true";
+      this.closeModal('traffic');
+      const path = "http://10.55.6.188:5000/";
+      axios.post(path, trafficDir).then((response) => {
+        var comp = true;
+        
+        if (comp == true) {
+          this.alertText = 'Tráfico Creado Exitosamente';
+          console.log(response.data)
+          this.openModal('done');
+
+        }else{
+          this.alertText = 'Imposible Crear el Tráfico';
+          this.openModal('done');
+        }
       });
+      
     },
 
     // Creacion elementos Fabric
