@@ -65,7 +65,8 @@
         <b-dropdown-item href="#" id="wireshark" class="p-1"
           >WireShark</b-dropdown-item
         >
-        <b-dropdown-item href="#" id="genTraffic" class="p-1">Generador de Tráfico</b-dropdown-item
+        <b-dropdown-item href="#" id="genTraffic" class="p-1"
+          >Generador de Tráfico</b-dropdown-item
         >
         <b-dropdown-item href="#" id="graf" class="p-1"
           >Generador de Gráficas</b-dropdown-item
@@ -190,42 +191,426 @@
       </b-col>
     </b-row>
 
-    <!-- Modal Done -->
-    <b-modal id="modal-done" hide-footer centered title="RESULTADO">
-      <b-container id="containerDone" class="">
-        <b-container id="containerFormDone">
-          <b-form id="formularioFancyDone" class="p-0">
-            <b-row id="containerDone" class="m-0 pt-3">
-              <b-col>
-                <small class="p-0 m-0 text-center text-primary"  id="text-done">{{alertText}}</smnall>
+    <!-- Modales de  creacion elementos individuales de red -->
+
+    <!-- Modal Controller -->
+    <b-modal id="modal-controller" hide-footer centered title="Controlador">
+      <b-container
+        id="containerInsertController"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerParameterFancyController" class="ml-3">
+          <img
+            type="image"
+            id="inputInfoController"
+            title="Información"
+            src="@/assets/img/controller.png"
+            width="25px"
+            height="30px"
+            class="m-0 d-inline"
+          />
+
+          <label
+            id="labelFancyController d-inline text-center"
+            class="ml-2 font-weight-bold text-uppercase"
+            >{{ tagElement }}
+          </label>
+        </b-container>
+
+        <b-container id="containerFormController">
+          <b-form id="formularioFancyController" class="p-0">
+            <b-row id="containerTypeController" class="m-0 pt-3">
+              <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4"
+                ><label id="labelTypeFancyController" class="p-0 m-0">
+                  Tipo:
+                </label></b-col
+              >
+              <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8">
+                <b-select
+                  id="optionTypeFancyController"
+                  class="p-2 ml-4 text-left"
+                  data-default="Por Defecto"
+                >
+                  <option value="Por Defecto">Por Defecto</option>
+                  <option value="OpenFlow Reference Implementation">
+                    OpenFlow Reference
+                  </option>
+                  <option value="NOX">NOX</option>
+                  <option value="OVS Controller">OVS Controller</option>
+                  <option value="OpenDayLigth">OpenDayLigth</option>
+                </b-select>
+              </b-col>
+            </b-row>
+
+            <b-row id="containerIPController" class="m-0 pt-3">
+              <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4"
+                ><label id="labelFancyIpController" class="p-0"
+                  >IP:</label
+                ></b-col
+              >
+              <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyIpController"
+                  name="fname"
+                  placeholder="   0   .   0   .   0   .   0"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerPortController" class="m-0 pt-3">
+              <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4"
+                ><label id="labelFancyPuertoController" class="p-0">
+                  Puerto:
+                </label></b-col
+              >
+              <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8"
+                ><b-input
+                  type="number"
+                  id="inputFancyPuertoController"
+                  step="1"
+                  min="0"
+                  max="65535"
+                  class="p-2 ml-4"
+              /></b-col>
+            </b-row>
+
+            <b-row id="containerProtocolController" class="m-0 pt-3">
+              <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4"
+                ><label id="labelFancyProtocolController" class="p-0 m-0">
+                  Protocolo:
+                </label></b-col
+              >
+              <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8">
+                <b-select
+                  id="optionProtocolFancyController"
+                  class="p-2 ml-4 text-right"
+                  data-default="Ninguno"
+                >
+                  <option value="Ninguno" selected="selected">Ninguno</option>
+                  <option value="TCP">TCP</option>
+                  <option value="SSL">SSL</option>
+                </b-select>
               </b-col>
             </b-row>
           </b-form>
         </b-container>
 
-        <b-row id="containerFancyButtonFormDone" class="m-0 p-0 text-right">
-          <b-col class="p-0"
+        <b-row
+          id="containerFancyButtonFormController"
+          class="m-0 p-0 text-right"
+        >
+          <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
             ><b-button
               variant="dark"
               squared
               type="button"
-              id="buttonModal"
+              id="GuardarButtonFancyController"
               value="Guardar"
               class="m-2"
-              @click="closeModal('done')"
+              @click="element"
               >Ok</b-button
             >
-            </b-col
+            <b-button
+              squared
+              variant="dark"
+              id="CancelarButtonFancyController"
+              class="m-2"
+              value="Cancelar"
+              @click="closeModal('controller')"
+              >Cancelar</b-button
+            ></b-col
           >
         </b-row>
       </b-container>
+
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
     </b-modal>
-    
+
+    <!-- Modal Switch -->
+    <b-modal
+      id="modal-switch"
+      centered
+      title="Switch"
+      cancel-title="Cancelar"
+      scrollable
+    >
+      <b-container
+        id="containerInsertSwitch"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerParameterFancySwitch" class="ml-3">
+          <img
+            type="image"
+            id="inputInfoSwitch"
+            title="Información"
+            src="@/assets/img/openflow_switch.png"
+            width="25px"
+            height="30px"
+            class="m-0 d-inline"
+          />
+
+          <label
+            id="labelFancySwitch d-inline text-center"
+            class="ml-2 font-weight-bold text-uppercase"
+            >{{ tagElement }}
+          </label>
+        </b-container>
+
+        <b-container id="containerFormSwitch">
+          <b-form id="formularioFancySwitch" class="p-0">
+            <b-row id="containerTypeSwitch" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyTypeSwitch" class="p-0 m-0">
+                  Tipo:
+                </label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-select
+                  id="optionTypeFancySwitch"
+                  class="p-2 ml-4 text-right"
+                  data-default="Ninguno"
+                >
+                  <option value="Ninguno">Ninguno</option>
+                  <option value="IVS Switch">IVS Switch</option>
+                  <option value="Linux Brigde">Linux Brigde</option>
+                  <option value="OVS Brigde">OVS Brigde</option>
+                  <option value="OVS Switch">OVS Switch</option>
+                  <option value="User Switch">User Switch</option>
+                </b-select>
+              </b-col>
+            </b-row>
+
+            <b-row id="containerSTPFancySwitch" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><b-form-checkbox
+                  id="checkboxSTPFancySwitch"
+                  name="checkbox-STPFancySwitch"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  STP Priority:
+                </b-form-checkbox>
+              </b-col>
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="number"
+                  class="p-2 ml-4"
+                  id="inputFancySTPPriority"
+                  step="4096"
+                  min="4096"
+                  max="32768"
+                  value="32768"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerIPSwitch" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyIPSwitch" class="p-0">IP:</label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyIPSwitch"
+                  name="fname"
+                  placeholder="0       .0       .0       .0"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerDPCTLPort" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyDPCTLPort" class="p-0"
+                  >DPCTL Port:</label
+                ></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="number"
+                  class="p-2 ml-4"
+                  id="inputFancyDPCTLPort"
+                  step="1"
+                  min="1"
+                  max="65535"
+                  value="6633"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerProtocolSwitch" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyProtocolSwitch" class="p-0 m-0">
+                  Protocolo:
+                </label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6s">
+                <b-select
+                  id="containerProtocolSwitch"
+                  class="p-2 ml-4 text-right"
+                  data-default="OpenFlow 1.0"
+                >
+                  <option value="OpenFlow 1.0">OpenFlow 1.1</option>
+                  <option value="OpenFlow 1.2">OpenFlow 1.2</option>
+                  <option value="OpenFlow 1.3">OpenFlow 1.3</option>
+                  <option value="OpenFlow 1.4">OpenFlow 1.4</option>
+                  <option value="OpenFlow 1.5">OpenFlow 1.5</option>
+                </b-select>
+              </b-col>
+            </b-row>
+
+            <b-row id="containerDataPath" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyDataPathSwitch" class="p-0 m-0">
+                  DataPath:
+                </label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-select
+                  id="optionDataPathFancySwitch"
+                  class="p-2 ml-4 text-right"
+                  data-default="Ninguno"
+                >
+                  <option value="Ninguno">Ninguno</option>
+                  <option value="Kernel">Kernel</option>
+                  <option value="User">User</option>
+                </b-select>
+              </b-col>
+            </b-row>
+
+            <b-row id="containerDataPathID" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyDataPathIDSwitch" class="p-0"
+                  >DataPath ID:</label
+                ></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyDataPathIDSwitch"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerOfDataPathArguments" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyOfDataPathArgsSwitch" class="p-0"
+                  >DataPath Args:</label
+                ></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyOfDataPathArgsSwitch"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+
+            <b-row id="containerFailMode" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><label id="labelFancyFailModeSwitch" class="p-0 m-0">
+                  Modelo de Fallas:
+                </label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-select
+                  id="optionFailModeFancySwitch"
+                  class="p-2 ml-4 text-right"
+                  data-default="Ninguno"
+                >
+                  <option value="Ninguno">Ninguno</option>
+                  <option value="Secure">Secure</option>
+                  <option value="Standalone">Standalone</option>
+                </b-select>
+              </b-col>
+            </b-row>
+
+            <b-row id="containerCheckBoxOne" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+                ><b-form-checkbox
+                  id="InBandFancySwitch"
+                  name="checkbox-InBand"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  InBand
+                </b-form-checkbox>
+                <b-form-checkbox
+                  id="InNameSpaceFancySwitch"
+                  name="checkbox-inNameSpace"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  In NameSpace
+                </b-form-checkbox>
+              </b-col>
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-form-checkbox
+                  id="BatchFancySwitch"
+                  name="checkbox-batch"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  Batch
+                </b-form-checkbox>
+                <b-form-checkbox
+                  id="VerboseFancySwitch"
+                  name="checkbox-verbose"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  Verbose
+                </b-form-checkbox>
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+      </b-container>
+
+      <!-- BTN GUARDAR GENERAR Y CANCELAR -->
+      <template #modal-footer>
+        <b-row id="containerBtnSaveSwitch" class="p-0 text-right">
+          <b-col class="p-0">
+            <b-button
+              variant="dark"
+              squared
+              type="buttonModal"
+              id="btnSaveSwitch"
+              class="m-2 ml-5"
+              @click="element"
+              >Ok</b-button
+            >
+
+            <b-button
+              squared
+              variant="dark"
+              id="buttonModal"
+              class="m-2 mr-4"
+              value="Cancelar"
+              @click="closeModal('switch')"
+              >Cancelar</b-button
+            >
+          </b-col>
+        </b-row>
+      </template>
+    </b-modal>
 
     <!-- Modal Host -->
     <b-modal id="modal-host" hide-footer centered title="Host">
-      <b-container id="containerInsertHost" class="">
-        <b-container id="containerParameterFancyHost" class="ml-3">
+      <b-container
+        id="containerInsertHost"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container
+          id="containerParameterFancyHost"
+          class="col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-3"
+        >
           <img
             type="image"
             id="inputInfoHost"
@@ -246,12 +631,12 @@
         <b-container id="containerFormHost">
           <b-form id="formularioFancyHost" class="p-0">
             <b-row id="containerIPHost" class="m-0 pt-3">
-              <b-col
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5"
                 ><label id="labelFancyIPHost" class="p-0"
                   >Ruta por Defecto:</label
                 ></b-col
               >
-              <b-col>
+              <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
                 <b-input
                   type="text"
                   class="p-2 ml-4"
@@ -262,18 +647,18 @@
             </b-row>
 
             <b-row id="containerShedulerHost" class="m-0 pt-3">
-              <b-col
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5"
                 ><label id="labelSchedulerFancyHost" class="p-0 m-0">
                   Scheduler:
                 </label></b-col
               >
-              <b-col>
+              <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
                 <b-select
                   id="optionShedulerFancyHost"
                   class="p-2 ml-4 text-right"
                   data-default="Ninguno"
                 >
-                  <option value="Ninguno" selected="selected">Ninguno</option>
+                  <option value="Ninguno">Ninguno</option>
                   <option value="CFS">CFS</option>
                   <option value="RT">RT</option>
                 </b-select>
@@ -282,28 +667,29 @@
             </b-row>
 
             <b-row id="containerCPULimitHost" class="m-0 pt-3">
-              <b-col
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5"
                 ><label id="labelFancyCpuLimitHost" class="p-0">
                   Limite CPU :
                 </label></b-col
               >
-              <b-col
+              <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7"
                 ><b-input
                   type="number"
                   id="inputFancyCpuLimitHost"
-                  step="0.01"
+                  step="1"
                   min="0"
                   max="1"
                   class="p-2 ml-4"
               /></b-col>
             </b-row>
+
             <b-row id="containerCPUCoresHost" class="m-0 pt-3">
-              <b-col
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5"
                 ><label id="labelFancyCPUCoreHost" class="p-0">
                   Núcleos CPU :
                 </label></b-col
               >
-              <b-col
+              <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7"
                 ><b-input
                   type="number"
                   id="inputFancyCPUCoresHost"
@@ -316,7 +702,279 @@
         </b-container>
 
         <b-row id="containerFancyButtonFormHost" class="m-0 p-0 text-right">
-          <b-col class="p-0"
+          <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="GuardarButtonFancyHost"
+              value="Guardar"
+              class="m-2"
+              @click="element"
+              >Ok</b-button
+            >
+            <b-button
+              squared
+              variant="dark"
+              id="CancelarButtonFancyHost"
+              class="m-2"
+              value="Cancelar"
+              @click="closeModal('host')"
+              >Cancelar</b-button
+            ></b-col
+          >
+        </b-row>
+      </b-container>
+
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
+    </b-modal>
+
+    <!-- Modal Puerto -->
+    <b-modal id="modal-port" hide-footer centered title="Puerto">
+      <b-container
+        id="containerInsertPort"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerFormPort">
+          <b-form id="formularioFancyPort" class="p-0">
+            <b-row id="containerPort" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <img
+                  type="image"
+                  id="inputInfoPort"
+                  title="Información"
+                  src="@/assets/img/port.png"
+                  width="25px"
+                  height="30px"
+                  class="m-0 d-inline mr-3"
+                />
+                <label id="labelFancyPort" class="p-0">Puerto:</label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyPort"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormPort" class="m-0 p-0 text-right">
+          <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="GuardarButtonFancyPort"
+              value="Guardar"
+              class="m-2"
+              @click="element"
+              >Ok</b-button
+            >
+            <b-button
+              squared
+              variant="dark"
+              id="CancelarButtonFancyPort"
+              class="m-2"
+              value="Cancelar"
+              @click="closeModal"
+              >Cancelar</b-button
+            ></b-col
+          >
+        </b-row>
+      </b-container>
+
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
+    </b-modal>
+
+    <!-- Modal Link -->
+    <b-modal id="modal-link" hide-footer centered title="Enlace">
+      <b-container
+        id="containerInsertLink"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerFormLink">
+          <b-form id="formularioFancyLink" class="p-0">
+            <b-row id="containerBandWidthLink" class="m-0 pt-1">
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <label id="labelFancyBandWidthLink">Ancho de Banda:</label>
+              </b-col>
+
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <b-input
+                  type="number"
+                  id="inputFancyBandWidthLink"
+                  step="1"
+                  min="0"
+                  max="10000000000000"
+                  class="p-2"
+              /></b-col>
+
+              <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
+                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                  >Mb/s</label
+                ></b-col
+              >
+            </b-row>
+
+            <b-row id="containerDelayLink" class="m-0 pt-1">
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <label id="labelFancyDelayLink" class="pt-2">Retardo:</label>
+              </b-col>
+
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <b-input
+                  type="number"
+                  id="inputFancyDelayLink"
+                  step="1"
+                  min="0"
+                  max="10000000000000"
+                  class="p-2"
+              /></b-col>
+
+              <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
+                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                  >ms</label
+                ></b-col
+              >
+            </b-row>
+
+            <b-row id="containerJitterLink" class="m-0 pt-1">
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <label id="labelFancyJitterLink" class="pt-2">Jitter:</label>
+              </b-col>
+
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <b-input
+                  type="number"
+                  id="inputFancyJitterLink"
+                  step="1"
+                  min="0"
+                  max="10000000000000"
+                  class="p-2"
+              /></b-col>
+
+              <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
+                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                  >ms</label
+                ></b-col
+              >
+            </b-row>
+
+            <b-row id="containerMaxQueueLink" class="m-0 pt-1">
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <label id="labelFancyMaxQueueLink" class="pt-2"
+                  >Cola Máxima:</label
+                >
+              </b-col>
+
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <b-input
+                  type="number"
+                  id="inputFancyMaxQueueLink"
+                  step="1"
+                  min="0"
+                  max="10000000000000"
+                  class="p-2"
+              /></b-col>
+
+              <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
+                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                  >Paquetes</label
+                ></b-col
+              >
+            </b-row>
+
+            <b-row id="containerLossLink" class="m-0 pt-1">
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <label id="labelFancyLossLink" class="pt-2">Perdidas:</label>
+              </b-col>
+
+              <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <b-input
+                  type="number"
+                  id="inputFancyLossLink"
+                  step="1"
+                  min="0"
+                  max="100"
+                  class="p-2"
+              /></b-col>
+
+              <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
+                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                  >%</label
+                ></b-col
+              >
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormLink" class="m-0 p-0 text-right">
+          <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="GuardarButtonFancyLink"
+              value="Guardar"
+              class="m-2"
+              @click="element"
+              >Ok</b-button
+            >
+            <b-button
+              squared
+              variant="dark"
+              id="CancelarButtonFancyLink"
+              class="m-2"
+              value="Cancelar"
+              @click="closeModal"
+              >Cancelar</b-button
+            ></b-col
+          >
+        </b-row>
+      </b-container>
+
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
+    </b-modal>
+
+    <!-- Modal Etiqueta -->
+    <b-modal id="modal-label" hide-footer centered title="Etiqueta">
+      <b-container
+        id="containerInsertLabel"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerFormLabel">
+          <b-form id="formularioFancyLabel" class="p-0">
+            <b-row id="containerLabel" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <img
+                  type="image"
+                  id="inputInfoLabel"
+                  title="Información"
+                  src="@/assets/img/label.png"
+                  width="25px"
+                  height="30px"
+                  class="m-0 d-inline"
+                />
+                <label id="labelFancyLabel" class="p-0">Etiqueta:</label></b-col
+              >
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputFancyLabel"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormLabel" class="m-0 p-0 text-right">
+          <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
             ><b-button
               variant="dark"
               squared
@@ -333,7 +991,7 @@
               id="buttonModal"
               class="m-2"
               value="Cancelar"
-              @click="closeModal"
+              @click="closeModal('label')"
               >Cancelar</b-button
             ></b-col
           >
@@ -345,15 +1003,18 @@
 
     <!-- Modal Detector IP Usuario -->
     <b-modal id="modal-IpUser" hide-footer centered title="Configurción IP">
-      <b-container id="containerIpUser" class="">
+      <b-container
+        id="containerIpUser"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
         <b-container id="containerForm_IP_xclient">
           <b-form id="formulario_IP_xclient" class="p-0">
             <b-row id="containerIp" class="m-0 pt-3">
-              <b-col class="col-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <label id="labelIP" class="p-0">IP Local:</label>
               </b-col>
 
-              <b-col class="col-9">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <b-input
                   type="text"
                   class="p-2 ml-4"
@@ -364,7 +1025,7 @@
             </b-row>
 
             <b-row id="containerBtnSave" class="mt-2 p-0 text-right">
-              <b-col class="p-0">
+              <b-col class="p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <b-button
                   variant="dark"
                   squared
@@ -399,45 +1060,97 @@
       centered
       title="Parámetros de la Red"
     >
-      <b-container class="divFormTemplate">
-        <b-form id="formulario">
-          <b-row>
-            <b-col><label id="labelHost">Número de Host:</label></b-col>
-            <b-col
-              ><b-input
-                type="number"
-                min="2"
-                id="inputHostTemplate"
-                name="fname"
-            /></b-col>
-          </b-row>
-          <b-row
-            id="containerFancyButtonFormTemplate"
-            class="m-0 p-0 text-right"
-          >
-            <b-col class="p-0 mt-2"
-              ><b-button
-                variant="dark"
-                squared
-                type="button"
-                id="buttonModal"
-                value="Guardar"
-                class="m-2"
-                @click="createTopology"
-                >Ok</b-button
+      <b-container
+        id="containerInsertTemplate"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerFormTemplate">
+          <b-form id="formularioFancyHostTemplate" class="p-0">
+            <b-row id="containerTemlate" class="m-0 pt-3">
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <img
+                  type="image"
+                  id="inputInfoHostTemplate"
+                  title="Información"
+                  src="@/assets/img/host.png"
+                  width="25px"
+                  height="30px"
+                  class="m-0 d-inline mr-3"
+                />
+                <label id="labelHostTemplate" class="p-0"
+                  >Número de Host:</label
+                ></b-col
               >
-              <b-button
-                squared
-                variant="dark"
-                id="buttonModal"
-                class="m-2"
-                value="Cancelar"
-                @click="closeModal('single')"
-                >Cancelar</b-button
-              ></b-col
+              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <b-input
+                  type="text"
+                  class="p-2 ml-4"
+                  id="inputHostTemplate"
+                  name="fname"
+                />
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormTemplate" class="m-0 p-0 text-right">
+          <b-col class="p-0"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="GuardarButtonFancyTemplate"
+              value="Guardar"
+              class="m-2"
+              @click="createTopology"
+              >Ok</b-button
             >
-          </b-row>
-        </b-form>
+            <b-button
+              squared
+              variant="dark"
+              id="CancelarButtonFancyTemplate"
+              class="m-2"
+              value="Cancelar"
+              @click="closeModal('single')"
+              >Cancelar</b-button
+            ></b-col
+          >
+        </b-row>
+      </b-container>
+
+      <!-- <p class="my-4">Vertically centered modal!</p> -->
+    </b-modal>
+
+    <!-- Modal Done -->
+    <b-modal id="modal-done" hide-footer centered title="RESULTADO">
+      <b-container
+        id="containerDone"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
+        <b-container id="containerFormDone">
+          <b-form id="formularioFancyDone" class="p-0">
+            <b-row id="containerDone" class="m-0 pt-3">
+              <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1 class="p-0 m-0" id="H1FancyDone">{{ alertText }}</h1>
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+
+        <b-row id="containerFancyButtonFormDone" class="m-0 p-0 text-right">
+          <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12 p-0"
+            ><b-button
+              variant="dark"
+              squared
+              type="button"
+              id="GuardarButtonFancyDone"
+              value="Guardar"
+              class="m-2"
+              @click="closeModal('done')"
+              >Ok</b-button
+            >
+          </b-col>
+        </b-row>
       </b-container>
     </b-modal>
 
@@ -450,16 +1163,19 @@
       title="Genetador de Tráfico"
       size="lg"
     >
-      <b-container id="containerForm_traffic">
+      <b-container
+        id="containerForm_traffic"
+        class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+      >
         <b-form id="formulario_traffic" class="p-0">
           <b-row id="containerSelectorraffic" class="m-0 pt-2">
-            <b-col class="m-0 pt-0 col-6">
+            <b-col class="m-0 pt-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
               <label id="labelSelectorTraffic" class="p-0 m-0">
                 Seleccione el tipo de Tráfico:
               </label>
             </b-col>
 
-            <b-col class="mt-0 mr-0 pt-0 col-6">
+            <b-col class="mt-0 mr-0 pt-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
               <b-select
                 id="optionSelectorTraffic"
                 class="ml-4 text-right"
@@ -472,7 +1188,7 @@
           </b-row>
           <!-- Label -->
           <b-row>
-            <b-col
+            <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
               ><label
                 id="parameterTraffic"
                 class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
@@ -483,13 +1199,13 @@
 
           <!-- FILA PARAMETRO DE TIEMPO -->
           <b-row id="parameterTime" class="m-0 pt-1">
-            <b-col class="p-1 m-0">
+            <b-col class="p-1 m-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
               <b-form-radio name="option-radios" value="time" id="radioTime">
                 Tiempo de Emulación:
               </b-form-radio>
             </b-col>
 
-            <b-col class="p-0 ml-5"
+            <b-col class="p-0 ml-5 col-sm-5 col-md-5 col-lg-5 col-xl-5"
               ><b-input
                 type="number"
                 id="inputTime"
@@ -839,11 +1555,10 @@
             <b-button
               variant="dark"
               squared
-              type="buttonModal"
-              id="btnSaveIp"
+              id="buttonModal"
               class="m-2 ml-5"
               @click="trafficGenerator"
-              >Generar</b-button
+              >Ok</b-button
             >
 
             <b-button
@@ -860,7 +1575,1086 @@
       </template>
     </b-modal>
 
+    <!-- Modal Analizador Grafico de Tráfico -->
+    <b-modal
+      id="modal-grafic"
+      centered
+      title="Analizador Grafico de Red"
+      cancel-title="Cancelar"
+      scrollable
+      size="xl"
+    >
+      <b-container id="containerGrafic" class="">
+        <b-container id="containerFormGrafic">
+          <b-form id="formularioFancyGrafic" class="p-0">
+            <b-row class="mt-0">
+              <b-col class="mt-0">
+                <b-row id="containerCanvaGraphic">
+                  <canvas id="graphic" class="d-none"></canvas>
+                  <canvas id="graphic2" class="d-none"></canvas>
+                </b-row>
+              </b-col>
 
+              <b-col id="containerFancyInfoGraphicTCPClient" class="mt-0">
+                <b-row id="continerSelectClientServer" class="col-12 mt-0">
+                  <b-col class="col-3">
+                    <label id="labelSelectServerClientTCP" class="p-0 m-0">
+                      Seleccione:
+                    </label>
+                  </b-col>
+
+                  <b-col class="col-5">
+                    <b-select id="optionSelectServerClientTCP" size="sm">
+                      <option id="serverTCP">Servidor</option>
+                      <option id="clientTCP">Cliente</option>
+                    </b-select>
+                  </b-col>
+
+                  <b-col class="col-4">
+                    <b-button
+                      squared
+                      variant="dark"
+                      id="buttonModal"
+                      value="Visualizar"
+                      size="sm"
+                      >Visualizar
+                    </b-button>
+                  </b-col>
+                </b-row>
+                <!-- TCP CLIENTE -->
+                <b-row id="continerParameterTcpClient" class="m-0 d-none">
+                  <b-row id="continerLabelMeter" class="m-0 mt-0 col-12">
+                    <b-col
+                      ><label
+                        id="labelparameterMeter"
+                        class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
+                      >
+                        MÉTRICAS DE DESEMPEÑO
+                      </label></b-col
+                    >
+                  </b-row>
+
+                  <b-row id="continerParameter_modo_op" class="mt-0 col-12">
+                    <b-col class="col-6">
+                      <label id="labelparameter_modo_op">Modo Operación:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_modo_op_tcp_client"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_protocol" class="mt-0 col-12">
+                    <b-col class="col-6">
+                      <label id="labelparameter_protocol">Protocolo:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_protocol_tcp_client"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_duration" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_duration">Duración:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_duration"
+                        name="fname"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_size_block" class="mt-0 col-12">
+                    <b-col class="col-6">
+                      <label id="labelparameter_size_block"
+                        >Tamaño de Bloque:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class="ml-0"
+                        id="input_size_block"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_bloque" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_bloque">Bloques:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_bloque"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_tcp_mss" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_tcp_mss">TCP MSS:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_tcp_mss"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_snd_buffer" class="mt-0 col-12">
+                    <b-col class="col-6">
+                      <label id="labelparameter_snd_buffer"
+                        >Buffer Envió:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_snd_buffer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_rcv_buffer" class="mt-0 col-12">
+                    <b-col class="col-6">
+                      <label id="labelparameter_rcv_buffer"
+                        >Buffer Recepción:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_rcv_buffer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_total_bytes" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_total_bytes"
+                        >Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_total_bytes"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_tbytes" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_tbytes"
+                        >Prom Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_tbytes"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_bit" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_bit"
+                        >Prom Bit por Seg:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_bit"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_sndcwnd"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_sndcwnd"
+                        >Prom SND CWND:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_sndcwnd"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_rtt" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_rtt">Prom RTT:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_rtt"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_rtx" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_rtx">Prom R-Tx:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_rtx"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_rttvar" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_rttvar"
+                        >Prom RTTVAR:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_rttvar"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row id="continerParameter_prom_pmtu" class="col-12 mt-0">
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_pmtu">Prom PMTU:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_pmtu"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-row>
+                <!-- TCP SERVER -->
+                <b-row id="continerParameterTcpServer" class="m-0 d-none">
+                  <b-row id="continerLabelMeter" class="m-0 mt-0 col-12">
+                    <b-col
+                      ><label
+                        id="labelparameterMeter"
+                        class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
+                      >
+                        MÉTRICAS DE DESEMPEÑO
+                      </label></b-col
+                    >
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_modo_op_Server"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_modo_op_Server"
+                        >Modo Operación:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_modo_op_tcp_Server"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_protocol_Server"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_protocol_Server"
+                        >Protocolo:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_protocol_tcp_Server"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_duration_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_duration_Server"
+                        >Duración:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_duration_Server"
+                        name="fname"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_size_block_Server"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_size_block_Server"
+                        >Tamaño de Bloque:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class="ml-0"
+                        id="input_size_block_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_bloque_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_bloque_Server">Bloques:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_bloque_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_tcp_mss_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_tcp_mss_Server">TCP MSS:</label>
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_tcp_mss_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_snd_buffer_Server"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_snd_buffer_Server"
+                        >Buffer Envió:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_snd_buffer_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_rcv_buffer_Server"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_rcv_buffer_Server"
+                        >Buffer Recepción:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_rcv_buffer_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_total_bytes_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_total_bytes_Server"
+                        >Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_total_bytes_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_tbytes_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_tbytes_Server"
+                        >Prom Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_tbytes_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_bit_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_bit_Server"
+                        >Prom Bit por Seg:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_bit_Server"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-row>
+                <!-- UDP CLIENTE -->
+                <b-row id="continerParameterUDPClient" class="m-0 d-none">
+                  <b-row
+                    id="continerLabelMeterUDPClient"
+                    class="m-0 mt-0 col-12"
+                  >
+                    <b-col
+                      ><label
+                        id="labelparameterMeterUDPClient"
+                        class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
+                      >
+                        MÉTRICAS DE DESEMPEÑO
+                      </label></b-col
+                    >
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_modo_op_UDPClient"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_modo_op_UDPClient"
+                        >Modo Operación:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_modo_op_UDPClient"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_protocol_UDPClient"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_protocol_UDPClient"
+                        >Protocolo:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_protocol_tcp_UDPClient"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_duration_Server"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_duration_UDPClient"
+                        >Duración:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_duration_UDPClient"
+                        name="fname"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_size_block_UDPClient"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_size_block_UDPClient"
+                        >Tamaño de Bloque:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class="ml-0"
+                        id="input_size_block_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_bloque_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_bloque_UDPClient"
+                        >Bloques:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_bloque_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_snd_buffer_UDPClient"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_snd_buffer_UDPClient"
+                        >Buffer Envió:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_snd_buffer_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_rcv_buffer_UDPClient"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_rcv_buffer_UDPClient"
+                        >Buffer Recepción:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_rcv_buffer_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_total_bytes_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_total_bytes_UDPClient"
+                        >Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_total_bytes_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_tbytes_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_tbytes_UDPClient"
+                        >Prom Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_tbytes_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_bit_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_bit_UDPClient"
+                        >Prom Bit por Seg:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_bit_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_jitter_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_jitter_UDPClient"
+                        >Jitter:</label
+                      >
+                    </b-col>
+                    <b-col class="col-5">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_jitter_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                    <b-col class="col-1 pl-0">
+                      <label id="labelparameterMeter_jitter_UDPClient"
+                        >ms</label
+                      >
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_packet_UDPClient"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_packet_UDPClient"
+                        >Paquetes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_packet_UDPClient"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-row>
+                <!-- UDP CLIENTE -->
+                <b-row id="continerParameterUDPServer" class="m-0 d-none">
+                  <b-row
+                    id="continerLabelMeterUDPServer"
+                    class="m-0 mt-0 col-12"
+                  >
+                    <b-col
+                      ><label
+                        id="labelparameterMeterUDPServer"
+                        class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
+                      >
+                        MÉTRICAS DE DESEMPEÑO
+                      </label></b-col
+                    >
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_modo_op_UDPServer"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_modo_op_UDPServer"
+                        >Modo Operación:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_modo_op_UDPServer"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_protocol_UDPServer"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_protocol_UDPServer"
+                        >Protocolo:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_protocol_tcp_UDPServer"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_duration_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_duration_UDPServer"
+                        >Duración:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_duration_UDPServer"
+                        name="fname"
+                        size="sm"
+                        class=""
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_size_block_UDPServer"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_size_block_UDPServer"
+                        >Tamaño de Bloque:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class="ml-0"
+                        id="input_size_block_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_bloque_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_bloque_UDPServer"
+                        >Bloques:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        id="input_bloque_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_snd_buffer_UDPServer"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_snd_buffer_UDPServer"
+                        >Buffer Envió:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_snd_buffer_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_rcv_buffer_UDPServer"
+                    class="mt-0 col-12"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_rcv_buffer_UDPServer"
+                        >Buffer Recepción:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_rcv_buffer_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_total_bytes_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_total_bytes_UDPServer"
+                        >Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_total_bytes_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_tbytes_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_tbytes_UDPServer"
+                        >Prom Total Bytes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_tbytes_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_prom_bit_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_prom_bit_UDPServer"
+                        >Prom Bit por Seg:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_prom_bit_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_jitter_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_jitter_UDPServer"
+                        >Jitter:</label
+                      >
+                    </b-col>
+                    <b-col class="col-5">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_jitter_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                    <b-col class="col-1 pl-0">
+                      <label id="labelparameterMeter_jitter_UDPServer"
+                        >ms</label
+                      >
+                    </b-col>
+                  </b-row>
+
+                  <b-row
+                    id="continerParameter_packet_UDPServer"
+                    class="col-12 mt-0"
+                  >
+                    <b-col class="col-6">
+                      <label id="labelparameter_packet_UDPServer"
+                        >Paquetes:</label
+                      >
+                    </b-col>
+                    <b-col class="col-6">
+                      <b-input
+                        type="text"
+                        class=""
+                        id="input_packet_UDPServer"
+                        name="fname"
+                        size="sm"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-container>
+      </b-container>
+
+      <!-- BTN GUARDAR GENERAR Y CANCELAR -->
+      <template #modal-footer>
+        <b-row id="containerBtnSaveGrafic" class="p-0 text-right">
+          <b-col class="p-0">
+            <b-button
+              squared
+              variant="dark"
+              id="buttonModal"
+              class="m-2 mr-4"
+              value="Cancelar"
+              @click="closeModal('graphic')"
+              >Cerrar</b-button
+            >
+          </b-col>
+        </b-row>
+      </template>
+    </b-modal>
   </div>
 </template>
   
@@ -876,10 +2670,10 @@ export default {
     return {
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
-      
+
       //Canvas
       canvas: "",
-
+      flag: true,
       //Varibales posición Fabric
       x0: "",
       y0: "",
@@ -907,8 +2701,8 @@ export default {
       depth: "",
       fanout: "",
 
-      //Variable para los Modales de Informacion 
-      alertText : '',
+      //Variable para los Modales de Informacion
+      alertText: "",
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -990,9 +2784,9 @@ export default {
       });
 
       this.canvas.on("mouse:wheel", (opt) => {
-        if (flag == true) {
+        if (this.flag == true) {
           var delta = opt.e.deltaY;
-          var zoom = canvas.getZoom();
+          var zoom = this.canvas.getZoom();
           zoom *= 0.999 ** delta;
           if (zoom > 20) zoom = 20;
           if (zoom < 0.01) zoom = 0.01;
@@ -1015,8 +2809,16 @@ export default {
             }
             break;
           case "controller":
+            this.imgElement = require("../assets/img/controller.png");
+            this.tagElement = "c" + (this.tagController.length + 1);
+            this.openModal("controller");
+            this.herramienta = "cursor";
             break;
           case "switch":
+            this.imgElement = require("../assets/img/openflow_switch.png");
+            this.tagElement = "s" + (this.tagSwitch.length + 1);
+            this.openModal("switch");
+            this.herramienta = "cursor";
             break;
           case "host":
             this.imgElement = require("../assets/img/host.png");
@@ -1056,6 +2858,15 @@ export default {
       if (open == "host") {
         return this.$bvModal.show("modal-host");
       }
+      if (open == "controller") {
+        return this.$bvModal.show("modal-controller");
+      }
+      if (open == "switch") {
+        return this.$bvModal.show("modal-switch");
+      }
+      if (open == "label") {
+        return this.$bvModal.show("modal-label");
+      }
 
       if (open == "minimal") {
         this.topologyType = "minimal";
@@ -1069,10 +2880,10 @@ export default {
       if (open == "play") {
         return this.$bvModal.show("modal-IpUser");
       }
-      if (open == 'traffic'){
+      if (open == "traffic") {
         return this.$bvModal.show("modal-traffic");
       }
-      if (open == 'done'){
+      if (open == "done") {
         return this.$bvModal.show("modal-done");
       }
     },
@@ -1081,22 +2892,28 @@ export default {
       if (mod == "host") {
         return this.$bvModal.hide("modal-host");
       }
+      if (mod == "switch") {
+        return this.$bvModal.hide("modal-switch");
+      }
+      if (mod == "controller") {
+        return this.$bvModal.hide("modal-controller");
+      }
       if (mod == "single") {
         return this.$bvModal.hide("modal-template");
       }
       if (mod == "play") {
         return this.$bvModal.hide("modal-IpUser");
       }
-      if (mod == 'traffic'){
+      if (mod == "traffic") {
         return this.$bvModal.hide("modal-traffic");
       }
-      if (mod == 'done'){
+      if (mod == "done") {
         return this.$bvModal.hide("modal-done");
       }
     },
 
     disableAll() {
-      $("#play-direct-access").css("disabled","true");
+      $("#play-direct-access").css("disabled", "true");
     },
 
     loadInfoElements() {
@@ -1193,14 +3010,13 @@ export default {
       console.log("Network Info: " + JSON.stringify(this.netWork));
       var json = JSON.stringify(this.netWork);
       const path = "http://10.55.6.188:5000/";
-      axios.post(path, this.netWork).then( (response) => {
+      axios.post(path, this.netWork).then((response) => {
         var h1 = $("#text-done");
-        var validator = Object.keys(response.data).includes('red');
+        var validator = Object.keys(response.data).includes("red");
         console.log(h1.text());
-        if (validator == true){
-          this.alertText = 'Red Creada Exitosamente';
-          this.openModal('done');
-
+        if (validator == true) {
+          this.alertText = "Red Creada Exitosamente";
+          this.openModal("done");
         }
       });
       this.closeModal("play");
@@ -1211,7 +3027,7 @@ export default {
       var actionDir = {};
       actionDir["action"] = "stop";
       const path = "http://10.55.6.188:5000/";
-      axios.post(path, actionDir).then((response)=> {
+      axios.post(path, actionDir).then((response) => {
         alert(JSON.stringify(response.data));
         this.elements = [];
         this.netWork = {};
@@ -1219,29 +3035,27 @@ export default {
     },
 
     trafficGenerator() {
-      var timeEmulation= $('#inputTime').val();
-      var lengthPackage = $('#inputLong').val();
+      var timeEmulation = $("#inputTime").val();
+      var lengthPackage = $("#inputLong").val();
       var trafficDir = {};
       trafficDir["TCP"] = "true";
-      trafficDir['n'] = String(lengthPackage)+ 'M'
+      trafficDir["n"] = String(lengthPackage) + "M";
       //trafficDir["t"] = String(timeEmulation);
       trafficDir["global"] = "true";
-      this.closeModal('traffic');
+      this.closeModal("traffic");
       const path = "http://10.55.6.188:5000/";
       axios.post(path, trafficDir).then((response) => {
         var comp = true;
-        
-        if (comp == true) {
-          this.alertText = 'Tráfico Creado Exitosamente';
-          console.log(response.data)
-          this.openModal('done');
 
-        }else{
-          this.alertText = 'Imposible Crear el Tráfico';
-          this.openModal('done');
+        if (comp == true) {
+          this.alertText = "Tráfico Creado Exitosamente";
+          console.log(response.data);
+          this.openModal("done");
+        } else {
+          this.alertText = "Imposible Crear el Tráfico";
+          this.openModal("done");
         }
       });
-      
     },
 
     // Creacion elementos Fabric
@@ -1384,6 +3198,59 @@ export default {
           }
         });
         this.closeModal("host");
+      } else if (this.tagElement.charAt(0) == "s") {
+        var type = $("#optionTypeFancySwitch option:selected").text();
+        var stp = $("#STPFancySwitch:checkbox:checked").val();
+        var stpPriority = $("#inputFancySTPPriority").val();
+        var ipSwitch = $("#inputFancyIPSwitch").val();
+        var dpctlPort = $("#inputFancyDPCTLPort").val();
+        var protocol = $("#optionProtocolFancySwitch option:selected").text();
+        var dataPath = $("#optionDataPathFancySwitch option:selected").text();
+        var dataPathIP = $("#inputFancyDataPathIDSwitch").val();
+        var dataPathArgs = $("#inputFancyOfDataPathArgsSwitch").val();
+        var model = $("#optionFailModeFancySwitch option:selected").text();
+        var inBand = $("#InBandFancySwitch:checkbox:checked").val();
+        var inNameSpace = $("#InNameSpaceFancySwitch:checkbox:checked").val();
+        var batch = $("#BatchFancySwitch:checkbox:checked").val();
+        var verbose = $("#VerboseFancySwitch:checkbox:checked").val();
+        this.armElement("s");
+        this.tagSwitch.push(this.tagElement);
+
+        this.canvas.forEachObject((obj) => {
+          if (obj.id == this.tagElement) {
+            obj.verbose = verbose;
+            obj.batch = batch;
+            obj.inNameSpace = inNameSpace;
+            obj.inBand = inBand;
+            obj.model = model;
+            obj.dataPathArgs = dataPathArgs;
+            obj.dataPathIP = dataPathIP;
+            obj.dataPath = dataPath;
+            obj.protocol = protocol;
+            obj.dpctlPort = dpctlPort;
+            obj.ipSwitch = ipSwitch;
+            obj.stpPriority = stpPriority;
+            obj.stp = stp;
+            obj.type = type;
+          }
+        });
+      } else if (this.tagElement.charAt(0) == "c") {
+        var type = $("#optionTypeFancyController option:selected").text();
+        var iPController = $("#inputFancyIpController").val();
+        var portController = $("#inputFancyPuertoController").val();
+        var protocol = $(
+          "#optionProtocolFancyController option:selected"
+        ).text();
+        this.armElement("c");
+        this.tagController.push(this.tagElement);
+        this.canvas.forEachObject((obj) => {
+          if (obj.id && obj.id === tag) {
+            obj.type = type;
+            obj.iPController = iPController;
+            obj.portController = portController;
+            obj.protocol = protocol;
+          }
+        });
       }
     },
 
@@ -1420,6 +3287,8 @@ export default {
         fill: "#15435d",
         fontSize: 15,
       });
+
+      // Si el elemento es un Host
       if (idElement == "h") {
         var groupHost = new fabric.Group([elemento, text], {
           left: this.x0,
@@ -1508,8 +3377,115 @@ export default {
         }
 
         this.canvas.add(groupHost);
+      } else if (idElement == "s") {
+        var groupSwitch = new fabric.Group([elemento, text], {
+          left: this.x0,
+          top: this.y0,
+          hasControls: false,
+          hasBorders: false,
+          transparentCorners: false,
+          selectable: true,
+          id: this.tagElement,
+          connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
+        });
+
+        // Creación de lineas por cada enlace
+        for (var i = 0; i < 6; i++) {
+          connection.type = "association";
+          connection.elementOrigin = idElement;
+          connection.x1 = this.x0 + 30;
+          connection.y1 = this.y0 + 35;
+          connection.x2 = this.x0 + i * 65 - 130;
+          connection.y2 = this.y0 + 107;
+          connection.id = "a" + i;
+          elemento.elementConnection.push(connection);
+
+          var link = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+
+          elemento.connectionLine.push(link);
+          groupSwitch.connection.push(link);
+        }
+
+        // Asociamos el grupo con cada enlace
+        for (var i = 0; i < 6; i++) {
+          var line = elemento.connectionLine[i];
+          groupSwitch.line = line;
+        }
+
+        var port = new Image();
+        port.src = require("../assets/img/port.png");
+
+        // Creación de puertos por cada enlace.
+        for (var i = 0; i < 6; i++) {
+          var asociate = elemento.elementConnection[i].elementOrigin;
+
+          if (asociate.charAt(0) == "s") {
+            var pt = new fabric.Image(port);
+            pt.set({
+              scaleX: 0.035,
+              scaleY: 0.035,
+              opacity: 1,
+              padding: 0,
+              id: this.tagElement,
+              connectionLine: [], // Contenedor de las lineas de conexión.
+            });
+            // Asignación de lineas por cada puerto
+            pt.connectionLine.push(elemento.connectionLine[i]);
+
+            var label = new fabric.Textbox("eth" + i, {
+              top: 22,
+              left: -5,
+              fontFamily: "arial",
+              fill: "#15435d",
+              fontSize: 15,
+            });
+
+            var groupSwitchPort = new fabric.Group([pt, label], {
+              left: this.x0 + i * 65 - 143,
+              top: this.y0 + 100,
+              hasControls: false,
+              hasBorders: false,
+              transparentCorners: false,
+              selectable: true,
+              elementContainer: this.tagElement,
+              identificator: "Sp",
+              id: "eth" + i,
+              connection: [], // Contenedor de lineas de conexión del grupo.
+            });
+
+            groupSwitchPort.connection.push(elemento.connectionLine[i]);
+
+            var li = elemento.connectionLine[i];
+
+            // Asignación de lineas por cada puerto en el grupo
+            groupSwitch.li = li;
+            this.canvas.add(groupSwitch.connection[i]);
+            this.canvas.add(groupSwitchPort);
+          }
+        }
+
+        this.canvas.add(groupSwitch);
+        this.closeModal("switch");
+      } else if (idElement == 'c'){
+        
+        var groupController = new fabric.Group([elemento, text], {
+
+            left: this.x0,
+            top: this.y0,
+            hasBorders: false,
+            hasControls: false,
+            transparentCorners: false,
+            selectable: true,
+            id: this.tagElement,
+            connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[])) 
+        });
+        this.canvas.add(groupController);
+        this.closeModal('controller');
       }
-      this.closeModal();
+      
     },
 
     createTopology() {
