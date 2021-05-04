@@ -4843,8 +4843,12 @@ export default {
           if (!Object.keys(data).includes('h1_5001')) {
             this.alertText = "Error en la Ejecución.";
             this.in_process = false;
-            this.openModal("done");
+            
           } else {
+            this.alertText = "Tráfico Creado con Éxito.";
+            this.in_process = false;
+            console.log(JSON.stringify(data));
+            
             // Gestión de Datos del Servidor
             var trafficValues = {};
             var trafficValuesServer = {};
