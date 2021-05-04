@@ -4840,7 +4840,7 @@ export default {
         .then((response) => {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
-          if (isObjEmpity(data)) {
+          if (!Object.keys(data).includes('h1_5001')) {
             this.alertText = "Error en la Ejecución.";
             this.in_process = false;
             this.openModal("done");
