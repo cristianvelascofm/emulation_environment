@@ -200,7 +200,7 @@
     <!-- Modal Controller -->
     <b-modal
       id="modal-controller"
-      centered 
+      centered
       title="Controlador"
       cancel-title="Cancelar"
       header-bg-variant="light"
@@ -624,7 +624,8 @@
     </b-modal>
 
     <!-- Modal Host -->
-    <b-modal id="modal-host"
+    <b-modal
+      id="modal-host"
       hide-footer
       centered
       title="Host"
@@ -1312,6 +1313,13 @@
                 </h6>
               </b-col>
             </b-row>
+            <b-row v-if="errorServer" id="containerError" class="m-0 pt-3">
+              <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <small class="p-0 m-0 text-danger" id="errorServerText">
+                  {{ serverText }}
+                </small>
+              </b-col>
+            </b-row>
             <b-row id="containerDone" class="m-0 pt-3">
               <b-col
                 class="text-center col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -1393,7 +1401,119 @@
               <option value="UDP">UDP</option>
             </select>
           </b-container>
+          <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+              ><label
+                id="parameterTraffic"
+                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
+              >
+                Seleccione el modo de operación
+              </label>
+            </b-col>
+          </b-row>
 
+          <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="global"
+                id="radioGlobal"
+                v-model="trafficModeSelected"
+              >
+                Global
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="specific"
+                id="radioSpecific"
+                v-model="trafficModeSelected"
+              >
+                Especifico
+              </b-form-radio>
+            </b-col>
+            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <b-form-radio
+                name="option-radios-type"
+                value="xtreme"
+                id="radioXtreme"
+                v-model="trafficModeSelected"
+              >
+                Extremo a extremo
+              </b-form-radio>
+            </b-col>
+          </b-row>
+
+          <b-row
+            class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+            v-if="selHostG"
+          >
+            <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
+              ><label
+                id="parameterTraffic"
+                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
+              >
+                Seleccione el modo de Distribución
+              </label>
+            </b-col>
+          </b-row>
+
+          <b-row
+            class="ml-4 col-sm-10 col-md-10 col-lg-10 col-xl-10"
+            v-if="selHostG"
+          >
+            <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
+              <b-form-radio
+                name="option-radios-distr"
+                value="one"
+                id="radioUnoaUno"
+                class="pl-5"
+              >
+                Uno a Uno
+              </b-form-radio>
+            </b-col>
+
+            <b-col class="ml-4 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+              <b-form-radio
+                name="option-radios-distr"
+                value="all"
+                id="radioTodosaTodos"
+                class="pl-5 ml-5"
+              >
+                Todos a Todos
+              </b-form-radio>
+            </b-col>
+          </b-row>
+
+          <b-row
+            class="m-3 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+            v-if="specifficTrafficMode"
+          >
+            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <label id="parameterHostA">Desde el Host:</label>
+            </b-col>
+
+            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <b-form-select
+                id="optionSelectorHostA"
+                v-model="selected"
+                :options="tagHost"
+              ></b-form-select>
+            </b-col>
+            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <label id="parameterHostB">Al Host:</label>
+            </b-col>
+
+            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <b-form-select
+                id="optionSelectorHostB"
+                v-model="selected"
+                :options="tagHost"
+              ></b-form-select>
+            </b-col>
+          </b-row>
           <!-- Label -->
           <b-row>
             <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -1433,11 +1553,7 @@
             class="m-0 mt-1 p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
           >
             <b-col class="p-0 m-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-              <b-form-radio
-                name="option-radios"
-                value="n"
-                id="radioPacket"
-              >
+              <b-form-radio name="option-radios" value="n" id="radioPacket">
                 Número de Bytes
               </b-form-radio>
             </b-col>
@@ -1655,120 +1771,6 @@
                   Segundos
                 </label>
               </b-row>
-            </b-col>
-          </b-row>
-
-          <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
-              ><label
-                id="parameterTraffic"
-                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
-              >
-                Seleccione el modo de operación
-              </label>
-            </b-col>
-          </b-row>
-
-          <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <b-form-radio
-                name="option-radios-type"
-                value="global"
-                id="radioGlobal"
-                v-model="trafficModeSelected"
-              >
-                Global
-              </b-form-radio>
-            </b-col>
-
-            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <b-form-radio
-                name="option-radios-type"
-                value="specific"
-                id="radioSpecific"
-                v-model="trafficModeSelected"
-              >
-                Especifico
-              </b-form-radio>
-            </b-col>
-            <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <b-form-radio
-                name="option-radios-type"
-                value="xtreme"
-                id="radioXtreme"
-                v-model="trafficModeSelected"
-              >
-                Extremo a extremo
-              </b-form-radio>
-            </b-col>
-          </b-row>
-
-          <b-row
-            class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
-            v-if="selHostG"
-          >
-            <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
-              ><label
-                id="parameterTraffic"
-                class="p-0 mt-3 mp-3 ml-0 font-weight-bold text-uppercase"
-              >
-                Seleccione el modo de Distribución
-              </label>
-            </b-col>
-          </b-row>
-
-          <b-row
-            class="ml-4 col-sm-10 col-md-10 col-lg-10 col-xl-10"
-            v-if="selHostG"
-          >
-            <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
-              <b-form-radio
-                name="option-radios-distr"
-                value="one"
-                id="radioUnoaUno"
-                class="pl-5"
-              >
-                Uno a Uno
-              </b-form-radio>
-            </b-col>
-
-            <b-col class="ml-4 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-              <b-form-radio
-                name="option-radios-distr"
-                value="all"
-                id="radioTodosaTodos"
-                class="pl-5 ml-5"
-              >
-                Todos a Todos
-              </b-form-radio>
-            </b-col>
-          </b-row>
-
-          <b-row
-            class="m-3 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-            v-if="specifficTrafficMode"
-          >
-            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <label id="parameterHostA">Desde el Host:</label>
-            </b-col>
-
-            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <b-form-select
-                id="optionSelectorHostA"
-                v-model="selected"
-                :options="tagHost"
-              ></b-form-select>
-            </b-col>
-            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <label id="parameterHostB">Al Host:</label>
-            </b-col>
-
-            <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <b-form-select
-                id="optionSelectorHostB"
-                v-model="selected"
-                :options="tagHost"
-              ></b-form-select>
             </b-col>
           </b-row>
         </b-form>
@@ -4269,7 +4271,8 @@
     </b-modal>
 
     <!-- Modal Info -->
-    <b-modal id="modal-info"
+    <b-modal
+      id="modal-info"
       hide-footer
       size="lg"
       centered
@@ -4278,19 +4281,23 @@
       header-bg-variant="light"
       header-text-variant="info"
     >
-
       <b-container
         id="containerInsertHost"
         class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
       >
-        
         <b-container id="containerFormInfo">
-          <b-form id="formularioFancyHost" class="p-0 ">
-            <b-table sticky-header no-border-collapse head-variant='Dark' responsive="true" striped hover :items="infoModal"></b-table>
+          <b-form id="formularioFancyHost" class="p-0">
+            <b-table
+              sticky-header
+              no-border-collapse
+              head-variant="Dark"
+              responsive="true"
+              striped
+              hover
+              :items="infoModal"
+            ></b-table>
           </b-form>
         </b-container>
-
-        
       </b-container>
 
       <!-- <p class="my-4">Vertically centered modal!</p> -->
@@ -4309,12 +4316,11 @@ export default {
     const $ = require("jquery");
     // Lo declaramos globalmente
     window.$ = $;
-
+    const path = "http://10.55.6.188:5000/";
     return {
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
       in_process: false,
-
 
       trafficModeSelected: "",
 
@@ -4334,7 +4340,7 @@ export default {
       clientAnswerTcp: false,
       clientAnswerUdp: false,
 
-      infoModal :[],
+      infoModal: [],
       //Canvas
       canvas: "",
       flag: true,
@@ -4344,7 +4350,18 @@ export default {
       //Variables Insertar elemento
       imgElement: "",
       tagElement: "",
-
+      //Eventos de uso en el canvas
+      insertOP = false,
+      imgUrl = "",
+      selected = null,
+      tool = 'cursor',
+      action = null,
+      countAsociate = 0,
+      tag = "",
+      img = '',
+      objectActiveLinkInitial = null,
+      objectActiveLinkFinal = null,
+      identTagHost = '',
       //Variables para la Logica de los elementos en la Red simulada
       tagHost: [],
       tagSwitch: [],
@@ -4380,6 +4397,8 @@ export default {
 
       //Variable para los Modales de Informacion
       alertText: "",
+      errorServer: false,
+      serverText: "",
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -4693,9 +4712,9 @@ export default {
 
       console.log("Network Info: " + JSON.stringify(this.netWork));
       var json = JSON.stringify(this.netWork);
-      const path = "http://10.55.6.188:5000/";
       this.closeModal("play");
       this.in_process = true;
+      this.errorServer = false;
       this.alertText = "Creando la Red...";
       this.openModal("done");
       axios
@@ -4707,13 +4726,13 @@ export default {
           if (validator == true) {
             this.in_process = false;
             this.alertText = "Red Creada Exitosamente.";
-            this.openModal("done");
+            // this.openModal("done");
           } else {
             this.alertText = "Error en la Creación de la Red.";
             this.in_process = false;
-            this.openModal("done");
-            // this.in_process = false;
-
+            var error = data["Error"];
+            this.serverText = "Error: " + String(error);
+            this.errorServer = true;
             // this.openModal("done");
           }
         })
@@ -4738,117 +4757,127 @@ export default {
     },
 
     trafficGenerator() {
-      
-      var typeTraffic = $('#optionSelectorTraffic option:selected').text();
-      var radioTime = $('#radioTime:radio:checked').val();
+      var typeTraffic = $("#optionSelectorTraffic option:selected").text();
+      var radioTime = $("#radioTime:radio:checked").val();
       var timeEmulation = $("#inputTime").val();
-      var radioPacket = $('#radioPacket:radio:checked').val();
-      var numberBytes = $('#inputPacket').val();
-      var radioKNumberBytes = $('#radioKBytesPacket:radio:checked').val();
-      var radioMNumberBytes = $('#radioMBytesPacket:radio:checked').val();
-      var checkLong = $('#checkboxLong:checkbox:checked').val();
-      var longPackage = $('#inputLog').val();
-      var radioKLongPackage = $('#radio-kbytes-long:radio:checked').val();
-      var radioMLongPackage = $('#radio-mbytes-long:radio:checked').val();
-      var checkWindow = $('#checkboxW:checkbox:checked').val();
-      var windowValue = $('#inputW').val();
-      var radioKWindow = $('#radioKBytesW:radio:checked').val();
-      var radioMWindow = $('#radioMBytesW:radio:checked').val();
-      var checkBw = $('#checkboxRate:checkbox:checked').val();
-      var bw = $('#inputRate').val();
-      var radioKBw = $('#radioKBitRate:radio:checked').val();
-      var radioMBw = $('#radioMBitRate:radio:checked').val();
-      var checkInterval = $('#checkboxRange:checkbox:checked').val();
-      var interval = $('#inputRange').val();
+      var radioPacket = $("#radioPacket:radio:checked").val();
+      var numberBytes = $("#inputPacket").val();
+      var radioKNumberBytes = $("#radioKBytesPacket:radio:checked").val();
+      var radioMNumberBytes = $("#radioMBytesPacket:radio:checked").val();
+      var checkLong = $("#checkboxLong:checkbox:checked").val();
+      var longPackage = $("#inputLog").val();
+      var radioKLongPackage = $("#radio-kbytes-long:radio:checked").val();
+      var radioMLongPackage = $("#radio-mbytes-long:radio:checked").val();
+      var checkWindow = $("#checkboxW:checkbox:checked").val();
+      var windowValue = $("#inputW").val();
+      var radioKWindow = $("#radioKBytesW:radio:checked").val();
+      var radioMWindow = $("#radioMBytesW:radio:checked").val();
+      var checkBw = $("#checkboxRate:checkbox:checked").val();
+      var bw = $("#inputRate").val();
+      var radioKBw = $("#radioKBitRate:radio:checked").val();
+      var radioMBw = $("#radioMBitRate:radio:checked").val();
+      var checkInterval = $("#checkboxRange:checkbox:checked").val();
+      var interval = $("#inputRange").val();
 
-      var globalMode = $('#radioGlobal:radio:checked').val();
-      var specificMode = $('#radioSpecific:radio:checked').val();
-      var xtremeMode = $('#radioXtreme:radio:checked').val();
+      var globalMode = $("#radioGlobal:radio:checked").val();
+      var specificMode = $("#radioSpecific:radio:checked").val();
+      var xtremeMode = $("#radioXtreme:radio:checked").val();
 
-      var allForAll = $('#radioTodosaTodos:radio:checked').val();
-      var oneForAll = $('#radioUnoaUno:radio:checked').val();
+      var allForAll = $("#radioTodosaTodos:radio:checked").val();
+      var oneForAll = $("#radioUnoaUno:radio:checked").val();
 
       var trafficDir = {};
-      console.log('tu '+typeTraffic);
-      
-      if (typeTraffic == 'TCP'){
-        trafficDir['TCP'] = 'true';
+      console.log("tu " + typeTraffic);
+
+      if (typeTraffic == "TCP") {
+        trafficDir["TCP"] = "true";
         this.protocolTrafficActual = "TCP";
-      };
-      if (radioTime == 't'){
-        trafficDir['t'] = String(timeEmulation);
-      };
-      if (radioPacket == 'n'){
-        if(radioKNumberBytes == 'k'){
-          trafficDir['n'] = String(numberBytes)+'K';
-        };
-        if(radioMNumberBytes == 'm'){
-          trafficDir['n'] = String(numberBytes)+'M';
-        };
-      };
-      if(checkLong == 'l'){
-        if(radioKLongPackage == 'k'){
-          trafficDir['l'] = String(longPackage)+'K';
-        };
-        if (radioMLongPackage == 'm'){
-          trafficDir['l'] = String(longPackage)+'M';
-        };
-      };
-      if(checkWindow == 'w'){
-        if(radioKWindow == 'k'){
-          trafficDir['w'] = String(windowValue)+'K';
-        };
-        if(radioMWindow == 'm'){
-          trafficDir['w'] = String(windowValue)+'M';
-        };
-      };
-      if(checkBw == 'b'){
-        if(radioKBw == 'k'){
-          trafficDir['b'] = String(bw)+'K';
-        };
-        if(radioMBw == 'm'){
-          trafficDir['b'] = String(bw)+'M';
-        };
-      };
-      if (checkInterval == 'i'){
-        trafficDir['i'] = String(interval);
-      };
-      if(globalMode == 'global'){
-        trafficDir['global'] = 'true';
-      };
-      if(specificMode == 'specific'){
-        trafficDir['specific'] = 'true';
-      };
-      if(xtremeMode == 'xtreme'){
-        trafficDir['xtreme'] = 'true';
-      };
-      if(oneForAll == 'one'){
-        trafficDir['one_for_all'] = 'true';
-      };
-      if(allForAll == 'all'){
-        trafficDir['all_for_all'] = 'true';
-      };
-      
+      }
+      if (radioTime == "t") {
+        trafficDir["t"] = String(timeEmulation);
+      }
+      if (radioPacket == "n") {
+        if (radioKNumberBytes == "k") {
+          trafficDir["n"] = String(numberBytes) + "K";
+        }
+        if (radioMNumberBytes == "m") {
+          trafficDir["n"] = String(numberBytes) + "M";
+        }
+      }
+      if (checkLong == "l") {
+        if (radioKLongPackage == "k") {
+          trafficDir["l"] = String(longPackage) + "K";
+        }
+        if (radioMLongPackage == "m") {
+          trafficDir["l"] = String(longPackage) + "M";
+        }
+      }
+      if (checkWindow == "w") {
+        if (radioKWindow == "k") {
+          trafficDir["w"] = String(windowValue) + "K";
+        }
+        if (radioMWindow == "m") {
+          trafficDir["w"] = String(windowValue) + "M";
+        }
+      }
+      if (checkBw == "b") {
+        if (radioKBw == "k") {
+          trafficDir["b"] = String(bw) + "K";
+        }
+        if (radioMBw == "m") {
+          trafficDir["b"] = String(bw) + "M";
+        }
+      }
+      if (checkInterval == "i") {
+        trafficDir["i"] = String(interval);
+      }
+      if (globalMode == "global") {
+        trafficDir["global"] = "true";
+      }
+      if (specificMode == "specific") {
+        trafficDir["specific"] = "true";
+      }
+      if (xtremeMode == "xtreme") {
+        trafficDir["xtreme"] = "true";
+      }
+      if (oneForAll == "one") {
+        trafficDir["one_for_all"] = "true";
+      }
+      if (allForAll == "all") {
+        trafficDir["all_for_all"] = "true";
+      }
 
       this.closeModal("traffic");
       this.alertText = "Procesando Tráfico...";
       this.in_process = true;
+      this.errorServer = false;
       this.openModal("done");
-      const path = "http://10.55.6.188:5000/";
+      // const path = "http://10.55.6.188:5000/";
       axios
         .post(path, trafficDir)
         .then((response) => {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
-          if (!Object.keys(data).includes('h1_5001')) {
+          if (
+            !Object.keys(data).includes("h1_5001") ||
+            Object.keys(data).includes("Error") ||
+            data == ""
+          ) {
             this.alertText = "Error en la Ejecución.";
             this.in_process = false;
-            
+            if (Object.keys(data).includes("Error")) {
+              var error = data["Error"];
+              this.serverText = "Error: " + String(error);
+              this.errorServer = true;
+            } else {
+              this.serverText = "Error: Response Collapsed";
+              this.errorServer = true;
+            }
           } else {
             this.alertText = "Tráfico Creado con Éxito.";
             this.in_process = false;
             console.log(JSON.stringify(data));
-            
+
             // Gestión de Datos del Servidor
             var trafficValues = {};
             var trafficValuesServer = {};
@@ -5368,8 +5397,8 @@ export default {
         for (var i = 0; i < 2; i++) {
           connection.type = "association";
           connection.elementOrigin = this.tagElement;
-          connection.x1 = this.x0 + 30;
-          connection.y1 = this.y0 + 35;
+          connection.x1 = this.x0 + 30; //Coordenadas del Host x "centro"
+          connection.y1 = this.y0 + 35; //Coordenadas del Host y  "centro"
           connection.x2 = this.x0 + i * 65 - 5;
           connection.y2 = this.y0 + 107;
           connection.id = "a" + i;
@@ -5456,8 +5485,8 @@ export default {
         for (var i = 0; i < 6; i++) {
           connection.type = "association";
           connection.elementOrigin = idElement;
-          connection.x1 = this.x0 + 30;
-          connection.y1 = this.y0 + 35;
+          connection.x1 = this.x0 + 30; // Coordenadas iniciales x centro switch
+          connection.y1 = this.y0 + 35;// Coordenadas iniciales y centro switch
           connection.x2 = this.x0 + i * 65 - 130;
           connection.y2 = this.y0 + 107;
           connection.id = "a" + i;
@@ -6187,43 +6216,50 @@ export default {
         }
       }
     },
-    openInfoModal(id){
+    openInfoModal(id) {
       var info = {};
-      if(id == 'traffic'){
+      if (id == "traffic") {
         this.infoModal = [];
-        info['Valor'] = 'Tipo de Trafico';
-        info['Descripción'] = 'Permite seleccionar el tipo de Protocolo del Tráfico que desea generar.'
+        info["Valor"] = "Tipo de Trafico";
+        info["Descripción"] =
+          "Permite seleccionar el tipo de Protocolo del Tráfico que desea generar.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Tiempo de Emulación';
-        info['Descripción'] = 'El tiempo en segundos para transmitir el tráfico a generar. Iperf3 normalmente funciona enviando repetidamente una serie de longitud de bytes en tiempo determinado en segundos.'
+        info = {};
+        info["Valor"] = "Tiempo de Emulación";
+        info["Descripción"] =
+          "El tiempo en segundos para transmitir el tráfico a generar. Iperf3 normalmente funciona enviando repetidamente una serie de longitud de bytes en tiempo determinado en segundos.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Número de Bytes';
-        info['Descripción'] = 'El número de búferes para transmitir. Normalmente, IPerf3 envía tráfico durante la cantidad de tiempo establecida. Esta opción anula esto y envía una matriz de longitud de bytes un número de veces, sin importar cuanto tiempo tome.'
+        info = {};
+        info["Valor"] = "Número de Bytes";
+        info["Descripción"] =
+          "El número de búferes para transmitir. Normalmente, IPerf3 envía tráfico durante la cantidad de tiempo establecida. Esta opción anula esto y envía una matriz de longitud de bytes un número de veces, sin importar cuanto tiempo tome.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Tamaño del Paquete';
-        info['Descripción'] = 'La longitud de los búferes para leer o escribir. El valor predeterminado es 128 KB para TCP y 8 KB para UDP.'
+        info = {};
+        info["Valor"] = "Tamaño del Paquete";
+        info["Descripción"] =
+          "La longitud de los búferes para leer o escribir. El valor predeterminado es 128 KB para TCP y 8 KB para UDP.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Tamaño de la Ventana Deslizante';
-        info['Descripción'] = 'Establece los tamaños del búfer del socket en el valor especificado. Para TCP, esto establece el tamaño de la ventana de TCP. (esto se envía al servidor y también se usa en ese lado).'
+        info = {};
+        info["Valor"] = "Tamaño de la Ventana Deslizante";
+        info["Descripción"] =
+          "Establece los tamaños del búfer del socket en el valor especificado. Para TCP, esto establece el tamaño de la ventana de TCP. (esto se envía al servidor y también se usa en ese lado).";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Ancho de Banda';
-        info['Descripción'] = 'Establezca el ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).'
+        info = {};
+        info["Valor"] = "Ancho de Banda";
+        info["Descripción"] =
+          "Establezca el ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Intervalo de Muestreo';
-        info['Descripción'] = 'Establece el intervalo de tiempo en segundos entre los informes periódicos de ancho de banda, fluctuación y pérdida. Si es distinto de cero, se realiza un informe cada segundo de intervalo del ancho de banda desde el último informe. Si es cero, no se imprimen informes periódicos. El valor predeterminado es cero.'
+        info = {};
+        info["Valor"] = "Intervalo de Muestreo";
+        info["Descripción"] =
+          "Establece el intervalo de tiempo en segundos entre los informes periódicos de ancho de banda, fluctuación y pérdida. Si es distinto de cero, se realiza un informe cada segundo de intervalo del ancho de banda desde el último informe. Si es cero, no se imprimen informes periódicos. El valor predeterminado es cero.";
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
-      if(id == 'host'){
+      if (id == "host") {
         this.infoModal = [];
       }
-    }
+    },
   },
 
   computed: {
