@@ -4316,8 +4316,9 @@ export default {
     const $ = require("jquery");
     // Lo declaramos globalmente
     window.$ = $;
-    const path = "http://10.55.6.188:5000/";
+    
     return {
+      path : "http://10.55.6.188:5000/",
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
       in_process: false,
@@ -4351,17 +4352,17 @@ export default {
       imgElement: "",
       tagElement: "",
       //Eventos de uso en el canvas
-      insertOP = false,
-      imgUrl = "",
-      selected = null,
-      tool = 'cursor',
-      action = null,
-      countAsociate = 0,
-      tag = "",
-      img = '',
-      objectActiveLinkInitial = null,
-      objectActiveLinkFinal = null,
-      identTagHost = '',
+      insertOP : false,
+      imgUrl : "",
+      selected : null,
+      tool : 'cursor',
+      action : null,
+      countAsociate : 0,
+      tag : "",
+      img : '',
+      objectActiveLinkInitial : null,
+      objectActiveLinkFinal : null,
+      identTagHost : '',
       //Variables para la Logica de los elementos en la Red simulada
       tagHost: [],
       tagSwitch: [],
@@ -4718,7 +4719,7 @@ export default {
       this.alertText = "Creando la Red...";
       this.openModal("done");
       axios
-        .post(path, this.netWork)
+        .post(this.path, this.netWork)
         .then((response) => {
           var h1 = $("#text-done");
           var validator = Object.keys(response.data).includes("red");
@@ -4748,8 +4749,7 @@ export default {
     stopEmulation() {
       var actionDir = {};
       actionDir["action"] = "stop";
-      const path = "http://10.55.6.188:5000/";
-      axios.post(path, actionDir).then((response) => {
+      axios.post(this.path, actionDir).then((response) => {
         alert(JSON.stringify(response.data));
         this.elements = [];
         this.netWork = {};
@@ -4854,7 +4854,7 @@ export default {
       this.openModal("done");
       // const path = "http://10.55.6.188:5000/";
       axios
-        .post(path, trafficDir)
+        .post(this.path, trafficDir)
         .then((response) => {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
