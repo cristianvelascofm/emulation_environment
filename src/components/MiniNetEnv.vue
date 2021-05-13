@@ -1865,23 +1865,15 @@
                   <label id="labelSelectServerClientTCP"> Seleccione: </label>
                 </b-col>
 
-                <b-col class="col-sm-4 col-md-4 col-lg-5 col-xl-5">
-                  <b-select id="optionSelectServerClientTCP" size="sm">
-                    <option id="serverTCP">Servidor</option>
+                <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8">
+                  <b-select v-model="trafficGraphic" @change="changeGraphic()" id="optionSelectServerClientTCP" size="sm">
+                    <option id="clientTCP">Total</option>
                     <option id="clientTCP">Cliente</option>
+                    <option id="serverTCP">Servidor</option>
+                    
                   </b-select>
                 </b-col>
 
-                <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
-                  <b-button
-                    squared
-                    variant="dark"
-                    id="buttonModal"
-                    value="Visualizar"
-                    size="sm"
-                    >Visualizar
-                  </b-button>
-                </b-col>
               </b-row>
 
               <!-- TCP CLIENTE -->
@@ -4324,7 +4316,7 @@ export default {
       in_process: false,
 
       trafficModeSelected: "",
-
+      trafficGraphic: '',
       selected: null,
       //Variable Generador Trafico
       selHostS: false,
@@ -4388,6 +4380,7 @@ export default {
 
       // Variables control del Analizador Gráfico
       // Variables eje Y Cliente
+      labelsGraphic: [],
       datosYNumBytes: [],
       datosYBitsnPerSecond: [],
       datosYSndCwnd: [],
@@ -4757,6 +4750,14 @@ export default {
     },
 
     trafficGenerator() {
+      this.labelsGraphic= []
+      this.datosYBitsPerSecond = [];
+      this.datosYNumBytes = [];
+      this.datosYPmtu = [];
+      this.datosYRetransmits = [];
+      this.datosYRtt = [];
+      this.datosYRttVar = [];
+      this.datosYSndCwnd = [];
       var typeTraffic = $("#optionSelectorTraffic option:selected").text();
       var radioTime = $("#radioTime:radio:checked").val();
       var timeEmulation = $("#inputTime").val();
@@ -5139,6 +5140,11 @@ export default {
                 else {
                 }
               }
+               //Eje X 
+                // var numLabels = time_e / interval;
+                for (var i = 0; i <= numTotalTempos.length; i++) {
+                    this.labelsGraphic.push('t ' + String(i));
+                }
             }
           }
         })
@@ -5149,7 +5155,137 @@ export default {
           console.log(error);
         });
     },
+    grafficGenerator(seleccion){
+      var graphServer = $('#graphic2');
+      var graph = $('#graphic');
+      var graphTotal = $('#graphic3');
+      var tableTraffic = $('#tableInfo');
 
+      if (seleccion == "Servidor") {}
+      else if (seleccion == 'Cliente') {
+        this.canvasAnswerServer = false,
+        this.canvasAnswerClient = true,
+        this.canvasAnswerTot = false;
+
+        var graphics = new Chart(graph, {
+            type: 'line',
+            data: {
+
+                labels: this.labelsGraphic,
+                datasets: [{
+                    label: 'Total de Bytes Transmitidos',
+                    data: this.datosYNumBytes,
+                    backgroundColor: [
+
+                        'rgba(54, 162, 235, 0.2)'
+
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+                },
+                {
+                    label: 'Bits por Segundo',
+                    data: this.datosYBitsPerSecond,
+                    backgroundColor: [
+                        'rgba(111, 194, 63, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                },
+                {
+                    label: 'SND CWND',
+                    data: this.datosYSndCwnd,
+                    backgroundColor: [
+                        'rgba(226, 33, 33, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                },
+                {
+                    label: 'Bytes Retransmitidos',
+                    data: this.datosYRetransmits,
+                    backgroundColor: [
+                        'rgba(226, 165, 33, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                },
+                {
+                    label: 'RTT',
+                    data: this.datosYRtt,
+                    backgroundColor: [
+                        'rgba(33, 226, 226, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                },
+                {
+                    label: 'RTT VAR',
+                    data: this.datosYRttVar,
+                    backgroundColor: [
+                        'rgba(101, 33, 226, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                },
+                {
+                    label: 'PMTU',
+                    data: this.datosYPmtu,
+                    backgroundColor: [
+                        'rgba(226, 33, 168, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+
+                }
+                ]
+
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+
+                responsive: true,
+                maintainAspectRatio: false
+
+            }
+        });
+
+        //Cliente TCP
+        if (protocolTrafficActual == 'TCP') {
+
+            $('#containerFancyInfoGraphicTCP').show();
+            $('#containerFancyInfoGraphicTCPServer').hide();
+            $('#containerFancyInfoGraphicUDP').hide();
+            $('#containerFancyInfoGraphicUDPServer').hide();
+
+
+        } else if (protocolTrafficActual == 'UDP') {
+
+            $('#containerFancyInfoGraphicTCP').hide();
+            $('#containerFancyInfoGraphicTCPServer').hide();
+            $('#containerFancyInfoGraphicUDP').show();
+            $('#containerFancyInfoGraphicUDPServer').hide();
+        }
+
+
+    } else if (seleccion == 'Total'){
+
+    };
+    },
+    changeGraphic(){
+      this.grafficGenerator(this.trafficGraphic)
+    },
     // Creacion elementos Fabric
     makeLink(coords, linkType) {
       if (linkType == "normal") {
