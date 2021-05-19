@@ -4888,7 +4888,7 @@ export default {
           } else {
             this.alertText = "Tráfico Creado con Éxito.";
             this.in_process = false;
-            console.log(JSON.stringify(data));
+            console.log(data);
 
             // Gestión de Datos del Servidor
             var trafficValues = {};
@@ -4925,7 +4925,7 @@ export default {
             var contador = 0;
             var auxList = ["null"];
             var intervalLabels = 0;
-            var numTotalTempos = [];
+            var numTotalTempos = 0;
             //Obtención de Datos para Analizador Gráfico}
             //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -4935,9 +4935,10 @@ export default {
 
                 //Si el valor despues del separador es una h la respuesta proviene del Host-Cliente
                 if (String(sp[1]).charAt(0) == "h") {
-                  numTotalTempos.push(
-                    parseInt(Object.keys(data[k]["speciffic"]).length)
-                  );
+                  var long = parseInt(Object.keys(data[k]["speciffic"]).length);
+                  if(numTotalTempos <= long){
+                    numTotalTempos = long;
+                  }
                   // En este ciclo se suman todos los datos correspondientes
                   for (var t in data[k]["speciffic"]) {
                     totalBytesTx =
@@ -5112,14 +5113,15 @@ export default {
                   promRetransmits = retransmits / counter;
                   promRttVar = rttVar / counter;
                   promPmtu = pmtu / counter;
-
-                  for (var i = 0; i < numTotalTempos.length; i++) {
-                    if (numTotalTempos[i] < numTotalTempos[i + 1]) {
-                      intervalLabels = numTotalTempos[i + 1];
-                    } else {
-                      intervalLabels = numTotalTempos[i];
-                    }
-                  }
+                  
+                  numTotalTempos = intervalLabels
+                  // for (var i = 0; i < numTotalTempos; i++) {
+                  //   if (numTotalTempos[i] < numTotalTempos[i + 1]) {
+                  //     intervalLabels = numTotalTempos[i + 1];
+                  //   } else {
+                  //     intervalLabels = numTotalTempos[i];
+                  //   }
+                  // }
 
                   for (var o in trafficValues) {
                     for (var q = 0; q < intervalLabels; q++) {
@@ -5153,7 +5155,7 @@ export default {
               }
               //Eje X
               // var numLabels = time_e / interval;
-              for (var i = 0; i <= numTotalTempos.length; i++) {
+              for (var i = 0; i <= numTotalTempos; i++) {
                 this.labelsGraphic.push("t " + String(i));
               }
             }
