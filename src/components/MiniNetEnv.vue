@@ -1847,13 +1847,7 @@
             <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <!-- Container Grafico -->
               <b-row id="containerCanvaGraphic">
-                <apexchart
-                  id="graphic"
-                  v-if="canvasAnswerClient"
-                  type="line"
-                  :series="series"
-                  :options="options"
-                />
+                <line-chart id="graphic2" v-if="canvasAnswerClient" :chart-data="chartdata" :options="options"/>
                 <!-- <canvas id="graphic" v-if="canvasAnswerServer"></canvas> -->
                 <!-- <canvas id="graphic2" v-if="canvasAnswerClient"></canvas> -->
                 <!-- <canvas id="graphic3" v-if="canvasAnswerTot"></canvas> -->
@@ -4311,12 +4305,10 @@
 <script>
 import axios from "axios";
 // import Chart from 'chart.js';
-// import LineChart from './LineChart.js'
+import LineChart from './LineChart.js'
 
 export default {
-  // components: {
-  //     LineChart
-  //   },
+  components: { LineChart },
   data() {
     // Importamos JQuery
     const $ = require("jquery");
@@ -4324,8 +4316,7 @@ export default {
     window.$ = $;
 
     return {
-      options: {},
-      series: [],
+
       path: "http://10.55.6.188:5000/",
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
@@ -4411,8 +4402,8 @@ export default {
       serverText: "",
 
       //datos CHart
-      chartdata: {},
-
+      chartdata: null,
+      options : null,
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -4938,7 +4929,7 @@ export default {
             //Obtención de Datos para Analizador Gráfico}
             //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
-            if (this.protocol == "TCP") {
+            if (this.protocolTrafficActual == "TCP") {
               for (var k in data) {
                 var sp = String(k).split("_");
 
@@ -5185,106 +5176,91 @@ export default {
       } else if (seleccion == "Cliente") {
         // this.canvasAnswerServer = false,
         this.canvasAnswerClient = true;
+        console.log('labels: '+this.labelsGraphic);
+        console.log('Datos: '+this.datosYNumBytes);
         // this.labelsGraphic.push('0');
         // this.canvasAnswerTot = false;
-        (this.options = {
-          
-          chart: {
-            id: "vuechart-example",
-          },
-          xaxis: {
-            categories: this.labelsGraphic,
-          },
-          markers: {
-            size: 3,
-          }
-        }),
-          (this.series = [
-            {
-              name: "series-1",
-              data: this.datosYNumBytes,
-            },
-          ]);
+    
 
         // this.chartdata = {'2017-01-01 00:00:00 -0800': 2, '2017-01-01 00:01:00 -0800': 5}
 
-        // var algo = {
+        this.chartdata = {
 
-        //         labels: this.labelsGraphic,
-        //         datasets: [{
-        //             label: 'Total de Bytes Transmitidos',
-        //             data: this.datosYNumBytes,
-        //             backgroundColor: [
+                labels: this.labelsGraphic,
+                datasets: [{
+                    label: 'Total de Bytes Transmitidos',
+                    data: this.datosYNumBytes,
+                    backgroundColor: [
 
-        //                 'rgba(54, 162, 235, 0.2)'
+                        'rgba(54, 162, 235, 0.2)'
 
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-        //         },
-        //         {
-        //             label: 'Bits por Segundo',
-        //             data: this.datosYBitsPerSecond,
-        //             backgroundColor: [
-        //                 'rgba(111, 194, 63, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
+                },
+                {
+                    label: 'Bits por Segundo',
+                    data: this.datosYBitsPerSecond,
+                    backgroundColor: [
+                        'rgba(111, 194, 63, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         },
-        //         {
-        //             label: 'SND CWND',
-        //             data: this.datosYSndCwnd,
-        //             backgroundColor: [
-        //                 'rgba(226, 33, 33, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                },
+                {
+                    label: 'SND CWND',
+                    data: this.datosYSndCwnd,
+                    backgroundColor: [
+                        'rgba(226, 33, 33, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         },
-        //         {
-        //             label: 'Bytes Retransmitidos',
-        //             data: this.datosYRetransmits,
-        //             backgroundColor: [
-        //                 'rgba(226, 165, 33, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                },
+                {
+                    label: 'Bytes Retransmitidos',
+                    data: this.datosYRetransmits,
+                    backgroundColor: [
+                        'rgba(226, 165, 33, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         },
-        //         {
-        //             label: 'RTT',
-        //             data: this.datosYRtt,
-        //             backgroundColor: [
-        //                 'rgba(33, 226, 226, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                },
+                {
+                    label: 'RTT',
+                    data: this.datosYRtt,
+                    backgroundColor: [
+                        'rgba(33, 226, 226, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         },
-        //         {
-        //             label: 'RTT VAR',
-        //             data: this.datosYRttVar,
-        //             backgroundColor: [
-        //                 'rgba(101, 33, 226, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                },
+                {
+                    label: 'RTT VAR',
+                    data: this.datosYRttVar,
+                    backgroundColor: [
+                        'rgba(101, 33, 226, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         },
-        //         {
-        //             label: 'PMTU',
-        //             data: this.datosYPmtu,
-        //             backgroundColor: [
-        //                 'rgba(226, 33, 168, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
+                },
+                {
+                    label: 'PMTU',
+                    data: this.datosYPmtu,
+                    backgroundColor: [
+                        'rgba(226, 33, 168, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    steppedLine: true
 
-        //         }
-        //         ]
+                }
+                ]
 
-        //     };
+            };
         // var graphics = new Chart(graph, {
         //     type: 'line',
         //     data: {
