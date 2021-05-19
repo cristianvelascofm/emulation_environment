@@ -1847,9 +1847,16 @@
             <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <!-- Container Grafico -->
               <b-row id="containerCanvaGraphic">
-                <canvas id="graphic" v-if="canvasAnswerServer"></canvas>
-                <canvas id="graphic2" v-if="canvasAnswerClient"></canvas>
-                <canvas id="graphic3" v-if="canvasAnswerTot"></canvas>
+                <apexchart
+                  id="graphic"
+                  v-if="canvasAnswerClient"
+                  type="line"
+                  :series="series"
+                  :options="options"
+                />
+                <!-- <canvas id="graphic" v-if="canvasAnswerServer"></canvas> -->
+                <!-- <canvas id="graphic2" v-if="canvasAnswerClient"></canvas> -->
+                <!-- <canvas id="graphic3" v-if="canvasAnswerTot"></canvas> -->
               </b-row>
             </b-col>
 
@@ -1866,14 +1873,17 @@
                 </b-col>
 
                 <b-col class="col-sm-8 col-md-8 col-lg-8 col-xl-8">
-                  <b-select v-model="trafficGraphic" @change="changeGraphic()" id="optionSelectServerClientTCP" size="sm">
+                  <b-select
+                    v-model="trafficGraphic"
+                    @change="changeGraphic()"
+                    id="optionSelectServerClientTCP"
+                    size="sm"
+                  >
                     <option id="clientTCP">Total</option>
                     <option id="clientTCP">Cliente</option>
                     <option id="serverTCP">Servidor</option>
-                    
                   </b-select>
                 </b-col>
-
               </b-row>
 
               <!-- TCP CLIENTE -->
@@ -4294,29 +4304,35 @@
 
       <!-- <p class="my-4">Vertically centered modal!</p> -->
     </b-modal>
-
   </div>
 </template>
    
 
 <script>
 import axios from "axios";
+// import Chart from 'chart.js';
+// import LineChart from './LineChart.js'
 
 export default {
+  // components: {
+  //     LineChart
+  //   },
   data() {
     // Importamos JQuery
     const $ = require("jquery");
     // Lo declaramos globalmente
     window.$ = $;
-    
+
     return {
-      path : "http://10.55.6.188:5000/",
+      options: {},
+      series: [],
+      path: "http://10.55.6.188:5000/",
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
       in_process: false,
 
       trafficModeSelected: "",
-      trafficGraphic: '',
+      trafficGraphic: "",
       selected: null,
       //Variable Generador Trafico
       selHostS: false,
@@ -4344,17 +4360,17 @@ export default {
       imgElement: "",
       tagElement: "",
       //Eventos de uso en el canvas
-      insertOP : false,
-      imgUrl : "",
-      selected : null,
-      tool : 'cursor',
-      action : null,
-      countAsociate : 0,
-      tag : "",
-      img : '',
-      objectActiveLinkInitial : null,
-      objectActiveLinkFinal : null,
-      identTagHost : '',
+      insertOP: false,
+      imgUrl: "",
+      selected: null,
+      tool: "cursor",
+      action: null,
+      countAsociate: 0,
+      tag: "",
+      img: "",
+      objectActiveLinkInitial: null,
+      objectActiveLinkFinal: null,
+      identTagHost: "",
       //Variables para la Logica de los elementos en la Red simulada
       tagHost: [],
       tagSwitch: [],
@@ -4393,6 +4409,10 @@ export default {
       alertText: "",
       errorServer: false,
       serverText: "",
+
+      //datos CHart
+      chartdata: {},
+
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -4750,7 +4770,7 @@ export default {
     },
 
     trafficGenerator() {
-      this.labelsGraphic= []
+      this.labelsGraphic = [];
       this.datosYBitsPerSecond = [];
       this.datosYNumBytes = [];
       this.datosYPmtu = [];
@@ -5140,11 +5160,11 @@ export default {
                 else {
                 }
               }
-               //Eje X 
-                // var numLabels = time_e / interval;
-                for (var i = 0; i <= numTotalTempos.length; i++) {
-                    this.labelsGraphic.push('t ' + String(i));
-                }
+              //Eje X
+              // var numLabels = time_e / interval;
+              for (var i = 0; i <= numTotalTempos.length; i++) {
+                this.labelsGraphic.push("t " + String(i));
+              }
             }
           }
         })
@@ -5155,136 +5175,232 @@ export default {
           console.log(error);
         });
     },
-    grafficGenerator(seleccion){
-      var graphServer = $('#graphic2');
-      var graph = $('#graphic');
-      var graphTotal = $('#graphic3');
-      var tableTraffic = $('#tableInfo');
+    grafficGenerator(seleccion) {
+      // var graphServer = $('#graphic2');
+      // var graph = $('#graphic');
+      // var graphTotal = $('#graphic3');
+      // var tableTraffic = $('#tableInfo');
 
-      if (seleccion == "Servidor") {}
-      else if (seleccion == 'Cliente') {
-        this.canvasAnswerServer = false,
-        this.canvasAnswerClient = true,
-        this.canvasAnswerTot = false;
-
-        var graphics = new Chart(graph, {
-            type: 'line',
-            data: {
-
-                labels: this.labelsGraphic,
-                datasets: [{
-                    label: 'Total de Bytes Transmitidos',
-                    data: this.datosYNumBytes,
-                    backgroundColor: [
-
-                        'rgba(54, 162, 235, 0.2)'
-
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-                },
-                {
-                    label: 'Bits por Segundo',
-                    data: this.datosYBitsPerSecond,
-                    backgroundColor: [
-                        'rgba(111, 194, 63, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'SND CWND',
-                    data: this.datosYSndCwnd,
-                    backgroundColor: [
-                        'rgba(226, 33, 33, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'Bytes Retransmitidos',
-                    data: this.datosYRetransmits,
-                    backgroundColor: [
-                        'rgba(226, 165, 33, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'RTT',
-                    data: this.datosYRtt,
-                    backgroundColor: [
-                        'rgba(33, 226, 226, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'RTT VAR',
-                    data: this.datosYRttVar,
-                    backgroundColor: [
-                        'rgba(101, 33, 226, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'PMTU',
-                    data: this.datosYPmtu,
-                    backgroundColor: [
-                        'rgba(226, 33, 168, 0.2)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                }
-                ]
-
+      if (seleccion == "Servidor") {
+      } else if (seleccion == "Cliente") {
+        // this.canvasAnswerServer = false,
+        this.canvasAnswerClient = true;
+        // this.labelsGraphic.push('0');
+        // this.canvasAnswerTot = false;
+        (this.options = {
+          
+          chart: {
+            id: "vuechart-example",
+          },
+          xaxis: {
+            categories: this.labelsGraphic,
+          },
+          markers: {
+            size: 3,
+          }
+        }),
+          (this.series = [
+            {
+              name: "series-1",
+              data: this.datosYNumBytes,
             },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                },
+          ]);
 
-                responsive: true,
-                maintainAspectRatio: false
+        // this.chartdata = {'2017-01-01 00:00:00 -0800': 2, '2017-01-01 00:01:00 -0800': 5}
 
-            }
-        });
+        // var algo = {
+
+        //         labels: this.labelsGraphic,
+        //         datasets: [{
+        //             label: 'Total de Bytes Transmitidos',
+        //             data: this.datosYNumBytes,
+        //             backgroundColor: [
+
+        //                 'rgba(54, 162, 235, 0.2)'
+
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+        //         },
+        //         {
+        //             label: 'Bits por Segundo',
+        //             data: this.datosYBitsPerSecond,
+        //             backgroundColor: [
+        //                 'rgba(111, 194, 63, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'SND CWND',
+        //             data: this.datosYSndCwnd,
+        //             backgroundColor: [
+        //                 'rgba(226, 33, 33, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'Bytes Retransmitidos',
+        //             data: this.datosYRetransmits,
+        //             backgroundColor: [
+        //                 'rgba(226, 165, 33, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'RTT',
+        //             data: this.datosYRtt,
+        //             backgroundColor: [
+        //                 'rgba(33, 226, 226, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'RTT VAR',
+        //             data: this.datosYRttVar,
+        //             backgroundColor: [
+        //                 'rgba(101, 33, 226, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'PMTU',
+        //             data: this.datosYPmtu,
+        //             backgroundColor: [
+        //                 'rgba(226, 33, 168, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         }
+        //         ]
+
+        //     };
+        // var graphics = new Chart(graph, {
+        //     type: 'line',
+        //     data: {
+
+        //         labels: this.labelsGraphic,
+        //         datasets: [{
+        //             label: 'Total de Bytes Transmitidos',
+        //             data: this.datosYNumBytes,
+        //             backgroundColor: [
+
+        //                 'rgba(54, 162, 235, 0.2)'
+
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+        //         },
+        //         {
+        //             label: 'Bits por Segundo',
+        //             data: this.datosYBitsPerSecond,
+        //             backgroundColor: [
+        //                 'rgba(111, 194, 63, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'SND CWND',
+        //             data: this.datosYSndCwnd,
+        //             backgroundColor: [
+        //                 'rgba(226, 33, 33, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'Bytes Retransmitidos',
+        //             data: this.datosYRetransmits,
+        //             backgroundColor: [
+        //                 'rgba(226, 165, 33, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'RTT',
+        //             data: this.datosYRtt,
+        //             backgroundColor: [
+        //                 'rgba(33, 226, 226, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'RTT VAR',
+        //             data: this.datosYRttVar,
+        //             backgroundColor: [
+        //                 'rgba(101, 33, 226, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         },
+        //         {
+        //             label: 'PMTU',
+        //             data: this.datosYPmtu,
+        //             backgroundColor: [
+        //                 'rgba(226, 33, 168, 0.2)'
+        //             ],
+        //             borderWidth: 1,
+        //             steppedLine: true
+
+        //         }
+        //         ]
+
+        //     },
+        //     options: {
+        //         scales: {
+        //             yAxes: [{
+        //                 ticks: {
+        //                     beginAtZero: true
+        //                 }
+        //             }]
+        //         },
+
+        //         responsive: true,
+        //         maintainAspectRatio: false
+
+        //     }
+        // });
 
         //Cliente TCP
-        if (protocolTrafficActual == 'TCP') {
 
-            $('#containerFancyInfoGraphicTCP').show();
-            $('#containerFancyInfoGraphicTCPServer').hide();
-            $('#containerFancyInfoGraphicUDP').hide();
-            $('#containerFancyInfoGraphicUDPServer').hide();
+        // if (this.protocolTrafficActual == 'TCP') {
 
+        //     $('#containerFancyInfoGraphicTCP').show();
+        //     $('#containerFancyInfoGraphicTCPServer').hide();
+        //     $('#containerFancyInfoGraphicUDP').hide();
+        //     $('#containerFancyInfoGraphicUDPServer').hide();
 
-        } else if (protocolTrafficActual == 'UDP') {
+        // } else if (this.protocolTrafficActual == 'UDP') {
 
-            $('#containerFancyInfoGraphicTCP').hide();
-            $('#containerFancyInfoGraphicTCPServer').hide();
-            $('#containerFancyInfoGraphicUDP').show();
-            $('#containerFancyInfoGraphicUDPServer').hide();
-        }
-
-
-    } else if (seleccion == 'Total'){
-
-    };
+        //     $('#containerFancyInfoGraphicTCP').hide();
+        //     $('#containerFancyInfoGraphicTCPServer').hide();
+        //     $('#containerFancyInfoGraphicUDP').show();
+        //     $('#containerFancyInfoGraphicUDPServer').hide();
+        // }
+      } else if (seleccion == "Total") {
+      }
     },
-    changeGraphic(){
-      this.grafficGenerator(this.trafficGraphic)
+    changeGraphic() {
+      console.log(this.trafficGraphic);
+      this.grafficGenerator(this.trafficGraphic);
     },
     // Creacion elementos Fabric
     makeLink(coords, linkType) {
@@ -5622,7 +5738,7 @@ export default {
           connection.type = "association";
           connection.elementOrigin = idElement;
           connection.x1 = this.x0 + 30; // Coordenadas iniciales x centro switch
-          connection.y1 = this.y0 + 35;// Coordenadas iniciales y centro switch
+          connection.y1 = this.y0 + 35; // Coordenadas iniciales y centro switch
           connection.x2 = this.x0 + i * 65 - 130;
           connection.y2 = this.y0 + 107;
           connection.id = "a" + i;
@@ -6772,7 +6888,7 @@ export default {
 }
 
 #graphic {
-  background-color: rgba(0, 255, 42, 0.582);
+  /* background-color: rgba(0, 255, 42, 0.582); */
 }
 #graphic2 {
   background-color: aqua;
