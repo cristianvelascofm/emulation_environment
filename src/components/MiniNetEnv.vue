@@ -5240,7 +5240,7 @@ export default {
                   promBitsPerSecondServer = bitsPerSecond / counter;
 
                   for (var o in trafficValuesServer) {
-                    for (var q = 0; q < numLabels; q++) {
+                    for (var q = 0; q < numTotalTempos; q++) {
                       if (String(o) == "t_" + String(q) + "_num_bytes") {
                         datosYNumBytesServer[q] = trafficValues[o];
                       }
