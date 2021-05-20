@@ -5176,8 +5176,8 @@ export default {
     grafficGenerator(seleccion) {
       this.datosYNumBytes.push(0);
       this.datosYBitsPerSecond.push(0);
-      this.datosYNumBytesServer.push(0);
-      this.datosYBitsPerSecondServer.push(0);
+      // this.datosYNumBytesServer.push(0);
+      // this.datosYBitsPerSecondServer.push(0);
       this.datosYSndCwnd.push(0);
       this.datosYRetransmits.push(0);
       this.datosYRtt.push(0);
