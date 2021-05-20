@@ -4737,6 +4737,7 @@ export default {
           if (validator == true) {
             this.in_process = false;
             this.alertText = "Red Creada Exitosamente.";
+            this.play_activator = false;
             // this.openModal("done");
           } else {
             this.alertText = "Error en la Creación de la Red.";
@@ -4763,6 +4764,7 @@ export default {
         alert(JSON.stringify(response.data));
         this.elements = [];
         this.netWork = {};
+        this.play_activator = true;
       });
     },
 
@@ -4894,6 +4896,8 @@ export default {
           } else {
             this.alertText = "Tráfico Creado con Éxito.";
             this.in_process = false;
+            this.play_activator = false;
+            this.traffic_activator = false;
             console.log(data);
 
             // Gestión de Datos del Servidor
