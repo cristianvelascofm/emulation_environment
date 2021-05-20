@@ -139,23 +139,27 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="stop-direct-access"
+        :disabled = "play-activator"
         @click="stopEmulation"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
+        :disabled = "play-activator"
         @click="openModal('traffic')"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
+        :disabled = "play-activator"
         id="graf-direct-access"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="diagram-direct-access"
+        :disabled = "traffic-activator"
         @click="openModal('grafic')"
       ></button>
       <button
@@ -1847,7 +1851,7 @@
             <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <!-- Container Grafico -->
               <b-row id="containerCanvaGraphic">
-                <line-chart id="graphic2" v-if="canvasAnswerClient" :chart-data="chartdata" :options="options"/>
+                <line-chart id="graphic2" v-if="canvasAnswerClient" :width="578" :height="396" :chart-data="chartdata" :options="options"/>
                 <!-- <canvas id="graphic" v-if="canvasAnswerServer"></canvas> -->
                 <!-- <canvas id="graphic2" v-if="canvasAnswerClient"></canvas> -->
                 <!-- <canvas id="graphic3" v-if="canvasAnswerTot"></canvas> -->
@@ -3609,7 +3613,7 @@
       </template>
     </b-modal>
 
-    <!-- Modal Analizador Grafico de Especifico -->
+<!-- Modal Unfo Trafico de Especifico de cada Host -->
     <b-modal
       id="modal-specific"
       centered
@@ -4321,6 +4325,8 @@ export default {
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
       in_process: false,
+      play_activator: true,
+      traffic_activator: true,
 
       trafficModeSelected: "",
       trafficGraphic: "",
@@ -4935,8 +4941,10 @@ export default {
 
                 //Si el valor despues del separador es una h la respuesta proviene del Host-Cliente
                 if (String(sp[1]).charAt(0) == "h") {
+
+                  // Verifica el mayor numero de tiempos generado para despues asignarlo al eje x de la grafica
                   var long = parseInt(Object.keys(data[k]["speciffic"]).length);
-                  if(numTotalTempos <= long){
+                  if(long >= numTotalTempos){
                     numTotalTempos = long;
                   }
                   // En este ciclo se suman todos los datos correspondientes
@@ -5114,14 +5122,7 @@ export default {
                   promRttVar = rttVar / counter;
                   promPmtu = pmtu / counter;
                   
-                  numTotalTempos = intervalLabels
-                  // for (var i = 0; i < numTotalTempos; i++) {
-                  //   if (numTotalTempos[i] < numTotalTempos[i + 1]) {
-                  //     intervalLabels = numTotalTempos[i + 1];
-                  //   } else {
-                  //     intervalLabels = numTotalTempos[i];
-                  //   }
-                  // }
+                  intervalLabels = numTotalTempos;
 
                   for (var o in trafficValues) {
                     for (var q = 0; q < intervalLabels; q++) {
@@ -5169,11 +5170,15 @@ export default {
         });
     },
     grafficGenerator(seleccion) {
-      // var graphServer = $('#graphic2');
-      // var graph = $('#graphic');
-      // var graphTotal = $('#graphic3');
-      // var tableTraffic = $('#tableInfo');
-
+      this.datosYNumBytes.push(0);
+      this.datosYBitsPerSecond.push(0);
+      this.datosYNumBytesServer.push(0);
+      this.datosYBitsPerSecondServer.push(0);
+      this.datosYSndCwnd.push(0);
+      this.datosYRetransmits.push(0);
+      this.datosYRtt.push(0);
+      this.datosYRttVar.push(0);
+      this.datosYPmtu.push(0);
       if (seleccion == "Servidor") {
       } else if (seleccion == "Cliente") {
         // this.canvasAnswerServer = false,
@@ -6486,8 +6491,159 @@ export default {
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
-      if (id == "host") {
+      if(id == 'host'){
         this.infoModal = [];
+        info['Valor'] = 'Ruta por Defecto';
+        info['Descripción'] = 'Defina la direccion IP del Host. Por defecto, las Ips están configuradas semejantes a: 10.0.0.X.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Scheduler';
+        info['Descripción'] = 'Programador de red, o porgramador de paqutes, algoritmo de puesta en cola. Gestiona la secuencia de paquetes de red en las colas de transmision y recepción.'
+          +' CFS:Completely Fair Scheduler. Un algoritmo planificador desarrollado con el objetivo de maximizar el uso de la CPU con las diferentes tareas que se lanzan en un sistema Linux basándose en el Fair Queuing.'
+          +'RT: Real Time. Programación de tiempo real compuesto por el programador, el reloj y otros elementos hardware de procesamiento.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Límite CPU';
+        info['Descripción'] = 'Establece la capacidad de las frecuencias de trabajo del Host.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Núcleos CPU';
+        info['Descripción'] = 'Establece la cantidad de núcleos que tendrá el CPU del Host.'
+        this.infoModal.push(info);
+        this.$bvModal.show("modal-info");
+      }
+      if(id == 'port'){
+        this.infoModal = [];
+        info['Valor'] = 'Dirección IP';
+        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        this.$bvModal.show("modal-info");
+      }
+      if(id == 'label'){
+        this.infoModal = [];
+        info['Valor'] = 'Etiqueta';
+        info['Descripción'] = 'Rótulo o nombre que presenta información considerada relevante para un determinado elemento de red.'
+        this.$bvModal.show("modal-info");
+      }
+      if(id == 'switch'){
+        this.infoModal = [];
+        info['Valor'] = 'Tipo';
+        info['Descripción'] = 'Permite seleccionar el tipo de dispositivo virtual encargado de la conexión de maquinas virtules y periféricos a la red con el fin de comunicarse entre sí y con otras redes.'
+          +'  IVS: Indigo Virtual Switch. Conmutador virtual OpenFlow puro diseñado para un alto rendimiento y una administración mínima. Está construido sobre la plataforma Indigo, que proporciona un núcleo común para muchos conmutadores virtuales.'
+          +'  Linux Brigde: Puente de Linux que se comporta como un conmutador de red, reenviando paquetes entre interfaces de red virtuales que están conectadas a él. Por lo general, se usa para reenviar paquetes en enrutadores virtuales, puertas de enlace o entre máquinas virtuales y espacios de nombres de red en un host.'
+          +'  OVS Bridge: Open vSwitch bridge. Puente diseñado para  comunicar un switch virtual en entornos de servidores virtualizados.'
+          +'  OVS: Open vSwitch. Software de código abierto, diseñado para ser utilizado como un switch virtual en entornos de servidores virtualizados. Es el encargado de reenviar el tráfico entre diferentes máquinas virtuales (VMs).'
+          +'  User Switch.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'STP: Spanning Tree Protocol';
+        info['Descripción'] = 'Protocolo de red de capa 2 del modelo OSI, encargado de gestionar la presencia de bucles en topologías de red debido a la existencia de enlaces redundantes.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'STP Priority';
+        info['Descripción'] = 'Es un valor configurable encarado de establecer la prioridad del switch en un valor más pequeño que el del valor por defecto (32768), el nuevo valor debe ser múltiplo de 4096. Esto sólo se debe implementar cuando se tiene un conocimiento profundo del flujo de tráfico en la red.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Dirección IP';
+        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'DPCTL Port';
+        info['Descripción'] = 'Puerto para la administración y control sobre el conmutador OpenFlow, mediante la agregación de flujos a la tabla de flujo, la consulta de las características y el estado del interruptor y el cambio de otras configuraciones. Por defecto es el 6633.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Protocolo';
+        info['Descripción'] = 'Sistema de reglas que permite a los controladores de red determinar la ruta de los paquetes de red a través de una red de conmutadores. El protocolo OpenFlow se establecio como la primera interfaz de comunicaciones estándar definida entre las capas de control y reenvío de una arquitectura SDN.'
+        +'   Versión Openflow 1.1.'
+        +'   Versión Openflow 1.2.'
+        +'   Versión Openflow 1.3.'
+        +'   Versión Openflow 1.4.'
+        +'   Versión Openflow 1.5.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Data Path';
+        info['Descripción'] = 'Ruta lógica para procesar los datos de entrada y generar los datos de salida correctos, generalmente se divide en bloques con el fin de ofrecer la optimización de la velocidad en el procesamiento de datos.'
+        +'   Kernel: Elemento principal de los sistemas Linux e interfaz fundamental entre el dispsitivo y sus procesos. Comunicandolos entre sí y gestiona los recursos de la manera más eficiente posible.'
+        +'   User.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Data Path ID';
+        info['Descripción'] = 'Identificador de ruta de datos, determinado por un número de 64 bits conformado por los 48 bits inferiores destinados a la dirección MAC del conmutador y los 16 bits superiores destinados al implementador.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Data Path Args';
+        info['Descripción'] = ''
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Modelo de Fallas';
+        info['Descripción'] = 'Determina una causa de falla o una posible manera en la que un sistema puede fallar.'
+          +'  Ninguno'
+          +'  Secure'
+          +'  Standalone'
+        this.infoModal.push(info);
+        this.$bvModal.show("modal-info");
+      }
+      if(id == 'ipUser'){
+        this.infoModal = [];
+        info['Valor'] = 'Dirección IP';
+        info['Descripción'] = 'Conjunto de números que identifica de manera lógica y jerárquica la interfaz de red del dispositivo local que utiliza como servidor Grafico.'
+        this.$bvModal.show("modal-info");
+      }
+      if(id == 'grapTraf'){
+        this.infoModal = [];
+        info['Valor'] = 'Selector de enlace';
+        info['Descripción'] = 'Permite seleccionar al host de detino que se encuentre conectado el Host de origen seleccionado.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Host Local';
+        info['Descripción'] = 'Dirección IP de origen del enlace de comunicación.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Puerto local';
+        info['Descripción'] = 'El puerto inicial del rango que se desea comunicar.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Dirección IP';
+        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Host Remoto';
+        info['Descripción'] = 'Dirección IP de destino del enlace de comunicación.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Puerto Remoto';
+        info['Descripción'] = 'El puerto final del rango que se desea comunicar.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Omitido';
+        info['Descripción'] = ''
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Protocolo';
+        info['Descripción'] = 'Protocolos utilizados para enviar bits de datos, conocidos como paquetes, a través de Internet.'
+          +'   TCP-  Transfer Control Protocol:  Protocolo para el intercambio de datos de manera segura, requeriendo la autorización de conexión entre el emisor y el receptor, o el cliente y el servidor, antes de producirse la transferencia; una vez ambas partes hayan autorizado la transmisión, podrá iniciarse el envío y recepción de datos.'
+          +'   UDP - User Datagram Protocol: Protocolo del nivel de transporte basado en el intercambio de datagramas, que permite el envío de datagramas a través de la red sin que se haya establecido previamente una conexión'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Bytes Especificados Tx';
+        info['Descripción'] = 'Ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Duración';
+        info['Descripción'] = 'Tiempo en segundos para transmitir.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Ventana Deslizante';
+        info['Descripción'] = 'Tamaños de búfer de socket en el valor especificado. Para TCP, esto establece el tamaño de la ventana de TCP. (esto se envía al servidor y también se usa en ese lado.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'Bloques';
+        info['Descripción'] = 'Número de bloques (paquetes) para transmitir.'
+        this.infoModal.push(info);
+        info= {};
+        info['Valor'] = 'TCP MSS';
+        info['Descripción'] = 'Tamaño máximo de segmento de TCP (MSS). El MSS suele ser el MTU - 40 bytes para el encabezado TCP / IP. Para Ethernet, el MSS es de 1460 bytes (MTU de 1500 bytes).'
+        this.infoModal.push(info);
+        this.$bvModal.show("modal-info");
       }
     },
   },
@@ -6865,13 +7021,4 @@ export default {
   margin: 2px;
 }
 
-#graphic {
-  /* background-color: rgba(0, 255, 42, 0.582); */
-}
-#graphic2 {
-  background-color: aqua;
-}
-#graphic3 {
-  background-color: rgb(0, 89, 255);
-}
 </style>
