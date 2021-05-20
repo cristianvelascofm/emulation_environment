@@ -4858,14 +4858,18 @@ export default {
       if (checkInterval == "i") {
         trafficDir["i"] = String(interval);
       }
+      var modeOp = "";
       if (globalMode == "global") {
         trafficDir["global"] = "true";
+        modeOp = 'Global'
       }
       if (specificMode == "specific") {
         trafficDir["specific"] = "true";
+        modeOp = 'Específico'
       }
       if (xtremeMode == "xtreme") {
         trafficDir["xtreme"] = "true";
+        modeOp = 'Extremo'
       }
       if (oneForAll == "one") {
         trafficDir["one_for_all"] = "true";
