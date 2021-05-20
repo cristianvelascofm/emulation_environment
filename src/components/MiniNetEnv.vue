@@ -159,7 +159,7 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="diagram-direct-access"
-        :disabled = "traffic-activator"
+        :disabled = "traffic_activator"
         @click="openModal('grafic')"
       ></button>
       <button
