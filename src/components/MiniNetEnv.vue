@@ -139,20 +139,20 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="stop-direct-access"
-        :disabled = "play-activator"
+        :disabled = "play_activator"
         @click="stopEmulation"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
-        :disabled = "play-activator"
+        :disabled = "play_activator"
         @click="openModal('traffic')"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
-        :disabled = "play-activator"
+        :disabled = "play_activator"
         id="graf-direct-access"
       ></button>
       <button
