@@ -4765,6 +4765,7 @@ export default {
         this.elements = [];
         this.netWork = {};
         this.play_activator = true;
+        this.traffic_activator = true;
       });
     },
 
@@ -5203,7 +5204,7 @@ export default {
                     data: this.datosYNumBytes,
                     backgroundColor: [
 
-                        'rgba(54, 162, 235, 0.2)'
+                        'rgba(54, 162, 235, 0.7)'
 
                     ],
                     borderWidth: 1,
@@ -5213,7 +5214,7 @@ export default {
                     label: 'Bits por Segundo',
                     data: this.datosYBitsPerSecond,
                     backgroundColor: [
-                        'rgba(111, 194, 63, 0.2)'
+                        'rgba(111, 194, 63, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5223,7 +5224,7 @@ export default {
                     label: 'SND CWND',
                     data: this.datosYSndCwnd,
                     backgroundColor: [
-                        'rgba(226, 33, 33, 0.2)'
+                        'rgba(226, 33, 33, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5233,7 +5234,7 @@ export default {
                     label: 'Bytes Retransmitidos',
                     data: this.datosYRetransmits,
                     backgroundColor: [
-                        'rgba(226, 165, 33, 0.2)'
+                        'rgba(226, 165, 33, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5243,7 +5244,7 @@ export default {
                     label: 'RTT',
                     data: this.datosYRtt,
                     backgroundColor: [
-                        'rgba(33, 226, 226, 0.2)'
+                        'rgba(33, 226, 226, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5253,7 +5254,7 @@ export default {
                     label: 'RTT VAR',
                     data: this.datosYRttVar,
                     backgroundColor: [
-                        'rgba(101, 33, 226, 0.2)'
+                        'rgba(101, 33, 226, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5263,7 +5264,7 @@ export default {
                     label: 'PMTU',
                     data: this.datosYPmtu,
                     backgroundColor: [
-                        'rgba(226, 33, 168, 0.2)'
+                        'rgba(226, 33, 168, 0.7)'
                     ],
                     borderWidth: 1,
                     steppedLine: true
@@ -5272,99 +5273,17 @@ export default {
                 ]
 
             };
-        // var graphics = new Chart(graph, {
-        //     type: 'line',
-        //     data: {
-
-        //         labels: this.labelsGraphic,
-        //         datasets: [{
-        //             label: 'Total de Bytes Transmitidos',
-        //             data: this.datosYNumBytes,
-        //             backgroundColor: [
-
-        //                 'rgba(54, 162, 235, 0.2)'
-
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-        //         },
-        //         {
-        //             label: 'Bits por Segundo',
-        //             data: this.datosYBitsPerSecond,
-        //             backgroundColor: [
-        //                 'rgba(111, 194, 63, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         },
-        //         {
-        //             label: 'SND CWND',
-        //             data: this.datosYSndCwnd,
-        //             backgroundColor: [
-        //                 'rgba(226, 33, 33, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         },
-        //         {
-        //             label: 'Bytes Retransmitidos',
-        //             data: this.datosYRetransmits,
-        //             backgroundColor: [
-        //                 'rgba(226, 165, 33, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         },
-        //         {
-        //             label: 'RTT',
-        //             data: this.datosYRtt,
-        //             backgroundColor: [
-        //                 'rgba(33, 226, 226, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         },
-        //         {
-        //             label: 'RTT VAR',
-        //             data: this.datosYRttVar,
-        //             backgroundColor: [
-        //                 'rgba(101, 33, 226, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         },
-        //         {
-        //             label: 'PMTU',
-        //             data: this.datosYPmtu,
-        //             backgroundColor: [
-        //                 'rgba(226, 33, 168, 0.2)'
-        //             ],
-        //             borderWidth: 1,
-        //             steppedLine: true
-
-        //         }
-        //         ]
-
-        //     },
-        //     options: {
-        //         scales: {
-        //             yAxes: [{
-        //                 ticks: {
-        //                     beginAtZero: true
-        //                 }
-        //             }]
-        //         },
-
-        //         responsive: true,
-        //         maintainAspectRatio: false
-
-        //     }
-        // });
+        this.options =  {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            };
 
         //Cliente TCP
 
