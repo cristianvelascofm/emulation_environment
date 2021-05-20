@@ -5431,10 +5431,10 @@ export default {
         } else if (this.trafficGraphic == "General") {
           var totalDatosYNumBytes = [];
           var totalDatosYBitsPerSecond = [];
-          var longClient = this.datosYNumBytes.length();
-          var longServer = this.datosYNumBytesServer.length();
-          var longServerBits = this.datosYBitsPerSecondServer.length();
-          var longClientBits = this.datosYBitsPerSecond.length();
+          var longClient = this.datosYNumBytes.length;
+          var longServer = this.datosYNumBytesServer.length;
+          var longServerBits = this.datosYBitsPerSecondServer.length;
+          var longClientBits = this.datosYBitsPerSecond.length;
 
           //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
           if(longClient > longServer){
