@@ -139,27 +139,27 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="stop-direct-access"
-        :disabled = "play_activator"
+        :disabled="play_activator"
         @click="stopEmulation"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
-        :disabled = "play_activator"
+        :disabled="play_activator"
         @click="openModal('traffic')"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
-        :disabled = "play_activator"
+        :disabled="play_activator"
         id="graf-direct-access"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="diagram-direct-access"
-        :disabled = "traffic_activator"
+        :disabled="traffic_activator"
         @click="openModal('grafic')"
       ></button>
       <button
@@ -1851,10 +1851,14 @@
             <b-col class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <!-- Container Grafico -->
               <b-row id="containerCanvaGraphic">
-                <line-chart id="graphic2" v-if="canvasAnswerClient" :width="578" :height="396" :chart-data="chartdata" :options="options"/>
-                <!-- <canvas id="graphic" v-if="canvasAnswerServer"></canvas> -->
-                <!-- <canvas id="graphic2" v-if="canvasAnswerClient"></canvas> -->
-                <!-- <canvas id="graphic3" v-if="canvasAnswerTot"></canvas> -->
+                <line-chart
+                  id="graphic2"
+                  v-if="canvasAnswerClient"
+                  :width="578"
+                  :height="396"
+                  :chart-data="chartdata"
+                  :options="options"
+                />
               </b-row>
             </b-col>
 
@@ -1877,7 +1881,7 @@
                     id="optionSelectServerClientTCP"
                     size="sm"
                   >
-                    <option id="clientTCP">Total</option>
+                    <option id="clientTCP">General</option>
                     <option id="clientTCP">Cliente</option>
                     <option id="serverTCP">Servidor</option>
                   </b-select>
@@ -3613,7 +3617,7 @@
       </template>
     </b-modal>
 
-<!-- Modal Unfo Trafico de Especifico de cada Host -->
+    <!-- Modal Unfo Trafico de Especifico de cada Host -->
     <b-modal
       id="modal-specific"
       centered
@@ -4309,7 +4313,7 @@
 <script>
 import axios from "axios";
 // import Chart from 'chart.js';
-import LineChart from './LineChart.js'
+import LineChart from "./LineChart.js";
 
 export default {
   components: { LineChart },
@@ -4320,7 +4324,6 @@ export default {
     window.$ = $;
 
     return {
-
       path: "http://10.55.6.188:5000/",
       //Variable id Herramienta seleccionada (barra lateral)
       herramienta: "cursor",
@@ -4329,7 +4332,7 @@ export default {
       traffic_activator: true,
 
       trafficModeSelected: "",
-      trafficGraphic: "",
+      trafficGraphic: "General",
       selected: null,
       //Variable Generador Trafico
       selHostS: false,
@@ -4401,6 +4404,8 @@ export default {
       datosYRtt: [],
       datosYRttVar: [],
       datosYPmtu: [],
+      datosYNumBytesServer: [],
+      datosYBitsPerSecondServer: [],
 
       //Variable para los Modales de Informacion
       alertText: "",
@@ -4409,7 +4414,7 @@ export default {
 
       //datos CHart
       chartdata: null,
-      options : null,
+      options: null,
       //Variables Creación panel lateral del emulador
       directaccess: [
         {
@@ -4594,6 +4599,7 @@ export default {
         return this.$bvModal.show("modal-done");
       }
       if (open == "grafic") {
+        this.grafficGenerator();
         return this.$bvModal.show("modal-grafic");
       }
       if (open == "info") {
@@ -4946,10 +4952,9 @@ export default {
 
                 //Si el valor despues del separador es una h la respuesta proviene del Host-Cliente
                 if (String(sp[1]).charAt(0) == "h") {
-
                   // Verifica el mayor numero de tiempos generado para despues asignarlo al eje x de la grafica
                   var long = parseInt(Object.keys(data[k]["speciffic"]).length);
-                  if(long >= numTotalTempos){
+                  if (long >= numTotalTempos) {
                     numTotalTempos = long;
                   }
                   // En este ciclo se suman todos los datos correspondientes
@@ -5126,7 +5131,7 @@ export default {
                   promRetransmits = retransmits / counter;
                   promRttVar = rttVar / counter;
                   promPmtu = pmtu / counter;
-                  
+
                   intervalLabels = numTotalTempos;
 
                   for (var o in trafficValues) {
@@ -5157,6 +5162,93 @@ export default {
                 }
                 //Si el valor despues del separador es un Número la respuesta proviene del Host-Servidor
                 else {
+                  // Verifica el mayor numero de tiempos generado para despues asignarlo al eje x de la grafica
+                  var long = parseInt(Object.keys(data[k]["speciffic"]).length);
+                  if (long >= numTotalTempos) {
+                    numTotalTempos = long;
+                  }
+
+                  for (var t in data[k]["speciffic"]) {
+                    totalBytesTxServer =
+                      totalBytesTxServer +
+                      parseInt(data[k]["speciffic"][t]["n_bytes"]);
+                    bitsPerSecondServer =
+                      bitsPerSecondServer +
+                      parseInt(data[k]["speciffic"][t]["bits_per_second"]);
+
+                    counter = counter + 1;
+                    var llave = String(t);
+
+                    //console.log('HOST ' + String(k));
+                    //console.log('Trafico: ' + JSON.stringify(trafficValues));
+
+                    //Valores Numero de Bytes
+                    if (
+                      Object.keys(trafficValuesServer).includes(
+                        String(t) + "_num_bytes"
+                      )
+                    ) {
+                      var valActualNumBytes = parseInt(
+                        trafficValuesServer[llave + "_num_bytes"]
+                      );
+                      var valorSumar = parseInt(
+                        data[k]["speciffic"][t]["n_bytes"]
+                      );
+
+                      var totalNumBytes = valActualNumBytes + valorSumar;
+                      trafficValuesServer[llave + "_num_bytes"] = totalNumBytes;
+                    } else {
+                      trafficValuesServer[llave + "_num_bytes"] = parseInt(
+                        data[k]["speciffic"][t]["n_bytes"]
+                      );
+                    }
+
+                    //Valores Bits por Segundo
+                    if (
+                      Object.keys(trafficValuesServer).includes(
+                        String(t) + "_bits_per_second"
+                      )
+                    ) {
+                      var valActualNumBytes = parseInt(
+                        trafficValuesServer[llave + "_bits_per_second"]
+                      );
+                      var valorSumar = parseInt(
+                        data[k]["speciffic"][t]["bits_per_second"]
+                      );
+
+                      var totalNumBytes = valActualNumBytes + valorSumar;
+                      trafficValuesServer[
+                        llave + "_bits_per_second"
+                      ] = totalNumBytes;
+                    } else {
+                      trafficValuesServer[
+                        llave + "_bits_per_second"
+                      ] = parseInt(data[k]["speciffic"][t]["bits_per_second"]);
+                    }
+                  }
+                  protocol = String(data[k]["general"]["protocol"]);
+                  time_e = data[k]["general"]["duration"];
+                  blocks = String(data[k]["general"]["blocks"]);
+                  tcpMssDefault = String(data[k]["general"]["tcp_mss_default"]);
+                  blkSize = String(data[k]["general"]["blksize"]);
+                  sockBufSize = String(data[k]["general"]["sock_bufsize"]);
+                  rcvBufActual = String(data[k]["general"]["rcvbuf_actual"]);
+                  sndBufActual = String(data[k]["general"]["sndbuf_actual"]);
+                  //Promedio de Bytes Transmitidos en la Emulacion del Trafico Servidor
+
+                  promTotalBytesTxServer = totalBytesTx / counter;
+                  promBitsPerSecondServer = bitsPerSecond / counter;
+
+                  for (var o in trafficValuesServer) {
+                    for (var q = 0; q < numLabels; q++) {
+                      if (String(o) == "t_" + String(q) + "_num_bytes") {
+                        datosYNumBytesServer[q] = trafficValues[o];
+                      }
+                      if (String(o) == "t_" + String(q) + "_bits_per_second") {
+                        datosYBitsPerSecondServer[q] = trafficValues[o];
+                      }
+                    }
+                  }
                 }
               }
               //Eje X
@@ -5164,6 +5256,48 @@ export default {
               for (var i = 0; i <= numTotalTempos; i++) {
                 this.labelsGraphic.push("t " + String(i));
               }
+              // El ultimo tiempo genera 0 en todo ya que ahi acaba la emulación, se agrega a continuacion
+              this.datosYNumBytes.push(0);
+              this.datosYBitsPerSecond.push(0);
+              this.datosYNumBytesServer.push(0);
+              this.datosYBitsPerSecondServer.push(0);
+              this.datosYSndCwnd.push(0);
+              this.datosYRetransmits.push(0);
+              this.datosYRtt.push(0);
+              this.datosYRttVar.push(0);
+              this.datosYPmtu.push(0);
+
+              //Server TCP
+              $('#modo_op_TCPServer').text(String(modeOp));
+              $('#protocol_TCPServer').text(String(protocol));
+              $('#duration_TCPServer').text(String(time_e));
+              $('#size_block_TCPServer').text(String(blkSize));
+              $('#bloque_TCPServer').text(String(blocks));
+              $('#tcp_mss_TCPServer').text(String(tcpMssDefault));
+              $('#snd_buffer_TCPServer').text(String(sndBufActual));
+              $('#rcv_buffer_TCPServer').text(String(rcvBufActual));
+              $('#total_bytes_TCPServer').text(String(totalBytesTxServer));
+              $('#prom_tbytes_TCPServer').text(String(promTotalBytesTxServer));
+              $('#prom_bit_TCPServer').text(String(promBitsPerSecondServer));
+
+              //Cliente TCP
+              $('#modo_op').text(String(modeOp));
+              $('#protocol').text(String(protocol));
+              $('#duration').text(String(time_e));
+              $('#size_block').text(String(blkSize));
+              $('#bloque').text(String(blocks));
+              $('#tcp_mss').text(String(tcpMssDefault));
+              $('#snd_buffer').text(String(sndBufActual));
+              $('#rcv_buffer').text(String(rcvBufActual));
+              $('#total_bytes').text(String(totalBytesTx));
+              $('#prom_tbytes').text(String(promTotalBytesTx));
+              $('#prom_bit').text(String(promBitsPerSecond));
+              $('#prom_sndcwnd').text(String(promSndCwnd));
+              $('#prom_rtt').text(String(promRtt));
+              $('#prom_rtx').text(String(promRetransmits));
+              $('#prom_rttvar').text(String(promRttVar));
+              $('#prom_pmtu').text(String(promPmtu));
+
             }
           }
         })
@@ -5174,139 +5308,232 @@ export default {
           console.log(error);
         });
     },
-    grafficGenerator(seleccion) {
-      this.datosYNumBytes.push(0);
-      this.datosYBitsPerSecond.push(0);
-      // this.datosYNumBytesServer.push(0);
-      // this.datosYBitsPerSecondServer.push(0);
-      this.datosYSndCwnd.push(0);
-      this.datosYRetransmits.push(0);
-      this.datosYRtt.push(0);
-      this.datosYRttVar.push(0);
-      this.datosYPmtu.push(0);
-      if (seleccion == "Servidor") {
-      } else if (seleccion == "Cliente") {
-        // this.canvasAnswerServer = false,
-        this.canvasAnswerClient = true;
-        console.log('labels: '+this.labelsGraphic);
-        console.log('Datos: '+this.datosYNumBytes);
-        // this.labelsGraphic.push('0');
-        // this.canvasAnswerTot = false;
+    grafficGenerator() {
+      this.canvasAnswerClient = true;
+      if (this.protocolTrafficActual == 'TCP'){
+        
+        if (this.trafficGraphic == "Servidor") {
+          this.chartdata = {
+            labels: this.labelsGraphic,
+            datasets: [
+              {
+                label: "Total de Bytes Transmitidos",
+                data: this.datosYNumBytesServer,
+                backgroundColor: ["rgba(54, 162, 235, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "Bits por Segundo",
+                data: this.datosYBitsPerSecondServer,
+                backgroundColor: ["rgba(111, 194, 63, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+            ],
+          };
+          this.options = {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
+                },
+              ],
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+          };
+          this.totalAnswerUdp = false;
+          this.clientAnswerUdp = false;
+          this.serverAnswerUdp = false;
+          this.clientAnswerTcp = false;
+          this.totalAnswerTcp = false;
+          this.serverAnswerTcp = true;
+
+
+        } else if (this.trafficGraphic == "Cliente") {
+          this.chartdata = {
+            labels: this.labelsGraphic,
+            datasets: [
+              {
+                label: "Total de Bytes Transmitidos",
+                data: this.datosYNumBytes,
+                backgroundColor: ["rgba(54, 162, 235, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "Bits por Segundo",
+                data: this.datosYBitsPerSecond,
+                backgroundColor: ["rgba(111, 194, 63, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "SND CWND",
+                data: this.datosYSndCwnd,
+                backgroundColor: ["rgba(226, 33, 33, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "Bytes Retransmitidos",
+                data: this.datosYRetransmits,
+                backgroundColor: ["rgba(226, 165, 33, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "RTT",
+                data: this.datosYRtt,
+                backgroundColor: ["rgba(33, 226, 226, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "RTT VAR",
+                data: this.datosYRttVar,
+                backgroundColor: ["rgba(101, 33, 226, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "PMTU",
+                data: this.datosYPmtu,
+                backgroundColor: ["rgba(226, 33, 168, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+            ],
+          };
+          this.options = {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
+                },
+              ],
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+          };
+          this.totalAnswerUdp = false;
+          this.totalAnswerTcp = false;
+          this.clientAnswerUdp = false;
+          this.serverAnswerTcp = false;
+          this.serverAnswerUdp = false;
+          this.clientAnswerTcp = true;
     
+        } else if (this.trafficGraphic == "General") {
+          var totalDatosYNumBytes = [];
+          var totalDatosYBitsPerSecond = [];
+          var longClient = this.datosYNumBytes.length();
+          var longServer = this.datosYNumBytesServer.length();
+          var longServerBits = this.datosYBitsPerSecondServer.length();
+          var longClientBits = this.datosYBitsPerSecond.length();
 
-        // this.chartdata = {'2017-01-01 00:00:00 -0800': 2, '2017-01-01 00:01:00 -0800': 5}
-
-        this.chartdata = {
-
-                labels: this.labelsGraphic,
-                datasets: [{
-                    label: 'Total de Bytes Transmitidos',
-                    data: this.datosYNumBytes,
-                    backgroundColor: [
-
-                        'rgba(54, 162, 235, 0.7)'
-
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-                },
+          //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
+          if(longClient > longServer){
+            for(var i = 0; i < longClient; i ++){
+              if (i >= longServer){
+                var total = this.datosYNumBytes[i] + 0;
+                totalDatosYNumBytes[i] = total;
+              }else{
+                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
+                totalDatosYNumBytes[i] = total;
+              }
+            }
+          }else if(longClient < longServer){
+            for(var i = 0; i < longServer; i ++){
+              if (i >= longClient){
+                var total = this.datosYNumBytesServer[i] + 0;
+                totalDatosYNumBytes[i] = total;
+              }else{
+                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
+                totalDatosYNumBytes[i] = total;
+              }
+            }
+          }else{
+            for(var i = 0; i < longClient; i ++){
+                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
+                totalDatosYNumBytes[i] = total;
+            }
+          }
+          //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
+          if(longClientBits > longServerBits){
+            for(var i = 0; i < longClientBits; i ++){
+              if (i >= longServerBits){
+                var total = this.datosYBitsPerSecond[i] + 0;
+                totalDatosYBitsPerSecond[i] = total;
+              }else{
+                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
+                totalDatosYBitsPerSecon[i] = total;
+              }
+            }
+          }else if(longClientBits < longServerBits){
+            for(var i = 0; i < longServerBits; i ++){
+              if (i >= longClientBits){
+                var total = this.datosYBitsPerSecondServer[i] + 0;
+                totalDatosYBitsPerSecond[i] = total;
+              }else{
+                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
+                totalDatosYBitsPerSecond[i] = total;
+              }
+            }
+          }else{
+            for(var i = 0; i < longClient; i ++){
+                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
+                totalDatosYBitsPerSecond[i] = total;
+            }
+          }
+          this.chartdata = {
+            labels: this.labelsGraphic,
+            datasets: [
+              {
+                label: "Total de Bytes Transmitidos",
+                data: totalDatosYNumBytes,
+                backgroundColor: ["rgba(54, 162, 235, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+              {
+                label: "Bits por Segundo",
+                data: totalDatosYBitsPerSecond,
+                backgroundColor: ["rgba(111, 194, 63, 0.7)"],
+                borderWidth: 1,
+                steppedLine: true,
+              },
+            ],
+          };
+          this.options = {
+            scales: {
+              yAxes: [
                 {
-                    label: 'Bits por Segundo',
-                    data: this.datosYBitsPerSecond,
-                    backgroundColor: [
-                        'rgba(111, 194, 63, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
+                  ticks: {
+                    beginAtZero: true,
+                  },
                 },
-                {
-                    label: 'SND CWND',
-                    data: this.datosYSndCwnd,
-                    backgroundColor: [
-                        'rgba(226, 33, 33, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
+              ],
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+          };
+          this.totalAnswerUdp = false;
+          this.clientAnswerUdp = false;
+          this.serverAnswerTcp = false;
+          this.serverAnswerUdp = false;
+          this.clientAnswerTcp = false;
+          this.totalAnswerTcp = true;
 
-                },
-                {
-                    label: 'Bytes Retransmitidos',
-                    data: this.datosYRetransmits,
-                    backgroundColor: [
-                        'rgba(226, 165, 33, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'RTT',
-                    data: this.datosYRtt,
-                    backgroundColor: [
-                        'rgba(33, 226, 226, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'RTT VAR',
-                    data: this.datosYRttVar,
-                    backgroundColor: [
-                        'rgba(101, 33, 226, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                },
-                {
-                    label: 'PMTU',
-                    data: this.datosYPmtu,
-                    backgroundColor: [
-                        'rgba(226, 33, 168, 0.7)'
-                    ],
-                    borderWidth: 1,
-                    steppedLine: true
-
-                }
-                ]
-
-            };
-        this.options =  {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            };
-
-        //Cliente TCP
-
-        // if (this.protocolTrafficActual == 'TCP') {
-
-        //     $('#containerFancyInfoGraphicTCP').show();
-        //     $('#containerFancyInfoGraphicTCPServer').hide();
-        //     $('#containerFancyInfoGraphicUDP').hide();
-        //     $('#containerFancyInfoGraphicUDPServer').hide();
-
-        // } else if (this.protocolTrafficActual == 'UDP') {
-
-        //     $('#containerFancyInfoGraphicTCP').hide();
-        //     $('#containerFancyInfoGraphicTCPServer').hide();
-        //     $('#containerFancyInfoGraphicUDP').show();
-        //     $('#containerFancyInfoGraphicUDPServer').hide();
-        // }
-      } else if (seleccion == "Total") {
-      }
+        }
+      };
     },
     changeGraphic() {
-      console.log(this.trafficGraphic);
-      this.grafficGenerator(this.trafficGraphic);
+      this.grafficGenerator();
     },
     // Creacion elementos Fabric
     makeLink(coords, linkType) {
@@ -6414,157 +6641,183 @@ export default {
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
-      if(id == 'host'){
+      if (id == "host") {
         this.infoModal = [];
-        info['Valor'] = 'Ruta por Defecto';
-        info['Descripción'] = 'Defina la direccion IP del Host. Por defecto, las Ips están configuradas semejantes a: 10.0.0.X.'
+        info["Valor"] = "Ruta por Defecto";
+        info["Descripción"] =
+          "Defina la direccion IP del Host. Por defecto, las Ips están configuradas semejantes a: 10.0.0.X.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Scheduler';
-        info['Descripción'] = 'Programador de red, o porgramador de paqutes, algoritmo de puesta en cola. Gestiona la secuencia de paquetes de red en las colas de transmision y recepción.'
-          +' CFS:Completely Fair Scheduler. Un algoritmo planificador desarrollado con el objetivo de maximizar el uso de la CPU con las diferentes tareas que se lanzan en un sistema Linux basándose en el Fair Queuing.'
-          +'RT: Real Time. Programación de tiempo real compuesto por el programador, el reloj y otros elementos hardware de procesamiento.'
+        info = {};
+        info["Valor"] = "Scheduler";
+        info["Descripción"] =
+          "Programador de red, o porgramador de paqutes, algoritmo de puesta en cola. Gestiona la secuencia de paquetes de red en las colas de transmision y recepción." +
+          " CFS:Completely Fair Scheduler. Un algoritmo planificador desarrollado con el objetivo de maximizar el uso de la CPU con las diferentes tareas que se lanzan en un sistema Linux basándose en el Fair Queuing." +
+          "RT: Real Time. Programación de tiempo real compuesto por el programador, el reloj y otros elementos hardware de procesamiento.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Límite CPU';
-        info['Descripción'] = 'Establece la capacidad de las frecuencias de trabajo del Host.'
+        info = {};
+        info["Valor"] = "Límite CPU";
+        info["Descripción"] =
+          "Establece la capacidad de las frecuencias de trabajo del Host.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Núcleos CPU';
-        info['Descripción'] = 'Establece la cantidad de núcleos que tendrá el CPU del Host.'
+        info = {};
+        info["Valor"] = "Núcleos CPU";
+        info["Descripción"] =
+          "Establece la cantidad de núcleos que tendrá el CPU del Host.";
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
-      if(id == 'port'){
+      if (id == "port") {
         this.infoModal = [];
-        info['Valor'] = 'Dirección IP';
-        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        info["Valor"] = "Dirección IP";
+        info["Descripción"] =
+          "Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.";
         this.$bvModal.show("modal-info");
       }
-      if(id == 'label'){
+      if (id == "label") {
         this.infoModal = [];
-        info['Valor'] = 'Etiqueta';
-        info['Descripción'] = 'Rótulo o nombre que presenta información considerada relevante para un determinado elemento de red.'
+        info["Valor"] = "Etiqueta";
+        info["Descripción"] =
+          "Rótulo o nombre que presenta información considerada relevante para un determinado elemento de red.";
         this.$bvModal.show("modal-info");
       }
-      if(id == 'switch'){
+      if (id == "switch") {
         this.infoModal = [];
-        info['Valor'] = 'Tipo';
-        info['Descripción'] = 'Permite seleccionar el tipo de dispositivo virtual encargado de la conexión de maquinas virtules y periféricos a la red con el fin de comunicarse entre sí y con otras redes.'
-          +'  IVS: Indigo Virtual Switch. Conmutador virtual OpenFlow puro diseñado para un alto rendimiento y una administración mínima. Está construido sobre la plataforma Indigo, que proporciona un núcleo común para muchos conmutadores virtuales.'
-          +'  Linux Brigde: Puente de Linux que se comporta como un conmutador de red, reenviando paquetes entre interfaces de red virtuales que están conectadas a él. Por lo general, se usa para reenviar paquetes en enrutadores virtuales, puertas de enlace o entre máquinas virtuales y espacios de nombres de red en un host.'
-          +'  OVS Bridge: Open vSwitch bridge. Puente diseñado para  comunicar un switch virtual en entornos de servidores virtualizados.'
-          +'  OVS: Open vSwitch. Software de código abierto, diseñado para ser utilizado como un switch virtual en entornos de servidores virtualizados. Es el encargado de reenviar el tráfico entre diferentes máquinas virtuales (VMs).'
-          +'  User Switch.'
+        info["Valor"] = "Tipo";
+        info["Descripción"] =
+          "Permite seleccionar el tipo de dispositivo virtual encargado de la conexión de maquinas virtules y periféricos a la red con el fin de comunicarse entre sí y con otras redes." +
+          "  IVS: Indigo Virtual Switch. Conmutador virtual OpenFlow puro diseñado para un alto rendimiento y una administración mínima. Está construido sobre la plataforma Indigo, que proporciona un núcleo común para muchos conmutadores virtuales." +
+          "  Linux Brigde: Puente de Linux que se comporta como un conmutador de red, reenviando paquetes entre interfaces de red virtuales que están conectadas a él. Por lo general, se usa para reenviar paquetes en enrutadores virtuales, puertas de enlace o entre máquinas virtuales y espacios de nombres de red en un host." +
+          "  OVS Bridge: Open vSwitch bridge. Puente diseñado para  comunicar un switch virtual en entornos de servidores virtualizados." +
+          "  OVS: Open vSwitch. Software de código abierto, diseñado para ser utilizado como un switch virtual en entornos de servidores virtualizados. Es el encargado de reenviar el tráfico entre diferentes máquinas virtuales (VMs)." +
+          "  User Switch.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'STP: Spanning Tree Protocol';
-        info['Descripción'] = 'Protocolo de red de capa 2 del modelo OSI, encargado de gestionar la presencia de bucles en topologías de red debido a la existencia de enlaces redundantes.'
+        info = {};
+        info["Valor"] = "STP: Spanning Tree Protocol";
+        info["Descripción"] =
+          "Protocolo de red de capa 2 del modelo OSI, encargado de gestionar la presencia de bucles en topologías de red debido a la existencia de enlaces redundantes.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'STP Priority';
-        info['Descripción'] = 'Es un valor configurable encarado de establecer la prioridad del switch en un valor más pequeño que el del valor por defecto (32768), el nuevo valor debe ser múltiplo de 4096. Esto sólo se debe implementar cuando se tiene un conocimiento profundo del flujo de tráfico en la red.'
+        info = {};
+        info["Valor"] = "STP Priority";
+        info["Descripción"] =
+          "Es un valor configurable encarado de establecer la prioridad del switch en un valor más pequeño que el del valor por defecto (32768), el nuevo valor debe ser múltiplo de 4096. Esto sólo se debe implementar cuando se tiene un conocimiento profundo del flujo de tráfico en la red.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Dirección IP';
-        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        info = {};
+        info["Valor"] = "Dirección IP";
+        info["Descripción"] =
+          "Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'DPCTL Port';
-        info['Descripción'] = 'Puerto para la administración y control sobre el conmutador OpenFlow, mediante la agregación de flujos a la tabla de flujo, la consulta de las características y el estado del interruptor y el cambio de otras configuraciones. Por defecto es el 6633.'
+        info = {};
+        info["Valor"] = "DPCTL Port";
+        info["Descripción"] =
+          "Puerto para la administración y control sobre el conmutador OpenFlow, mediante la agregación de flujos a la tabla de flujo, la consulta de las características y el estado del interruptor y el cambio de otras configuraciones. Por defecto es el 6633.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Protocolo';
-        info['Descripción'] = 'Sistema de reglas que permite a los controladores de red determinar la ruta de los paquetes de red a través de una red de conmutadores. El protocolo OpenFlow se establecio como la primera interfaz de comunicaciones estándar definida entre las capas de control y reenvío de una arquitectura SDN.'
-        +'   Versión Openflow 1.1.'
-        +'   Versión Openflow 1.2.'
-        +'   Versión Openflow 1.3.'
-        +'   Versión Openflow 1.4.'
-        +'   Versión Openflow 1.5.'
+        info = {};
+        info["Valor"] = "Protocolo";
+        info["Descripción"] =
+          "Sistema de reglas que permite a los controladores de red determinar la ruta de los paquetes de red a través de una red de conmutadores. El protocolo OpenFlow se establecio como la primera interfaz de comunicaciones estándar definida entre las capas de control y reenvío de una arquitectura SDN." +
+          "   Versión Openflow 1.1." +
+          "   Versión Openflow 1.2." +
+          "   Versión Openflow 1.3." +
+          "   Versión Openflow 1.4." +
+          "   Versión Openflow 1.5.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Data Path';
-        info['Descripción'] = 'Ruta lógica para procesar los datos de entrada y generar los datos de salida correctos, generalmente se divide en bloques con el fin de ofrecer la optimización de la velocidad en el procesamiento de datos.'
-        +'   Kernel: Elemento principal de los sistemas Linux e interfaz fundamental entre el dispsitivo y sus procesos. Comunicandolos entre sí y gestiona los recursos de la manera más eficiente posible.'
-        +'   User.'
+        info = {};
+        info["Valor"] = "Data Path";
+        info["Descripción"] =
+          "Ruta lógica para procesar los datos de entrada y generar los datos de salida correctos, generalmente se divide en bloques con el fin de ofrecer la optimización de la velocidad en el procesamiento de datos." +
+          "   Kernel: Elemento principal de los sistemas Linux e interfaz fundamental entre el dispsitivo y sus procesos. Comunicandolos entre sí y gestiona los recursos de la manera más eficiente posible." +
+          "   User.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Data Path ID';
-        info['Descripción'] = 'Identificador de ruta de datos, determinado por un número de 64 bits conformado por los 48 bits inferiores destinados a la dirección MAC del conmutador y los 16 bits superiores destinados al implementador.'
+        info = {};
+        info["Valor"] = "Data Path ID";
+        info["Descripción"] =
+          "Identificador de ruta de datos, determinado por un número de 64 bits conformado por los 48 bits inferiores destinados a la dirección MAC del conmutador y los 16 bits superiores destinados al implementador.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Data Path Args';
-        info['Descripción'] = ''
+        info = {};
+        info["Valor"] = "Data Path Args";
+        info["Descripción"] = "";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Modelo de Fallas';
-        info['Descripción'] = 'Determina una causa de falla o una posible manera en la que un sistema puede fallar.'
-          +'  Ninguno'
-          +'  Secure'
-          +'  Standalone'
+        info = {};
+        info["Valor"] = "Modelo de Fallas";
+        info["Descripción"] =
+          "Determina una causa de falla o una posible manera en la que un sistema puede fallar." +
+          "  Ninguno" +
+          "  Secure" +
+          "  Standalone";
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
-      if(id == 'ipUser'){
+      if (id == "ipUser") {
         this.infoModal = [];
-        info['Valor'] = 'Dirección IP';
-        info['Descripción'] = 'Conjunto de números que identifica de manera lógica y jerárquica la interfaz de red del dispositivo local que utiliza como servidor Grafico.'
+        info["Valor"] = "Dirección IP";
+        info["Descripción"] =
+          "Conjunto de números que identifica de manera lógica y jerárquica la interfaz de red del dispositivo local que utiliza como servidor Grafico.";
         this.$bvModal.show("modal-info");
       }
-      if(id == 'grapTraf'){
+      if (id == "grapTraf") {
         this.infoModal = [];
-        info['Valor'] = 'Selector de enlace';
-        info['Descripción'] = 'Permite seleccionar al host de detino que se encuentre conectado el Host de origen seleccionado.'
+        info["Valor"] = "Selector de enlace";
+        info["Descripción"] =
+          "Permite seleccionar al host de detino que se encuentre conectado el Host de origen seleccionado.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Host Local';
-        info['Descripción'] = 'Dirección IP de origen del enlace de comunicación.'
+        info = {};
+        info["Valor"] = "Host Local";
+        info["Descripción"] =
+          "Dirección IP de origen del enlace de comunicación.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Puerto local';
-        info['Descripción'] = 'El puerto inicial del rango que se desea comunicar.'
+        info = {};
+        info["Valor"] = "Puerto local";
+        info["Descripción"] =
+          "El puerto inicial del rango que se desea comunicar.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Dirección IP';
-        info['Descripción'] = 'Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.'
+        info = {};
+        info["Valor"] = "Dirección IP";
+        info["Descripción"] =
+          "Conjunto de números que identifica, de manera lógica y jerárquica, a una interfaz en la red de un dispositivo que utilice el protocolo o, que corresponde al nivel de red del modelo TCP/IP.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Host Remoto';
-        info['Descripción'] = 'Dirección IP de destino del enlace de comunicación.'
+        info = {};
+        info["Valor"] = "Host Remoto";
+        info["Descripción"] =
+          "Dirección IP de destino del enlace de comunicación.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Puerto Remoto';
-        info['Descripción'] = 'El puerto final del rango que se desea comunicar.'
+        info = {};
+        info["Valor"] = "Puerto Remoto";
+        info["Descripción"] =
+          "El puerto final del rango que se desea comunicar.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Omitido';
-        info['Descripción'] = ''
+        info = {};
+        info["Valor"] = "Omitido";
+        info["Descripción"] = "";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Protocolo';
-        info['Descripción'] = 'Protocolos utilizados para enviar bits de datos, conocidos como paquetes, a través de Internet.'
-          +'   TCP-  Transfer Control Protocol:  Protocolo para el intercambio de datos de manera segura, requeriendo la autorización de conexión entre el emisor y el receptor, o el cliente y el servidor, antes de producirse la transferencia; una vez ambas partes hayan autorizado la transmisión, podrá iniciarse el envío y recepción de datos.'
-          +'   UDP - User Datagram Protocol: Protocolo del nivel de transporte basado en el intercambio de datagramas, que permite el envío de datagramas a través de la red sin que se haya establecido previamente una conexión'
+        info = {};
+        info["Valor"] = "Protocolo";
+        info["Descripción"] =
+          "Protocolos utilizados para enviar bits de datos, conocidos como paquetes, a través de Internet." +
+          "   TCP-  Transfer Control Protocol:  Protocolo para el intercambio de datos de manera segura, requeriendo la autorización de conexión entre el emisor y el receptor, o el cliente y el servidor, antes de producirse la transferencia; una vez ambas partes hayan autorizado la transmisión, podrá iniciarse el envío y recepción de datos." +
+          "   UDP - User Datagram Protocol: Protocolo del nivel de transporte basado en el intercambio de datagramas, que permite el envío de datagramas a través de la red sin que se haya establecido previamente una conexión";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Bytes Especificados Tx';
-        info['Descripción'] = 'Ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).'
+        info = {};
+        info["Valor"] = "Bytes Especificados Tx";
+        info["Descripción"] =
+          "Ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Duración';
-        info['Descripción'] = 'Tiempo en segundos para transmitir.'
+        info = {};
+        info["Valor"] = "Duración";
+        info["Descripción"] = "Tiempo en segundos para transmitir.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Ventana Deslizante';
-        info['Descripción'] = 'Tamaños de búfer de socket en el valor especificado. Para TCP, esto establece el tamaño de la ventana de TCP. (esto se envía al servidor y también se usa en ese lado.'
+        info = {};
+        info["Valor"] = "Ventana Deslizante";
+        info["Descripción"] =
+          "Tamaños de búfer de socket en el valor especificado. Para TCP, esto establece el tamaño de la ventana de TCP. (esto se envía al servidor y también se usa en ese lado.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'Bloques';
-        info['Descripción'] = 'Número de bloques (paquetes) para transmitir.'
+        info = {};
+        info["Valor"] = "Bloques";
+        info["Descripción"] = "Número de bloques (paquetes) para transmitir.";
         this.infoModal.push(info);
-        info= {};
-        info['Valor'] = 'TCP MSS';
-        info['Descripción'] = 'Tamaño máximo de segmento de TCP (MSS). El MSS suele ser el MTU - 40 bytes para el encabezado TCP / IP. Para Ethernet, el MSS es de 1460 bytes (MTU de 1500 bytes).'
+        info = {};
+        info["Valor"] = "TCP MSS";
+        info["Descripción"] =
+          "Tamaño máximo de segmento de TCP (MSS). El MSS suele ser el MTU - 40 bytes para el encabezado TCP / IP. Para Ethernet, el MSS es de 1460 bytes (MTU de 1500 bytes).";
         this.infoModal.push(info);
         this.$bvModal.show("modal-info");
       }
@@ -6572,22 +6825,20 @@ export default {
   },
 
   computed: {
+    //Obtiene la Herramienta seleccionada en el panel lateral izquierdo de elementos de red
     obtenerHerramienta() {
       this.actualTool = this.herramienta;
       return this.actualTool;
     },
-
+    //En el Modal de Trafico identifica el modo de traffico seleccionado y habilita la seleccion de host en el modo especifico
     specifficTrafficMode() {
       if (this.trafficModeSelected == "global") {
-        console.log("g");
         return this.selHostS;
       }
       if (this.trafficModeSelected == "xtreme") {
-        console.log("x");
         return this.selHostS;
       }
       if (this.trafficModeSelected == "specific") {
-        console.log("s");
         return !this.selHostS;
       }
     },
@@ -6943,5 +7194,4 @@ export default {
   height: 396px;
   margin: 2px;
 }
-
 </style>
