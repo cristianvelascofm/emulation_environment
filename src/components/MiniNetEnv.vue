@@ -5242,10 +5242,10 @@ export default {
                   for (var o in trafficValuesServer) {
                     for (var q = 0; q < numTotalTempos; q++) {
                       if (String(o) == "t_" + String(q) + "_num_bytes") {
-                        datosYNumBytesServer[q] = trafficValues[o];
+                        this.datosYNumBytesServer[q] = trafficValues[o];
                       }
                       if (String(o) == "t_" + String(q) + "_bits_per_second") {
-                        datosYBitsPerSecondServer[q] = trafficValues[o];
+                        this.datosYBitsPerSecondServer[q] = trafficValues[o];
                       }
                     }
                   }
