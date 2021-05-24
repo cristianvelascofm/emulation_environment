@@ -1781,7 +1781,7 @@
                 </b-form-radio>
                 <b-form-radio
                   name="option-radios-rate"
-                  value="K"
+                  value="M"
                   class="p-2 ml-4 pl-2 mt-0"
                   id="radioMBitRate"
                   v-model = 'radioBw'
@@ -5125,7 +5125,6 @@ export default {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
           if (
-            !Object.keys(data).includes("h1_5001") ||
             Object.keys(data).includes("Error") ||
             data == ""
           ) {
