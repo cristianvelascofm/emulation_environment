@@ -146,7 +146,7 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
-        
+        :disabled = 'play_activator'
         @click="openModal('traffic')"
       ></button>
       <button
@@ -172,7 +172,7 @@
     <!-- Barra Lateral y Canvas -->
     <b-row class="p-0 m-0 w-100">
       <!-- Barra Lateral Elementos de Red -->
-      <b-col class="col-1 p-0 m-0" id="bar-lat">
+      <b-col class="col-sm-2 col-md-2 col-lg-1 col-xl-1  m-0" id="bar-lat">
         <b-nav vertical>
           <button
             id="btn-element"
@@ -192,7 +192,7 @@
         </b-nav>
       </b-col>
       <!-- Canvas -->
-      <b-col class="col-11 p-0 m-0">
+      <b-col class="col-sm-10 col-md-10 col-lg-11 col-xl-11 p-0 m-0">
         <b-container class="col-12 p-0" id="container-canvas">
           <canvas id="fcanvas" height="5000" width="5000" ref="canvas"></canvas>
         </b-container>
@@ -821,6 +821,7 @@
                   type="text"
                   class="p-2 ml-4"
                   id="inputFancyPort"
+                  v-model="ipPort"
                   name="fname"
                 />
               </b-col>
@@ -837,7 +838,7 @@
               id="GuardarButtonFancyPort"
               value="Guardar"
               class="m-2"
-              @click="element"
+              @click="addPort()"
               >Ok</b-button
             >
             <b-button
@@ -846,7 +847,7 @@
               id="CancelarButtonFancyPort"
               class="m-2"
               value="Cancelar"
-              @click="closeModal"
+              @click="closeModal('port')"
               >Cancelar</b-button
             ></b-col
           >
@@ -1124,7 +1125,7 @@
 
       <!-- <p class="my-4">Vertically centered modal!</p> -->
     </b-modal>
-
+    
     <!-- Modal Detector IP Usuario -->
     <b-modal
       id="modal-IpUser"
@@ -1378,6 +1379,7 @@
       </b-container>
     </b-modal>
 
+    <!-- Modales Configuracion y Analisis del Trafico de la Red -->
     <!-- Modal Generador de Tráfico -->
     <b-modal
       id="modal-traffic"
@@ -1656,7 +1658,7 @@
                 id="inputLong"
                 step="1"
                 min="1"
-                max="90000000"
+                max="1024"
                 :state = 'stateLong'
                 class="ml-3 d-inline"
                 :disabled = 'optionCheckerLong'
@@ -1675,16 +1677,6 @@
                   :disabled = 'optionCheckerLong'
                 >
                   KB
-                </b-form-radio>
-                <b-form-radio
-                  name="option-radios-long"
-                  value="M"
-                  class="p-2 ml-5 mt-0"
-                  id="radio-mbytes-long"
-                  v-model="radioLong"
-                  :disabled = 'optionCheckerLong'
-                >
-                  MB
                 </b-form-radio>
               </b-row>
             </b-col>
@@ -3731,7 +3723,7 @@
               id="divLabelHostSpecific"
               class="text-left m-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"
             >
-              <h6 class="info_hostS" id="idenHost">x</h6>
+              <h6 class="info_hostS" id="idenHost">{{identTagHost}}</h6>
             </b-col>
             <b-col
               id="divlabelLink"
@@ -4406,7 +4398,8 @@ export default {
 
       
       trafficGraphic: "General",
-      selected: null,
+      
+
       //Variable Generador Trafico
       selHostS: false,
       selHostG: false,
@@ -4461,6 +4454,9 @@ export default {
       serverAnswerUdp: false,
       clientAnswerTcp: false,
       clientAnswerUdp: false,
+
+      // Modelos para Los inputs Modales Elements
+      ipPort : '',
       
 
       infoModal: [],
@@ -4473,6 +4469,7 @@ export default {
       //Variables Insertar elemento
       imgElement: "",
       tagElement: "",
+
       //Eventos de uso en el canvas
       insertOP: false,
       imgUrl: "",
@@ -4485,6 +4482,7 @@ export default {
       objectActiveLinkInitial: null,
       objectActiveLinkFinal: null,
       identTagHost: "",
+
       //Variables para la Logica de los elementos en la Red simulada
       tagHost: [],
       tagSwitch: [],
@@ -4492,6 +4490,7 @@ export default {
       netInfo: [],
       link: [],
 
+      // Esta variable no sirve
       listHost: [],
       //Contiene toda la informacion de la red y su configuración
       elements: [],
@@ -4591,13 +4590,14 @@ export default {
 
   methods: {
     initCanvas() {
+      // Esta Variable Contendra Todas las asociaciones de Los Switchs con su Controlador *- Variable independiente del Canvas
+      this.netWork['controller_switch']={};
       //Declaracion de la variable Fabric para el lienzo Canvas
       const ref = this.$refs.canvas;
       this.canvas = new fabric.Canvas(ref, {
-        fireRightClick: true,
-        fireMiddleClick: true,
+        // fireRightClick: true,
+        // fireMiddleClick: true,
       });
-
       /* -------------------Eventos del Mouse en el Fabric ------------------- */
 
       //Evita la creacion de grupos en el Fabric
@@ -4629,10 +4629,50 @@ export default {
         this.y0 = pointer.y; //get initial starting point of y
         switch (this.herramienta) {
           case "cursor":
-            $("#cursor").addClass("active");
-            if (options.target != null) {
-              console.log(options.target.id);
-            }
+            var objectActive = this.canvas.getActiveObject();
+            if (objectActive != null) {
+              console.log('Id: '+ objectActive.id + ' Cont: '+ objectActive.elementContainer);
+              // Se reestablece el Libre movimiento del Elemento  Activo (Si por alguna otra instancia ha sido bloqueado)
+              objectActive && objectActive.set({
+                lockMovementX: false,
+                lockMovementY: false,
+                lockScalingX: false,
+                lockScalingY: false,
+                lockUniScaling: false,
+                lockRotation: false,
+              });
+              
+              //Si el Elemento Activo es una Asociación o Link aumenta su Grosor
+              if (objectActive.id.charAt(0) == "l" || objectActive.id.charAt(0) == "n") {
+                objActive && objActive.set({
+                    strokeWidth: 4,
+                });
+                this.canvas.renderAll();
+              };
+              
+              // Todos Los Elementos de Red Tendrán Una opacidad de 100% y el Elementro Activo una Opacidad del 70%
+              this.canvas.forEachObject(function (obj) {
+                obj && obj.set({
+                    opacity: 1,
+                });
+              });
+
+              objectActive.set({
+                opacity: 0.7,
+              });          
+            }else{
+              this.canvas.forEachObject(function (obj) {
+                if (obj.id.charAt(0) == "l" || obj.id.charAt(0) == "n") {
+                  obj.set({
+                    strokeWidth: 2,
+                  });
+                };
+                obj.set({
+                  opacity: 1,
+                });
+                // this.canvas.renderAll();
+                });
+            };
             break;
           case "controller":
             this.imgElement = require("../assets/img/controller.png");
@@ -4653,8 +4693,130 @@ export default {
             this.herramienta = "cursor";
             break;
           case "port":
+            this.openModal('port');
+            this.herramienta = 'cursor';
             break;
           case "link":
+            var active = this.canvas.getActiveObject()
+            // Se bloquea el movimiento del Elemento de Red
+            if(active != null){
+              active && active.set({
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockUniScaling: true,
+                lockRotation: true,
+              });
+            };
+            // Si es una Interfaz de Red (Puerto)
+            if (active != null && active.id.charAt(0) == "e") {
+
+                active.set({
+                    opacity: 0.7,
+                });
+                // Evaluacion de los casos de Enlace en un puerto
+                // Si la interfaz de red es la primera seleccion del enlace a realizar y su estado es NO conectado, el elemento final del enlace tambien debe ser nulo
+                if(this.objectActiveLinkInitial == null && active.state != 'connected' && this.objectActiveLinkFinal == null){
+                  this.objectActiveLinkInitial = active;
+                  var coordenadasEnlace = [];
+                  coordenadasEnlace[0] = this.objectActiveLinkInitial.connection[0].x2;
+                  coordenadasEnlace[1] = this.objectActiveLinkInitial.connection[0].y2;
+                  coordenadasEnlace[2] = this.objectActiveLinkInitial.connection[0].x2;
+                  coordenadasEnlace[3] = this.objectActiveLinkInitial.connection[0].y2;
+                  var link = this.makeLink(coordenadasEnlace,'link');
+                  if(this.objectActiveLinkInitial.elementContainer.charAt(0) == 's' || this.objectActiveLinkInitial.elementContainer.charAt(0) == 'h'){
+                    this.objectActiveLinkInitial.position = 'initial';
+                  };
+                  this.selected = link;
+                  console.log('L:'+ this.selected);
+                  this.canvas.add(link);
+                }
+                // Si la interfaz de red es la segunda seleccion del enlace a realizar y su estado es NO conectado, el elemento inicial del enlace NO debe ser nulo
+                else if(this.objectActiveLinkInitial != null && active.state != 'connected' && this.objectActiveLinkFinal == null){
+                  this.objectActiveLinkFinal = active;
+                  // Si el Enlace es de un Switch a Otro Sitch Diferente
+                  if (this.objectActiveLinkFinal.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer != this.objectActiveLinkFinal.elementContainer) {
+                    this.selected.set({
+                      x2: this.objectActiveLinkFinal.connection[0].x2,
+                      y2: this.objectActiveLinkFinal.connection[0].y2,
+                    });
+                    this.objectActiveLinkInitial.state = "connected";
+                    this.objectActiveLinkFinal.state = "connected";
+                    this.objectActiveLinkInitial.line = this.selected;
+                    this.objectActiveLinkFinal.line = this.selected;
+                    this.objectActiveLinkInitial.connection.push(this.selected);
+                    this.objectActiveLinkFinal.connection.push(this.selected);
+                    this.objectActiveLinkFinal.position = "terminal";
+                    this.canvas.sendToBack(this.selected);
+                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
+                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
+                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
+                    this.herramienta = 'cursor';
+                    this.selected = null;
+                    this.objectActiveLinkInitial = null;
+                    this.objectActiveLinkFinal = null;
+                  } 
+                  // Si el Enlace es de un Switch a un Host
+                  else if(this.objectActiveLinkFinal.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 'h'){
+                    this.selected.set({
+                      x2: this.objectActiveLinkFinal.connection[0].x2,
+                      y2: this.objectActiveLinkFinal.connection[0].y2,
+                    });
+                    this.objectActiveLinkInitial.state = "connected";
+                    this.objectActiveLinkFinal.state = "connected";
+                    this.objectActiveLinkInitial.line = this.selected;
+                    this.objectActiveLinkFinal.line = this.selected;
+                    this.objectActiveLinkInitial.connection.push(this.selected);
+                    this.objectActiveLinkFinal.connection.push(this.selected);
+                    this.objectActiveLinkFinal.position = 'terminal';
+                    this.canvas.sendToBack(this.selected);
+                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
+                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
+                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
+                    this.herramienta = 'cursor';
+                    this.selected = null;
+                    this.objectActiveLinkInitial = null;
+                    this.objectActiveLinkFinal = null;
+                  }
+                  // Si el Enlace es de un Host a un Switch
+                  else if(this.objectActiveLinkFinal.elementContainer.charAt(0) == 'h' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 's'){
+                    this.selected.set({
+                      x2: this.objectActiveLinkFinal.connection[0].x2,
+                      y2: this.objectActiveLinkFinal.connection[0].y2,
+                    });
+                    this.objectActiveLinkInitial.state = "connected";
+                    this.objectActiveLinkFinal.state = "connected";
+                    this.objectActiveLinkInitial.line = this.selected;
+                    this.objectActiveLinkFinal.line = this.selected;
+                    this.objectActiveLinkInitial.connection.push(this.selected);
+                    this.objectActiveLinkFinal.connection.push(this.selected);
+                    this.objectActiveLinkFinal.position = 'terminal';
+                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
+                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
+                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
+                    this.canvas.sendToBack(this.selected);
+                    this.herramienta = 'cursor';
+                    this.selected = null;
+                    this.objectActiveLinkInitial = null;
+                    this.objectActiveLinkFinal = null;
+                  }
+                }
+                // Si el Enlace Se hace al mismo Elemento de Red, este enlance se eliminará.
+                else if (this.objectActiveLinkInitial.elementContainer == this.objectActiveLinkFinal.elementContainer) {
+                  this.canvas.remove(this.selected);
+                  this.herramienta = 'cursor';
+                  this.selected = null;
+                  this.objectActiveLinkInitial = null;
+                  this.objectActiveLinkFinal = null;
+                };
+                // this.herramienta = 'cursor';
+                // this.selected = null;
+                // this.objectActiveLinkInitial = null;
+                // this.objectActiveLinkFinal = null;
+            };
+
+
             break;
           case "label":
             break;
@@ -4663,6 +4825,111 @@ export default {
         }
       });
 
+      this.canvas.on('object:moving', (e) =>{
+        var elementMoving = e.target;
+        switch(this.herramienta){
+          case 'cursor':
+            if(elementMoving != undefined){ 
+              if(elementMoving.id.charAt(0) != 'e' ){
+                for(var i = 0; i< elementMoving.connection.length; i++){
+                  // Definicion para el Movimiento para el Controlador y sus Asociaciones
+                  if(elementMoving.id.charAt(0) ==  'c'){
+                    elementMoving.connection[i] && elementMoving.connection[i].set({
+                      'x2': elementMoving.left + 30,
+                      'y2': elementMoving.top + 35
+                    });
+                    this.canvas.renderAll();
+                  }
+                  // Definicion para el Movimiento de un Host o Switch y sus Asociaciones
+                  else{
+                    elementMoving.connection[i] && elementMoving.connection[i].set({
+                      'x1': elementMoving.left + 30,
+                      'y1': elementMoving.top + 35
+                    });
+                    this.canvas.renderAll();
+                  }
+                }
+              }
+              // Definicion para el Movimiento de los Puertos y sus Enlaces y Asociaciones
+              else{
+                for(var i = 0; i<elementMoving.connection.length; i++){
+
+                  // Si el puerto esta en estado Conectado y tiene Enlaces
+                  if(elementMoving.state == 'connected'){
+                    // Movimiento para Los Enlaces del Puerto
+                    if(elementMoving.connection[i].id == 'link'){
+                      // Si el Puerto le Pertenece a un Switch
+                      if(elementMoving.elementContainer.charAt(0) == 's'){
+                        // Si este Puerto inicia el enlace
+                        if(elementMoving.position == 'initial'){
+                          elementMoving.connection[i] && elementMoving.connection[i].set({
+                            'x1': elementMoving.left + 10,
+                            'y1': elementMoving.top + 7
+                          });
+                          this.canvas.renderAll();
+                        }
+                        // Si este Puerto finaliza el enlace
+                        else if(elementMoving.position == 'terminal'){
+                          elementMoving.connection[i] && elementMoving.connection[i].set({
+                            'x2': elementMoving.left + 10,
+                            'y2': elementMoving.top + 7
+                          });
+                          this.canvas.renderAll();
+                        }
+                        // Si este Puerto No esta conectado
+                        else{
+                          elementMoving.connection[i] && elementMoving.connection[i].set({
+                            'x1': elementMoving.left + 10,
+                            'y2': elementMoving.top + 7
+                          });
+                          this.canvas.renderAll();
+                        };
+                      }
+                      // Si el Puerto le Pertenece a un Host
+                      else{
+                        if(elementMoving.position == 'initial'){
+                          elementMoving.connection[i] && elementMoving.connection[i].set({
+                            'x1': elementMoving.left + 10,
+                            'y1': elementMoving.top + 7
+                          });
+                          this.canvas.renderAll();
+                        }
+                        // Si este Puerto finaliza el enlace
+                        else if(elementMoving.position == 'terminal'){
+                          elementMoving.connection[i] && elementMoving.connection[i].set({
+                            'x2': elementMoving.left + 10,
+                            'y2': elementMoving.top + 7
+                          });
+                          this.canvas.renderAll();
+                        }
+                      }
+                    }
+                    // Mover una Asociacion
+                    else {
+                      //muevo la asociasion 
+                      elementMoving.connection[i] && elementMoving.connection[i].set({
+                          'x2': elementMoving.left + 10,
+                          'y2': elementMoving.top + 7
+                      });
+                      this.canvas.renderAll();
+                  }
+
+                  }
+                  else {
+                    elementMoving.connection[i] && elementMoving.connection[i].set({
+                        'x2': elementMoving.left + 10,
+                        'y2': elementMoving.top + 7
+                    });
+                    this.canvas.renderAll();
+                    }
+
+
+
+                }
+              }
+            }
+        }
+      });
       //Mouse up event
       this.canvas.on("mouse:up", (e) => {
         // this.panning = false;
@@ -4670,12 +4937,56 @@ export default {
         // canvas.selection = true;
       });
       // Move the canvas event
-      this.canvas.on("mouse:move", (e) => {
-        // if (this.panning && e && e.e) {
-        //   var delta = new fabric.Point(e.e.movementX, e.e.movementY);
-        //   canvas.relativePan(delta);
-        // }
-        console.log("mm");
+      this.canvas.on("mouse:move", (options) => {
+        var objActive = this.canvas.getActiveObject();
+        var pointer = this.canvas.getPointer(options.e);
+        var x2 = pointer.x; //get the current value of X
+        var y2 = pointer.y; //get the current value of Y
+        switch (this.herramienta) {
+
+          case 'cursor':
+              // if (options.target != null) {
+
+              //     groupLabelController.set({
+              //         left: x2,
+              //         top: y2,
+              //     });
+              //     canvas.renderAll();
+
+              // } else {
+
+              //     groupLabelController.set({
+              //         visible: false,
+              //     });
+
+              // }
+
+              break;
+          case 'link':
+            console.log(this.herramienta);
+            if (this.selected != null) {
+
+                this.selected.set({
+                    x2: x2, //set the line's x2 to the current X value of the mouse
+                    y2: y2, //set the line's y2 to the current Y value of the mouse
+                    selectable: true,
+                    hasBorders: false,
+                    hasControls: false,
+                });
+            }
+            this.canvas.renderAll();
+            break;
+      };
+
+    });
+      // Doble Click en elemento Host 
+      this.canvas.on('mouse:dblclick', (e) =>{
+        var objectActive = this.canvas.getActiveObject();
+        if (objectActive != null) {
+          if(objectActive.id.charAt(0) == 'h'){
+            this.openModal('specific');
+          }
+        }
       });
     },
 
@@ -4690,10 +5001,12 @@ export default {
       if (open == "switch") {
         return this.$bvModal.show("modal-switch");
       }
+      if (open == "port") {
+        return this.$bvModal.show("modal-port");
+      }
       if (open == "label") {
         return this.$bvModal.show("modal-label");
       }
-
       if (open == "minimal") {
         this.topologyType = "minimal";
         this.createTopology();
@@ -4707,7 +5020,7 @@ export default {
         return this.$bvModal.show("modal-IpUser");
       }
       if (open == "traffic") {
-        console.log('A: '+this.selectedServertHost+' B: '+this.selectedClientHost);
+        
         this.stateOKTrafic = false;
         this.typeTrafic = 'TCP';
         this.trafficModeSelected = "";
@@ -4729,7 +5042,7 @@ export default {
         this.checkerInterval = false;
         this.valueInterval = '';
         this.selectedClientHost = '';
-        this.selectedServerHost = '';
+        this.selectedServertHost = '';
         this.textTime = '';
         this.textPacket = '';
         this.textLong = '';
@@ -4743,8 +5056,6 @@ export default {
         this.stateBw = null;
         this.stateInterval = null;
 
-
-
         return this.$bvModal.show("modal-traffic");
       }
       if (open == "done") {
@@ -4756,7 +5067,11 @@ export default {
       }
       if (open == "info") {
         return this.$bvModal.show("modal-info");
-      }
+      };
+      if (open == 'specific'){
+        return this.$bvModal.show("modal-specific");
+      };
+      
     },
 
     closeModal(mod) {
@@ -4768,6 +5083,9 @@ export default {
       }
       if (mod == "controller") {
         return this.$bvModal.hide("modal-controller");
+      }
+      if (mod == "port") {
+        return this.$bvModal.hide("modal-port");
       }
       if (mod == "single") {
         return this.$bvModal.hide("modal-template");
@@ -4882,7 +5200,8 @@ export default {
       this.netWork["items"] = this.elements;
       this.netWork["IpClient"] = ipClient;
 
-      console.log("Network Info: " + JSON.stringify(this.netWork));
+      console.log("Network Info");
+      console.log(this.netWork);
       var json = JSON.stringify(this.netWork);
       this.closeModal("play");
       this.in_process = true;
@@ -4915,7 +5234,6 @@ export default {
           this.serverText = "Error: Failed to Connect" ;
           this.errorServer = true;
         });
-      console.log("lista: " + JSON.stringify(this.listHost));
     },
 
     stopEmulation() {
@@ -5039,80 +5357,13 @@ export default {
         this.protocolTrafficActual = "UDP";
       }
 
-      console.log(traficDir);
+      
       if(this.stateOKTrafic == true){
         this.closeModal('traffic');
         this.traficGenerator(traficDir,modeOp);
       }
     },
     traficGenerator(traficDir,modeOp) {
-      
-      
-
-      // if (radioTime == "t") {
-      //   trafficDir['TCP'][0]['t'] = String(timeEmulation);
-      //   // trafficDir["t"] = String(timeEmulation);
-      // }
-      // if (radioPacket == "n") {
-      //   if (radioKNumberBytes == "k") {
-      //     trafficDir['TCP'][0]['n'] = String(numberBytes) + "K";
-      //     // trafficDir["n"] = String(numberBytes) + "K";
-      //   }
-      //   if (radioMNumberBytes == "m") {
-      //     trafficDir['TCP'][0]['n'] = String(numberBytes) + "M";
-      //     // trafficDir["n"] = String(numberBytes) + "M";
-      //   }
-      // }
-      // if (checkLong == "l") {
-      //   if (radioKLongPackage == "k") {
-      //     trafficDir['TCP'][0]['l'] = String(longPackage) + "K";
-      //     // trafficDir["l"] = String(longPackage) + "K";
-      //   }
-      //   if (radioMLongPackage == "m") {
-      //     trafficDir['TCP'][0]['l'] = String(longPackage) + "M";
-      //     // trafficDir["l"] = String(longPackage) + "M";
-      //   }
-      // }
-      // if (checkWindow == "w") {
-      //   if (radioKWindow == "k") {
-      //     trafficDir['TCP'][0]['w'] = String(windowValue) + "K";
-      //     // trafficDir["w"] = String(windowValue) + "K";
-      //   }
-      // }
-      // if (checkBw == "b") {
-      //   if (radioKBw == "k") {
-      //     trafficDir['TCP'][0]['b'] = String(bw) + "K";
-      //     // trafficDir["b"] = String(bw) + "K";
-      //   }
-      //   if (radioMBw == "m") {
-      //     trafficDir['TCP'][0]['b'] = String(bw) + "M";
-      //     // trafficDir["b"] = String(bw) + "M";
-      //   }
-      // }
-      // if (checkInterval == "i") {
-      //   trafficDir['TCP'][0]['i'] = String(interval);
-      //   // trafficDir["i"] = String(interval);
-      // }
-      
-      // if (globalMode == "global") {
-      //   trafficDir["global"] = "true";
-      //   modeOp = 'Global'
-      // }
-      // if (specificMode == "specific") {
-      //   trafficDir["specific"] = "true";
-      //   modeOp = 'Específico'
-      // }
-      // if (xtremeMode == "xtreme") {
-      //   trafficDir["xtreme"] = "true";
-      //   modeOp = 'Extremo'
-      // }
-      // if (oneForAll == "one") {
-      //   trafficDir["one_for_all"] = "true";
-      // }
-      // if (allForAll == "all") {
-      //   trafficDir["all_for_all"] = "true";
-      // }
-
       this.closeModal("traffic");
       this.alertText = "Procesando Tráfico...";
       this.in_process = true;
@@ -5124,7 +5375,7 @@ export default {
         .then((response) => {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
-          if (
+          if ( Object.keys(data).length == 0 ||
             Object.keys(data).includes("Error") ||
             data == ""
           ) {
@@ -5775,9 +6026,9 @@ export default {
     },
     // Creacion elementos Fabric
     makeLink(coords, linkType) {
-      if (linkType == "normal") {
+      if (linkType == "controller") {
         return new fabric.Line(coords, {
-          fill: "red",
+          fill: "violet",
           stroke: "#9733FA",
           strokeWidth: 2,
           selectable: false,
@@ -5790,7 +6041,7 @@ export default {
                lockUniScaling: true,
                lockRotation: true,*/
           // evented: false,
-          id: "normal",
+          id: "controller",
         });
       } else if (linkType == "portHost") {
         return new fabric.Line(coords, {
@@ -5865,6 +6116,8 @@ export default {
       //
     },
 
+
+// Esta funcion no hace nada ...
     linkMaker(topo) {
       var pareja;
       var k = [];
@@ -5889,7 +6142,7 @@ export default {
           );
           this.link[y] = line;
 
-          //canvas.add(line);
+          this.canvas.add(line);
         }
       }
     },
@@ -6200,6 +6453,95 @@ export default {
       }
     },
 
+    addPort(){
+      var objectActive = this.canvas.getActiveObject();
+      
+      if(objectActive != null){
+        console.log(objectActive.id);
+        if(objectActive.id.charAt(0) == 's' || objectActive.id.charAt(0) == 'h'){
+          var aux = objectActive.connection.length;
+          console.log(objectActive.connection[aux-1].id);
+          var interfaces = [];
+          this.canvas.forEachObject((object) =>{
+            if(object.elementContainer == objectActive.id){
+              interfaces.push(object);
+            }
+          });
+
+          console.log(interfaces);
+          var obj = interfaces[interfaces.length-1];
+          var indice = parseInt(obj.id.split('eth')[1]) + 1;
+          
+          var left = obj.left;  
+          var top = obj.top;
+
+          var port = new Image();
+          port.src = require("../assets/img/port.png");
+          var pt = new fabric.Image(port);
+          pt.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+          var label = new fabric.Textbox("eth" + (indice) , {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupHostPort = new fabric.Group([pt, label], {
+            left: left+ (65 - 15),
+            top: top,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: objectActive.id,
+            identificator: "Hp",
+            id: "eth" + (indice),
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+          this.canvas.add(groupHostPort);
+          var connection = {};
+          connection.type = "association";
+          connection.elementOrigin = objectActive.id;
+          connection.x1 = objectActive.left + 30; //Coordenadas del Host x "centro"
+          connection.y1 = objectActive.top + 35; //Coordenadas del Host y  "centro"
+          connection.x2 = left + 60;
+          connection.y2 = top + 7;
+          connection.id = "a" + indice;
+          if(objectActive.id.charAt(0) == 'h')
+            var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portHost');
+          else
+            var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portSwitch');
+          objectActive.connection.push(link);
+          objectActive.line = link;
+          groupHostPort.connection.push(link);
+          if(this.ipPort != ''){
+            console.log(this.ipPort);
+            groupHostPort.ip = (this.ipPort);
+          }
+          this.canvas.add(link);
+          this.canvas.sendToBack(link);
+          this.herramienta = 'cursor';
+          
+          
+          
+          
+
+          // if(objectActive.co){}
+
+
+        
+        };
+      };
+      this.ipPort = ''
+      this.closeModal('port');
+    },
+
     createTopology() {
       switch (this.topologyType) {
         case "minimal":
@@ -6447,9 +6789,12 @@ export default {
 
           var link = this.makeLink(
             [connection.x1, connection.y1, connection.x2, connection.y2],
-            "normal"
+            "controller"
           );
+          // Agregamos la asociacion del controlador y el switch al arreglo del la red
+          this.netWork['controller_switch'][this.tagSwitch[this.tagSwitch.length-1]] = tag;
 
+          // Agrega la asociacion al arreglo de conexciones del Controlador
           elemento.connectionLine.push(link);
           groupController.connection.push(link);
 
@@ -6516,9 +6861,9 @@ export default {
           };
 
           this.netInfo.push(objt);
-          this.linkMaker(this.topologyType);
+          // this.linkMaker(this.topologyType);
 
-          // Insertar Elementos de Red
+          // Insertar Elementos de Red Hosts
           for (var a = 0; a < h.length; a++) {
             this.insertElementTopology(
               h[a].rX,
@@ -6578,9 +6923,8 @@ export default {
             });
           }
 
-          console.log("tag " + JSON.stringify(this.tagSwitch));
-
           this.canvas.forEachObject((obj) => {
+            // Se toma el ultimo swtich agregado ya que este es el asociado a esta topologia
             id1 = "s" + this.tagSwitch.length;
 
             if (obj.elementContainer && obj.elementContainer == id1) {
@@ -6599,13 +6943,17 @@ export default {
             this.canvas.sendToBack(link);
 
             objSwitch[s].state = "connected";
+            objSwitch[s].position = "initial";
             objHost[s].state = "connected";
+            objHost[s].position = "terminal";
             objSwitch[s].connection.push(link);
             objHost[s].connection.push(link);
 
             objSwitch[s].link = link;
             objHost[s].link = link;
-
+            
+            
+            // SO IMPORTANT!!!!!
             //Emparejamiento
             link.connectionLink =
               objSwitch[s].elementContainer + "," + objHost[s].elementContainer;
@@ -6830,6 +7178,8 @@ export default {
       }
     },
 
+
+// Esta funcion no sirve
     llenarListaHost() {
       if (this.tagHost.length > 0) {
         for (var h = 0; h < this.tagHost.length; h++) {
@@ -7359,6 +7709,7 @@ export default {
     //Obtiene la Herramienta seleccionada en el panel lateral izquierdo de elementos de red
     obtenerHerramienta() {
       this.actualTool = this.herramienta;
+      console.log(this.actualTool);
       return this.actualTool;
     },
     //En el Modal de Trafico identifica el modo de traffico seleccionado y habilita la seleccion de host en el modo especifico
@@ -7394,10 +7745,11 @@ export default {
     optionCheckerTime(){
       if (this.radioTime == 't'){
           this.radioPacket = '';
-          this.radioKPacket = ''
+          this.radioKPacket = '';
+          this.textPacket = '';
           return this.checkerTime;
       }else{
-        
+        this.stateTime = null;
         return !this.checkerTime;
       }
       
@@ -7407,9 +7759,12 @@ export default {
       if (this.radioPacket == 'n'){
         this.radioTime = '';
         this.radioKPacket = 'K';
+        this.stateTime = null;
+        this.textTime = '';
         return this.checkerPacket;
       }else{  
         this.radioPacket = '';
+        this.statePacket = null;
         return !this.checkerPacket;
       }
 
@@ -7420,6 +7775,8 @@ export default {
           return this.checkerWindow;
       }else{
         this.radioWindow = '';
+        this.textWindow = '';
+        this.stateWindow = null;
         return !this.checkerWindow;
       } 
     },
@@ -7429,6 +7786,8 @@ export default {
           return this.checkerLong;
       }else{
         this.radioLong = '';
+        this.textLong = '';
+        this.stateLong = null;
         return !this.checkerLong;
       } 
     },
@@ -7438,6 +7797,8 @@ export default {
           return this.checkerBw;
       }else{
         this.radioBw = '';
+        this.textBw = '';
+        this.stateBw = null;
         return !this.checkerBw;
       } 
     },
@@ -7447,6 +7808,8 @@ export default {
           return this.checkerInverval;
       }else{
         this.radioBw = '';
+        this.textInterval = '';
+        this.stateInterval = null;
         return !this.checkerInterval;
       } 
     },
