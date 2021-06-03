@@ -569,7 +569,7 @@
               <select
                 id="optionFailModeFancySwitch"
                 class="form-control form-control"
-                v-model="failModel"
+                v-model="failMode"
               >
                 <option value="Ninguno">Ninguno</option>
                 <option value="Secure">Secure</option>
@@ -3272,7 +3272,7 @@ export default {
       dataPath: 'Ninguno',
       dataPathId: '',
       dataPathOpt:'',
-      failModel: 'Ninguno',
+      failMode: 'Ninguno',
       reconnectSwitch: '',
       inBand: '',
       inNameSpace: '',
@@ -3983,8 +3983,8 @@ export default {
                 if(objectActive.dataPathOpt){
                   this.dataPathOpt = objectActive.dataPathOpt;
                 };
-                if(objectActive.failModel){
-                  this.failModel = objectActive.failModel;
+                if(objectActive.failMode){
+                  this.failMode = objectActive.failMode;
                 };
                 if(objectActive.reconnectedSwitch){
                   this.reconnectedSwitch = objectActive.reconnectedSwitch;
@@ -4168,7 +4168,7 @@ export default {
         this.dataPath = 'Ninguno';
         this.dataPathId = '';
         this.dataPathOpt ='';
-        this.failModel = 'Ninguno';
+        this.failMode = 'Ninguno';
         this.reconnectSwitch = '';
         this.inBand = '';
         this.inNameSpace = '';
@@ -4214,78 +4214,138 @@ export default {
     loadInfoElements() {
       this.canvas.forEachObject((obj) => {
         //Recopila la información de cada Host
+        
         if (obj.id.charAt(0) == "h") {
-          var element = {
-            id: obj.id,
-            rX: obj.left,
-            rY: obj.top,
-            ipHost: obj.ipHost,
-            shedule: obj.sheduler,
-            cpuLimit: obj.cpuLimit,
-            cpuCores: obj.cpuCores,
+          var element = {};
+
+          element['id'] = obj.id;
+          // element['top'] = obj.top;
+          // element['left'] = obj.left;
+          if(obj.ipHost != '' || obj.ipHost != undefined){
+            element['ipHost'] = obj.ipHost;
           };
+          if(obj.shedule !='Ninguno' || obj.shedule != undefined){
+            element['sheduler']= obj.sheduler;
+          };
+          if(obj.cpuLimit != '' || obj.cpuLimit != undefined){
+            element['cpuLimit'] = obj.cpuLimit;
+          };
+          if(obj.cpuCores != '' || obj.cpuCores != undefined){
+            element['cpuCores'] = obj.cpuCores;
+          };
+
           this.elements.push(element);
         } 
         //Recopila la información de cada Switch
         else if (obj.id.charAt(0) == "s") {
-          //Recopila la información de cada Switch
-          var element = {
-            id: obj.id,
-            rX: obj.left,
-            rY: obj.top,
-            verbose: obj.verbose,
-            batch: obj.batch,
-            inNameSpace: obj.inNameSpace,
-            inBand: obj.inBand,
-            failMode: obj.failModel,
-            reconnectedSwitch: obj.reconnectedSwitch,
-            dataPathOpt: obj.dataPathOpt,
-            dataPathId: obj.dataPathId,
-            dataPath: obj.dataPath,
-            protocol: obj.protocol,
-            dpctlPort: obj.dpctlPort,
-            ipSwitch: obj.ipSwitch,
-            stpPriority: obj.stpPriority,
-            stp: obj.stp,
-            type: obj.type,
-            controller: obj.controller,
+          var element = {};
+          element['id'] = obj.id;
+          // element['top'] = obj.top;
+          // element['left'] = obj.left;
+          
+          if(obj.ipSwitch != '' || obj.ipSwitch != undefined){
+            element['ipSwitch'] = obj.ipSwitch;
           };
+          if(obj.verbose != '' || obj.verbose != undefined){
+            element['verbose'] = obj.verbose;
+          };
+          if(obj.batch != '' || obj.batch != undefined){
+            element['batch'] = obj.batch;
+          };
+          if(obj.inNameSpace != '' || obj.inNameSpace != undefined){
+            element['inNameSpace'] = obj.inNameSpace;
+          };
+          if(obj.inBand != '' || obj.inBand != undefined){
+            element['inBand'] = obj.inBand;
+          };
+          if(obj.failMode != 'Ninguno' || obj.failMode != undefined){
+            element['failMode'] = obj.failMode;
+          };
+          if(obj.reconnectedSwitch != '' || obj.reconnectSwitch != undefined){
+            element['reconnectedSwitch'] = obj.reconnectedSwitch;
+          };
+          if(obj.dataPath != 'Ninguno' || obj.dataPath != undefined){
+            element['dataPath'] = obj.dataPath;
+          };
+          if(obj.dataPathId != '' || obj.dataPathId != undefined){
+            element['dataPathId'] = obj.dataPathId;
+          };
+          if(obj.dataPathOpt != '' || obj.dataPathOpt != undefined){
+            element['dataPathOpt'] = obj.dataPathOpt;
+          };
+          if(obj.protocol != undefined){
+            element['protocol'] = obj.protocol;
+          };
+          if(obj.dpctlPort != '' || obj.dpctlPort != undefined){
+            element['dpctlPort'] = obj.dpctlPort;
+          };
+          if(obj.stpSwitch != '' || obj.stpSwitch != undefined || obj.stpSwitch != 'not_stp'){
+            element['stp'] = obj.stpSwitch;
+          };
+          if(obj.stpPriority != '' || obj.stpPriority != undefined){
+            element['stpPriority'] = obj.stpPriority;
+          };
+          if(obj.type != 'Ninguno' || obj.type != undefined){
+            element['type'] = obj.type;
+          };
+          if(obj.controller != '' || obj.controller != undefined){
+            element['controller'] = obj.controller;
+          };
+
           this.elements.push(element);
         } 
         //Recopila la información de cada Controlador
         else if (obj.id.charAt(0) == "c" && obj.id != 'controller') {
-          //Recopila la información de cada Controlador y evita que tome la asociacion de controlador
-          var element = {
-            id: obj.id,
-            rX: obj.left,
-            rY: obj.top,
-            type: obj.type,
-            ipController: obj.ipController,
-            portController: obj.portController,
-            protocol: obj.protocol,
+          var element = {};
+          element['id'] = obj.id;
+          // element['top'] = obj.top;
+          // element['left'] = obj.left;
+          if(obj.type != 'Por Defecto' || obj.type != undefined){
+            element['type'] = obj.type;
           };
+          if(obj.ipController != '' || obj.ipController != undefined){
+            element['ipController'] = obj.ipController;
+          };
+          if(obj.portController != '' || obj.portController != undefined){
+            element['port'] = obj.portController;
+          };
+          if(obj.protocol != 'Ninguno' || obj.protocol != undefined){
+            element['protocol'] = obj.protocol;
+          };
+          
           this.elements.push(element);
         }
         //Recopila la información de cada Enlace
         else if (obj.id.charAt(0) == "l") {
-          //Recopila la información de cada Asociacion tipo Link
-          var element = {
-            id: obj.id,
-            rX: obj.left,
-            rY: obj.top,
-            loss: obj.loss,
-            queue: obj.queue,
-            jitter: obj.jitter,
-            delay: obj.delay,
-            bw: obj.bw,
-            connection: obj.connectionLink,
-            intfName1: obj.intfName1,
-            intfName2: obj.intfName2,
+          var element = {};
+          element['id'] = obj.id;
+          // element['top'] = obj.top;
+          // element['left'] = obj.left;
+          if(obj.loss != '' || obj.loss != undefined){
+            element['loss'] = obj.loss;
           };
+          if(obj.queue != '' || obj.queue != undefined){
+            element['queue'] = obj.queue;
+          };
+          if(obj.jitter != '' || obj.jitterUdp != undefined){
+            element['jitter'] = obj.jitter;
+          };
+          if(obj.delay != '' || obj.delay != undefined){
+            element['delay'] = obj.delay;
+          };
+          if(obj.bw != '' || obj.bw != undefined){
+            element['bw'] = obj.bw;
+          };
+
+          element['connection'] = obj.connectionLink;
+          element['intfName1'] = obj.intfName1;
+          element['intfName2'] = obj.intfName2;
+          
           this.elements.push(element);
         } 
         //Recopila la información de cada Label
         else if (obj.id.charAt(1) == "a") {
+          var element = {};
           //Para los Labels identifica la letra a de lAbel - Recopila la información de cada Label
           var element = {
             id: obj.id,
@@ -4297,13 +4357,16 @@ export default {
         } 
         //Recopila la información de cada Puerto
         else if (obj.id.charAt(0) == "e") {
-          var element = {
-            id: obj.id,
-            rX: obj.left,
-            rY: obj.top,
-            ipPort: obj.ipPort,
-            container: obj.elementContainer,
+          var element = {};
+          element['id'] = obj.id;
+          // element['top'] = obj.top;
+          // element['left'] = obj.left;
+          element['intf'] = String(obj.elementContainer)+'-'+String(obj.id);
+          
+          if(obj.ipPort != '' || obj.ipPort){
+              element['ipPort'] = obj.ipPort;
           };
+
           this.elements.push(element);
         }
       });
@@ -5334,7 +5397,7 @@ export default {
             obj.inNameSpace = this.inNameSpace;
             obj.inBand = this.inBand;
             obj.reconnectSwitch = this.reconnectSwitch;
-            obj.failModel = this.failModel;
+            obj.failMode = this.failMode;
             obj.dataPathOpt = this.dataPathOpt;
             obj.dataPathId = this.dataPathId;
             obj.dataPath = this.dataPath;
@@ -5357,7 +5420,7 @@ export default {
         this.dataPath = 'Ninguno';
         this.dataPathId = '';
         this.dataPathOpt ='';
-        this.failModel = 'Ninguno';
+        this.failMode = 'Ninguno';
         this.reconnectSwitch = '';
         this.inBand = '';
         this.inNameSpace = '';
