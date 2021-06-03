@@ -101,23 +101,26 @@
         class="btn btn-outline-primary m-md-2"
         id="nuevo-direct-access"
         title="Nuevo"
-        @click="openInfoModal('traffic')"
+        @click="newDocument()"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="guardar-direct-access"
         title="Guardar"
+        
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="copiar-direct-access"
+        @click="saveCanvas()"
       ></button>
       <button
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="pegar-direct-access"
+        @click="loadCanvas()"
       ></button>
       <button
         type="button"
@@ -200,7 +203,6 @@
     </b-row>
 
     <!-- Modales de  creacion elementos individuales de red -->
-
     <!-- Modal Controller -->
     <b-modal
       id="modal-controller"
@@ -210,6 +212,8 @@
       header-bg-variant="light"
       header-text-variant="dark"
       hide-footer
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -265,15 +269,16 @@
               <select
                 id="optionTypeFancyController"
                 class="form-control form-control"
+                v-model="typeController"
               >
-                <option value="Por Defecto" selected="selected">
+                <option value="Por Defecto">
                   Por Defecto
                 </option>
-                <option value="OpenFlow Reference Implementation">
-                  OpenFlow Reference
+                <option value="OpenFlow">
+                  OpenFlow Reference Implementation
                 </option>
                 <option value="NOX">NOX</option>
-                <option value="OVS Controller">OVS Controller</option>
+                <option value="OVS">OVS</option>
                 <option value="OpenDayLigth">OpenDayLigth</option>
               </select>
             </b-container>
@@ -281,11 +286,13 @@
             <!-- IP Controller -->
             <b-container id="container-Ip" class="form-group">
               <label for="labelType" class="mt-1">IP</label>
-              <input
+              <b-input
                 id="inputFancyIpController"
                 type="text"
                 class="form-control text-right"
+                v-model="ipController"
                 placeholder="0   .   0   .   0   .   0"
+                :state='stateIpController'
               />
             </b-container>
 
@@ -298,11 +305,12 @@
                 >Puerto</label
               >
               <input
-                id="inputFancyIpController"
+                id="inputFancyPortController"
                 type="number"
                 class="form-control text-right"
                 step="1"
                 min="1"
+                v-model="portController"
                 max="65535"
               />
             </b-container>
@@ -318,8 +326,9 @@
               <select
                 id="optionTypeFancyController"
                 class="form-control form-control"
+                v-model="protocolController"
               >
-                <option value="Ninguno" selected="selected">Ninguno</option>
+                <option value="Ninguno">Ninguno</option>
                 <option value="TCP">TCP</option>
                 <option value="SSL">SSL</option>
               </select>
@@ -365,6 +374,8 @@
       scrollable
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -423,8 +434,9 @@
               <select
                 id="optionTypeFancySwitch"
                 class="form-control form-control"
+                v-model="typeSwitch"
               >
-                <option value="Ninguno" selected>Ninguno</option>
+                <option value="Ninguno">Ninguno</option>
                 <option value="IVS Switch">IVS Switch</option>
                 <option value="Linux Brigde">Linux Brigde</option>
                 <option value="OVS Brigde">OVS Brigde</option>
@@ -439,8 +451,9 @@
                 ><b-form-checkbox
                   id="checkboxSTPFancySwitch"
                   name="checkbox-STPFancySwitch"
-                  value="accepted"
-                  unchecked-value="not_accepted"
+                  value="stp"
+                  unchecked-value="not_stp"
+                  v-model="stpSwitch"
                 >
                   STP Priority:
                 </b-form-checkbox>
@@ -453,7 +466,7 @@
                   step="4096"
                   min="4096"
                   max="32768"
-                  value="32768"
+                  v-model="stpPriority"
                 />
               </b-col>
             </b-row>
@@ -463,11 +476,13 @@
               <label id="labelFancyIPSwitch" for="labelType" class="mt-1"
                 >IP</label
               >
-              <input
+              <b-input
                 id="labelFancyIPSwitch"
                 type="text"
                 class="form-control text-right"
                 placeholder="0   .   0   .   0   .   0"
+                v-model="ipSwitch"
+                :state='stateIpSwitch'
               />
             </b-container>
 
@@ -483,6 +498,7 @@
                 step="1"
                 min="1"
                 max="65535"
+                v-model="portSwitch"
               />
             </b-container>
 
@@ -494,8 +510,8 @@
               <select
                 id="containerProtocolSwitch"
                 class="form-control form-control"
+                v-model="protocolSwitch"
               >
-                <option value="OpenFlow 1.0" selected>OpenFlow 1.1</option>
                 <option value="OpenFlow 1.2">OpenFlow 1.2</option>
                 <option value="OpenFlow 1.3">OpenFlow 1.3</option>
                 <option value="OpenFlow 1.4">OpenFlow 1.4</option>
@@ -511,6 +527,7 @@
               <select
                 id="optionDataPathFancySwitch"
                 class="form-control form-control"
+                v-model="dataPath"
               >
                 <option value="Ninguno" selected>Ninguno</option>
                 <option value="Kernel">Kernel</option>
@@ -527,6 +544,7 @@
                 id="inputFancyDataPathIDSwitch"
                 type="text"
                 class="form-control text-right"
+                v-model= 'dataPathId'
               />
             </b-container>
 
@@ -539,6 +557,7 @@
                 id="inputFancyOfDataPathArgsSwitch"
                 type="text"
                 class="form-control text-right"
+                v-model= 'dataPathOpt'
               />
             </b-container>
 
@@ -550,11 +569,24 @@
               <select
                 id="optionFailModeFancySwitch"
                 class="form-control form-control"
+                v-model="failModel"
               >
-                <option value="Ninguno" selected>Ninguno</option>
+                <option value="Ninguno">Ninguno</option>
                 <option value="Secure">Secure</option>
                 <option value="Standalone">Standalone</option>
               </select>
+            </b-container>
+             <!-- Reconnect  Switch -->
+            <b-container id="containerFailMode" class="form-group">
+              <label for="labelType" id="labelReconnectModeSwitch" class="mt-1"
+                >Tiempo de Reconexión (ms)</label
+              >
+              <input
+                id="inputFancyReconnectSwitch"
+                type="number"
+                class="form-control text-right"
+                v-model="reconnectSwitch"
+              />
             </b-container>
 
             <b-row id="containerCheckBoxOne" class="m-0 pt-3">
@@ -562,16 +594,18 @@
                 ><b-form-checkbox
                   id="InBandFancySwitch"
                   name="checkbox-InBand"
-                  value="accepted"
+                  value="inband"
                   unchecked-value="not_accepted"
+                  v-model="inBand"
                 >
                   InBand
                 </b-form-checkbox>
                 <b-form-checkbox
                   id="InNameSpaceFancySwitch"
                   name="checkbox-inNameSpace"
-                  value="accepted"
+                  value="innamespace"
                   unchecked-value="not_accepted"
+                  v-model="inNameSpace"
                 >
                   In NameSpace
                 </b-form-checkbox>
@@ -580,16 +614,18 @@
                 <b-form-checkbox
                   id="BatchFancySwitch"
                   name="checkbox-batch"
-                  value="accepted"
+                  value="batch"
                   unchecked-value="not_accepted"
+                  v-model="batch"
                 >
                   Batch
                 </b-form-checkbox>
                 <b-form-checkbox
                   id="VerboseFancySwitch"
                   name="checkbox-verbose"
-                  value="accepted"
+                  value="verbose"
                   unchecked-value="not_accepted"
+                  v-model="verbose"
                 >
                   Verbose
                 </b-form-checkbox>
@@ -636,6 +672,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -688,11 +726,14 @@
             <!-- IP Host -->
             <b-container id="containerIPHost" class="form-group">
               <label id="labelFancyIPHost" class="mt-1">Ruta por Defecto</label>
-              <input
+              <b-input
                 id="inputFancyIPHost"
                 type="text"
                 class="form-control text-right"
+                :state = 'stateIpHost'
                 placeholder="0   .   0   .   0   .   0"
+                v-model="ipHost"
+                
               />
             </b-container>
 
@@ -702,8 +743,9 @@
               <select
                 id="optionShedulerFancyHost"
                 class="form-control form-control"
+                v-model="sheduler"
               >
-                <option value="Ninguno" selected>Ninguno</option>
+                <option value="Ninguno">Ninguno</option>
                 <option value="CFS">CFS</option>
                 <option value="RT">RT</option>
               </select>
@@ -720,6 +762,7 @@
                 class="form-control text-right"
                 step="1"
                 min="0"
+                v-model="limitCpu"
               />
             </b-container>
 
@@ -734,6 +777,7 @@
                 class="form-control text-right"
                 step="1"
                 min="0"
+                v-model="coreCpu"
               />
             </b-container>
           </b-form>
@@ -776,6 +820,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -822,8 +868,13 @@
                   class="p-2 ml-4"
                   id="inputFancyPort"
                   v-model="ipPort"
-                  name="fname"
+                  
                 />
+            <b-row id="containerPort" class="m-0 pt-3 text-rigth">
+              <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <b-button size="sm" variant="success" v-if="linkActive" @click="openModal('link')">Enlace</b-button>
+              </b-col>
+            </b-row>
               </b-col>
             </b-row>
           </b-form>
@@ -866,6 +917,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -894,6 +947,7 @@
       >
         <b-container id="containerFormLink">
           <b-form id="formularioFancyLink" class="p-0">
+            <!-- Ancho de Banda -->
             <b-row id="containerBandWidthLink" class="m-0 pt-1">
               <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
                 <label id="labelFancyBandWidthLink">Ancho de Banda:</label>
@@ -907,6 +961,7 @@
                   min="0"
                   max="10000000000000"
                   class="p-2"
+                  v-model="bwLink"
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
@@ -915,7 +970,7 @@
                 ></b-col
               >
             </b-row>
-
+            <!-- Delay -->
             <b-row id="containerDelayLink" class="m-0 pt-1">
               <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
                 <label id="labelFancyDelayLink" class="pt-2">Retardo:</label>
@@ -929,6 +984,7 @@
                   min="0"
                   max="10000000000000"
                   class="p-2"
+                  v-model="delayLink"
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
@@ -937,7 +993,7 @@
                 ></b-col
               >
             </b-row>
-
+            <!-- Jitter -->
             <b-row id="containerJitterLink" class="m-0 pt-1">
               <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
                 <label id="labelFancyJitterLink" class="pt-2">Jitter:</label>
@@ -951,6 +1007,7 @@
                   min="0"
                   max="10000000000000"
                   class="p-2"
+                  v-model="jitterLink"
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
@@ -959,7 +1016,7 @@
                 ></b-col
               >
             </b-row>
-
+            <!-- Maxima Queue -->
             <b-row id="containerMaxQueueLink" class="m-0 pt-1">
               <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
                 <label id="labelFancyMaxQueueLink" class="pt-2"
@@ -975,6 +1032,7 @@
                   min="0"
                   max="10000000000000"
                   class="p-2"
+                  v-model="queueLink"
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
@@ -983,7 +1041,7 @@
                 ></b-col
               >
             </b-row>
-
+            <!-- Pérdidas -->
             <b-row id="containerLossLink" class="m-0 pt-1">
               <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
                 <label id="labelFancyLossLink" class="pt-2">Perdidas:</label>
@@ -997,10 +1055,11 @@
                   min="0"
                   max="100"
                   class="p-2"
+                  v-model="lossLink"
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
-                ><label id="labelFancyUnityBandWidthLink" class="pt-2"
+                ><label id="labelFancyLossLink" class="pt-2"
                   >%</label
                 ></b-col
               >
@@ -1026,7 +1085,7 @@
               id="CancelarButtonFancyLink"
               class="m-2"
               value="Cancelar"
-              @click="closeModal"
+              @click="closeModal('link')"
               >Cancelar</b-button
             ></b-col
           >
@@ -1045,6 +1104,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -1135,6 +1196,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -1177,6 +1240,7 @@
                 type="text"
                 class="form-control text-right"
                 placeholder="0   .   0   .   0   .   0"
+                v-model="ipClient"
               />
             </b-form-group>
 
@@ -1218,6 +1282,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -1260,8 +1326,9 @@
               <label id="labelHostTemplate" class="p-0">Número de Host:</label>
               <input
                 id="inputHostTemplate"
-                type="text"
+                type="number"
                 class="form-control text-right"
+                v-model="numHostTopology"
               />
             </b-container>
           </b-form>
@@ -1299,8 +1366,8 @@
     <b-modal
       id="modal-done"
       no-close-on-esc
-      hide-footer
       no-close-on-backdrop
+      hide-footer
       hide-header-close
       centered
       title="Resultado"
@@ -1390,6 +1457,8 @@
       size="lg"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -1858,7 +1927,7 @@
       </template>
     </b-modal>
 
-    <!-- Modal Analizador Grafico de Tráfico -->
+    <!-- Modal Analizador Gráfico de Tráfico -->
     <b-modal
       id="modal-grafic"
       centered
@@ -1868,6 +1937,8 @@
       size="xl"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -1904,7 +1975,7 @@
               <b-row id="containerCanvaGraphic">
                 <line-chart
                   id="graphic2"
-                  v-if="canvasAnswerClient"
+                  v-if="canvasGraphic"
                   :width="578"
                   :height="396"
                   :chart-data="chartdata"
@@ -1938,12 +2009,11 @@
                   </b-select>
                 </b-col>
               </b-row>
-
-              <!-- TCP CLIENTE -->
+              <!-- Métricas de Desempeño Generales-->
               <b-row
                 id="continerParameterTcpClient"
                 class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="clientAnswerTcp"
+                v-if="metrics"
               >
                 <b-row
                   id="continerLabelMeter"
@@ -1964,6 +2034,7 @@
                   id="continerParameter_modo_op"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
                 >
+                  <!-- Modo de Operación -->
                   <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <label id="labelparameter_modo_op">Modo Operación:</label>
                   </b-col>
@@ -1975,6 +2046,7 @@
                       class=""
                       disabled
                       readonly
+                      v-model="modeOpTcp"
                     />
                   </b-col>
                 </b-row>
@@ -1994,10 +2066,11 @@
                       class=""
                       disabled
                       readonly
+                      v-model="protocolTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Duración -->
                 <b-row
                   id="continerParameter_duration"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2014,10 +2087,11 @@
                       class=""
                       disabled
                       readonly
+                      v-model="timeTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Tamaño del Bloque -->
                 <b-row
                   id="continerParameter_size_block"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2034,10 +2108,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="sizeBlockTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Bloques -->
                 <b-row
                   id="continerParameter_bloque"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2053,10 +2128,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="blockTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- TCP MSS -->
                 <b-row
                   id="continerParameter_tcp_mss"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2073,16 +2149,17 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="tcpMssTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Buffer de Envio -->
                 <b-row
                   id="continerParameter_snd_buffer"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
                 >
                   <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer">Buffer Envió:</label>
+                    <label id="labelparameter_snd_buffer">Buffer Envio:</label>
                   </b-col>
                   <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <b-input
@@ -2093,10 +2170,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="sndBufferTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Buffer de Recepción -->
                 <b-row
                   id="continerParameter_rcv_buffer"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2115,10 +2193,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="rcvBufferTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Total Bytes -->
                 <b-row
                   id="continerParameter_total_bytes"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2135,10 +2214,21 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="totalBytesTcp"
                     />
                   </b-col>
                 </b-row>
+              </b-row>
 
+
+              <!-- TCP -->
+              <b-row
+                id="continerParameterTcpClient"
+                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+                v-if="activeTcp"
+              >
+                <!-- Valores Promedio del Trafico Generado -->
+                <!-- Promedio Total de Bytes -->
                 <b-row
                   id="continerParameter_prom_tbytes"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2157,10 +2247,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promTotalBytesTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Promedio De Bits por Segundo -->
                 <b-row
                   id="continerParameter_prom_bit"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2179,10 +2270,19 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promBitsPerSecondTcp"
                     />
                   </b-col>
                 </b-row>
+              </b-row>
 
+              <!-- Cliente TCP -->
+              <b-row
+                id="continerParameterTcpServer"
+                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+                v-if="clientAnswerTcp"
+              >
+               <!-- Promedio de SND CWND -->
                 <b-row
                   id="continerParameter_prom_sndcwnd"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2201,10 +2301,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promSndCwndTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Promedio RTT -->
                 <b-row
                   id="continerParameter_prom_rtt"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2221,10 +2322,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promRttTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Promedio de Retransmitidos Transmision -->
                 <b-row
                   id="continerParameter_prom_rtx"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2241,10 +2343,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promRetransmitsTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Promedio RTTVAR -->
                 <b-row
                   id="continerParameter_prom_rttvar"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2261,10 +2364,11 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promRttVarTcp"
                     />
                   </b-col>
                 </b-row>
-
+                <!-- Promedio PMTU -->
                 <b-row
                   id="continerParameter_prom_pmtu"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2281,464 +2385,18 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promPmtuTcp"
                     />
                   </b-col>
                 </b-row>
               </b-row>
 
-              <!-- TCP SERVER -->
-              <b-row
-                id="continerParameterTcpServer"
-                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="serverAnswerTcp"
-              >
-                <b-row
-                  id="continerLabelMeter"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col
-                    class="m-0 mt-2 mb-3 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                    ><label
-                      id="labelparameterMeter"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
-                    >
-                      MÉTRICAS DE DESEMPEÑO
-                    </label></b-col
-                  >
-                </b-row>
-
-                <b-row
-                  id="continerParameter_modo_op_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <!-- Modo Operación -->
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_modo_op_Server"
-                      >Modo Operación:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_modo_op_tcp_Server"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_protocol_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_protocol_Server"
-                      >Protocolo:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_protocol_tcp_Server"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_duration_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_duration_Server">Duración:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_duration_Server"
-                      name="fname"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_size_block_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_size_block_Server"
-                      >Tamaño Bloque:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class="ml-0"
-                      id="input_size_block_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_bloque_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_bloque_Server">Bloques:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_bloque_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_tcp_mss_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_tcp_mss_Server">TCP MSS:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_tcp_mss_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_snd_buffer_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer_Server"
-                      >Buffer Envió:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_snd_buffer_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_rcv_buffer_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_rcv_buffer_Server"
-                      >Buffer Recepción:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_rcv_buffer_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_total_bytes_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_total_bytes_Server"
-                      >Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_total_bytes_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_tbytes_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_tbytes_Server"
-                      >Prom Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_tbytes_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_bit_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_bit_Server"
-                      >Prom Bit por Seg:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_bit_Server"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-              </b-row>
-
-              <!-- UDP CLIENTE -->
+              <!-- UDP  -->
               <b-row
                 id="continerParameterUDPClient"
                 class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="clientAnswerUdp"
+                v-if="activeUdp"
               >
-                <!-- Name Meter -->
-                <b-row
-                  id="continerLabelMeterUDPClient"
-                  class="m-0 mt-2 mb-3 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col
-                    ><label
-                      id="labelparameterMeterUDPClient"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
-                    >
-                      MÉTRICAS DE DESEMPEÑO
-                    </label></b-col
-                  >
-                </b-row>
-                <!-- Modo Op -->
-                <b-row
-                  id="continerParameter_modo_op_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_modo_op_UDPClient"
-                      >Modo Operación:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_modo_op_UDPClient"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <!-- Protocolo -->
-                <b-row
-                  id="continerParameter_protocol_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_protocol_UDPClient"
-                      >Protocolo:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_protocol_tcp_UDPClient"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-                <!-- Duración -->
-                <b-row
-                  id="continerParameter_duration_Server"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_duration_UDPClient"
-                      >Duración:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_duration_UDPClient"
-                      name="fname"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-                <!-- Tamaño Bloque -->
-                <b-row
-                  id="continerParameter_size_block_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_size_block_UDPClient"
-                      >Tamaño Bloque:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class="ml-0"
-                      id="input_size_block_UDPClient"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <!-- Bloques -->
-                <b-row
-                  id="continerParameter_bloque_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_bloque_UDPClient">Bloques:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_bloque_UDPClient"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <!-- Buffer envio -->
-                <b-row
-                  id="continerParameter_snd_buffer_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer_UDPClient"
-                      >Buffer Envió:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_snd_buffer_UDPClient"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <!-- Buffer recepción -->
-                <b-row
-                  id="continerParameter_rcv_buffer_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_rcv_buffer_UDPClient"
-                      >Buffer Recepción:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_rcv_buffer_UDPClient"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <!-- Total Bytes -->
-                <b-row
-                  id="continerParameter_total_bytes_UDPClient"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_total_bytes_UDPClient"
-                      >Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_total_bytes_UDPClient"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
                 <!-- Total Bytes -->
                 <b-row
                   id="continerParameter_prom_tbytes_UDPClient"
@@ -2758,6 +2416,7 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promTotalBytesUdp"
                     />
                   </b-col>
                 </b-row>
@@ -2781,6 +2440,8 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="promBitPerSecondUdp"
+                      
                     />
                   </b-col>
                 </b-row>
@@ -2804,6 +2465,7 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="jitterUdp"
                     />
                   </b-col>
                 </b-row>
@@ -2827,824 +2489,13 @@
                       size="sm"
                       disabled
                       readonly
+                      v-model="packetsUdp"
                     />
                   </b-col>
                 </b-row>
               </b-row>
 
-              <!-- UDP SERVER -->
-              <b-row
-                id="continerParameterUDPServer"
-                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="serverAnswerUdp"
-              >
-                <b-row
-                  id="continerLabelMeterUDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col
-                    class="m-0 mt-2 mb-2 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                    ><label
-                      id="labelparameterMeterUDPServer"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
-                    >
-                      MÉTRICAS DE DESEMPEÑO
-                    </label></b-col
-                  >
-                </b-row>
 
-                <b-row
-                  id="continerParameter_modo_op_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_modo_op_UDPServer"
-                      >Modo Operación:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_modo_op_UDPServer"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_protocol_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_protocol_UDPServer"
-                      >Protocolo:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_protocol_tcp_UDPServer"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_duration_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_duration_UDPServer"
-                      >Duración:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_duration_UDPServer"
-                      name="fname"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_size_block_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_size_block_UDPServer"
-                      >Tamaño Bloque:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class="ml-0"
-                      id="input_size_block_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_bloque_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_bloque_UDPServer">Bloques:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_bloque_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_snd_buffer_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer_UDPServer"
-                      >Buffer Envió:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_snd_buffer_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_rcv_buffer_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_rcv_buffer_UDPServer"
-                      >Buffer Recepción:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_rcv_buffer_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_total_bytes_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_total_bytes_UDPServer"
-                      >Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_total_bytes_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_tbytes_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_tbytes_UDPServer"
-                      >Prom Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_tbytes_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_bit_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_bit_UDPServer"
-                      >Prom Bit por Seg:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_bit_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_jitter_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_jitter_UDPServer"
-                      >Jitter (ms):</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_jitter_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_packet_UDPServer"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_packet_UDPServer"
-                      >Paquetes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_packet_UDPServer"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-              </b-row>
-
-              <!-- TCP TOTAL -->
-              <b-row
-                id="continerParameterTcpTotal"
-                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="totalAnswerTcp"
-              >
-                <b-row
-                  id="continerLabelMeterTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col
-                    class="m-0 mt-2 mb-3 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                    ><label
-                      id="labelparameterMeterTotal"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
-                    >
-                      MÉTRICAS DE DESEMPEÑO
-                    </label></b-col
-                  >
-                </b-row>
-
-                <b-row
-                  id="continerParameter_modo_op_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <!-- Modo Operación -->
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_modo_op_ServerTotal"
-                      >Modo Operación:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_modo_op_tcp_Total"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_protocol_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_protocol_Total">Protocolo:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_protocol_tcp_Total"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_duration_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_duration_Total">Duración:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_duration_Total"
-                      name="fname"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_size_block_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_size_block_Total"
-                      >Tamaño Bloque:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class="ml-0"
-                      id="input_size_block_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_bloque_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_bloque_Total">Bloques:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_bloque_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_tcp_mss_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_tcp_mss_Total">TCP MSS:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_tcp_mss_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_snd_buffer_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer_Total"
-                      >Buffer Envió:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_snd_buffer_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_rcv_buffer_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_rcv_buffer_Total"
-                      >Buffer Recepción:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_rcv_buffer_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_total_bytes_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_total_bytes_Total"
-                      >Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_total_bytes_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_tbytes_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_tbytes_Total"
-                      >Prom Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_tbytes_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_bit_Total"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_bit_Total"
-                      >Prom Bit por Seg:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_bit_Total"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-              </b-row>
-
-              <!-- UDP TOTAL -->
-              <b-row
-                id="continerParameterUDPTotal"
-                class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                v-if="totalAnswerUdp"
-              >
-                <b-row
-                  id="continerLabelMeterUDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col
-                    class="m-0 mt-2 mb-2 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                    ><label
-                      id="labelparameterMeterUDPTotal"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
-                    >
-                      MÉTRICAS DE DESEMPEÑO
-                    </label></b-col
-                  >
-                </b-row>
-
-                <b-row
-                  id="continerParameter_modo_op_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_modo_op_UDPTotal"
-                      >Modo Operación:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_modo_op_UDPTotal"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_protocol_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_protocol_UDPTotal"
-                      >Protocolo:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_protocol_tcp_UDPTotal"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_duration_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_duration_UDPTotal"
-                      >Duración:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_duration_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      class=""
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_size_block_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_size_block_UDPTotal"
-                      >Tamaño Bloque:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class="ml-0"
-                      id="input_size_block_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_bloque_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_bloque_UDPTotal">Bloques:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      id="input_bloque_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_snd_buffer_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_snd_buffer_UDPTotal"
-                      >Buffer Envió:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_snd_buffer_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_rcv_buffer_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_rcv_buffer_UDPTotal"
-                      >Buffer Recepción:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_rcv_buffer_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_total_bytes_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_total_bytes_UDPTotal"
-                      >Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_total_bytes_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_tbytes_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_tbytes_UDPTotal"
-                      >Prom Total Bytes:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_tbytes_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_prom_bit_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_prom_bit_UDPTotal"
-                      >Prom Bit por Seg:</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_prom_bit_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_jitter_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_jitter_UDPTotal"
-                      >Jitter (ms):</label
-                    >
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_jitter_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-
-                <b-row
-                  id="continerParameter_packet_UDPTotal"
-                  class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                >
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <label id="labelparameter_packet_UDPTotal">Paquetes:</label>
-                  </b-col>
-                  <b-col class="m-0 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <b-input
-                      type="text"
-                      class=""
-                      id="input_packet_UDPTotal"
-                      name="fname"
-                      size="sm"
-                      disabled
-                      readonly
-                    />
-                  </b-col>
-                </b-row>
-              </b-row>
             </b-col>
           </b-row>
         </b-form>
@@ -3678,6 +2529,8 @@
       size="xl"
       header-bg-variant="light"
       header-text-variant="dark"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
@@ -4335,6 +3188,8 @@
       cancel-title="Cancelar"
       header-bg-variant="light"
       header-text-variant="info"
+      no-close-on-esc
+      no-close-on-backdrop
     >
       <b-container
         id="containerInsertHost"
@@ -4389,21 +3244,60 @@ export default {
     window.$ = $;
 
     return {
+      // Dirección del Servidor de Mininet - IMPORTANTE DEFINIR!!!
       path: "http://10.55.6.188:5000/",
-      //Variable id Herramienta seleccionada (barra lateral)
+      //Variable id Herramienta seleccionada (barra lateral izquierda - Barra de Elementos de Red)
       herramienta: "cursor",
+
+      // Variables para la activacion de botones, funciones y alertas
       in_process: false,
       play_activator: true,
       traffic_activator: true,
 
-      
-      trafficGraphic: "General",
-      
-
-      //Variable Generador Trafico
-      selHostS: false,
-      selHostG: false,
-
+      // Modelos para Los inputs Modales Elements
+      // Modal Host
+      ipHost: '',
+      stateIpHost: null,
+      sheduler: 'Ninguno',
+      limitCpu: '',
+      coreCpu: '',
+      // Modal Switch
+      typeSwitch: 'Ninguno',
+      stpSwitch: '',
+      stpPriority: '',
+      ipSwitch: '',
+      stateIpSwitch: null,
+      portSwitch: '',
+      protocolSwitch: 'OpenFlow 1.2',
+      dataPath: 'Ninguno',
+      dataPathId: '',
+      dataPathOpt:'',
+      failModel: 'Ninguno',
+      reconnectSwitch: '',
+      inBand: '',
+      inNameSpace: '',
+      batch: '',
+      verbose: '',
+      // Modal Controller
+      typeController: 'Por Defecto',
+      ipController: '',
+      stateIpController: null,
+      portController: '',
+      protocolController: 'Ninguno',
+      // Modal Puerto
+      ipPort : '',
+      stateIpPort: null,
+      // Modal Link
+      bwLink: '',
+      delayLink: '',
+      jitterLink: '',
+      queueLink: '',
+      lossLink: '',
+      // Modal Ip Usuario
+      ipClient: '',
+      // Modal Template Topology
+      numHostTopology: '',
+      // Modal Generador de Tráfico
       //Variables para las opciones de Tráfico
       typeTrafic : 'TCP',
       trafficModeSelected: "",
@@ -4424,11 +3318,12 @@ export default {
       checkerPacket: false,
       checkerInterval: false,
       valueInterval: '',
-
+      //Variable Generador Trafico
+      selHostS: false,
+      selHostG: false,
       // Variables Host Trafico Modo Especifico
       selectedClientHost: '',
       selectedServertHost: '',
-
       // Variables Datos Trafico
       textTime: '',
       stateTime: null,
@@ -4443,20 +3338,54 @@ export default {
       textInterval: '',
       stateInterval: null,
       stateOKTrafic: true,
-
-      //Variable Generador Grafico
-      canvasAnswerServer: false,
-      canvasAnswerClient: false,
-      canvasAnswerTot: false,
+      //  Modal Graphic
+      trafficGraphic: "General",
+      canvasGraphic: false,
       totalAnswerTcp: false,
       totalAnswerUdp: false,
       serverAnswerTcp: false,
       serverAnswerUdp: false,
       clientAnswerTcp: false,
       clientAnswerUdp: false,
+      activeTcp: false,
+      activeUdp: false,
+      metrics: false,
+      // Variables TCP Cliente
+      // Valores Generales del Trafico 
+      modeOpTcp: '',
+      protocolTcp: '',
+      timeTcp: '',
+      sizeBlockTcp: '',
+      blockTcp: '',
+      tcpMssTcp: '',
+      sndBufferTcp: '',
+      rcvBufferTcp: '',
+      totalBytesTcp: '',
+      // Valores Promedio del Trafico Tcp 
+      promTotalBytesTcp: '',
+      promBitsPerSecondTcp: '',
+      promSndCwndTcp: '',
+      promRttTcp: '',
+      promRetransmitsTcp: '',
+      promRttVarTcp: '',
+      promPmtuTcp: '',
+      // Variables TCP Servidor
+      promTotalBytesUdp: '',
+      promBitPerSecondUdp: '',
+      jitterUdp: '',
+      packetsUdp: '',
 
-      // Modelos para Los inputs Modales Elements
-      ipPort : '',
+      // Variable para el Modal del Enlace Link
+      linkActive: false,
+
+      // Variables auxiliares para los datos del Trafico
+      // TCP
+      totalBytesTcpclient: '',
+      promTotalBytesTcpClient: '',
+      promBitsPerSecondTcpClient: '',
+      totalBytesTcpServer: '',
+      promTotalBytesTcpServer: '',
+      promBitsPerSecondTcpServer: '',
       
 
       infoModal: [],
@@ -4466,10 +3395,19 @@ export default {
       //Varibales posición Fabric
       x0: "",
       y0: "",
+
+      // Variables asociadas a funciones en el Canvas
+      copiedObject: null,
+      copiedObjects: new Array(),
+      cutted: false,
+      stateFabric: [],
+      mods: 0,
+      savedFabric: null,
+
       //Variables Insertar elemento
       imgElement: "",
       tagElement: "",
-
+      
       //Eventos de uso en el canvas
       insertOP: false,
       imgUrl: "",
@@ -4590,13 +3528,12 @@ export default {
 
   methods: {
     initCanvas() {
-      // Esta Variable Contendra Todas las asociaciones de Los Switchs con su Controlador *- Variable independiente del Canvas
-      this.netWork['controller_switch']={};
       //Declaracion de la variable Fabric para el lienzo Canvas
       const ref = this.$refs.canvas;
       this.canvas = new fabric.Canvas(ref, {
-        // fireRightClick: true,
-        // fireMiddleClick: true,
+        fireRightClick: true,
+        fireMiddleClick: true,
+        stopContextMenu: true, // <--  prevent context menu from showing
       });
       /* -------------------Eventos del Mouse en el Fabric ------------------- */
 
@@ -4625,13 +3562,16 @@ export default {
       //Mouse Down Event
       this.canvas.on("mouse:down", (options) => {
         var pointer = this.canvas.getPointer(options.e);
+        this.action = 'insert';
         this.x0 = pointer.x; //get initial starting point of x
         this.y0 = pointer.y; //get initial starting point of y
         switch (this.herramienta) {
           case "cursor":
             var objectActive = this.canvas.getActiveObject();
+            
             if (objectActive != null) {
-              console.log('Id: '+ objectActive.id + ' Cont: '+ objectActive.elementContainer);
+
+              console.log(objectActive);
               // Se reestablece el Libre movimiento del Elemento  Activo (Si por alguna otra instancia ha sido bloqueado)
               objectActive && objectActive.set({
                 lockMovementX: false,
@@ -4641,7 +3581,11 @@ export default {
                 lockUniScaling: false,
                 lockRotation: false,
               });
-              
+              if(options.button === 3){
+                if(objectActive.id.charAt(0) == 'h'){
+                  this.openModal('specific');
+                }
+              }
               //Si el Elemento Activo es una Asociación o Link aumenta su Grosor
               if (objectActive.id.charAt(0) == "l" || objectActive.id.charAt(0) == "n") {
                 objActive && objActive.set({
@@ -4689,6 +3633,11 @@ export default {
           case "host":
             this.imgElement = require("../assets/img/host.png");
             this.tagElement = "h" + (this.tagHost.length + 1);
+            // Reestablece las variables asociadas al Modal Host
+            this.ipHost = '';
+            this.sheduler = 'Ninguno';
+            this.limitCpu = '';
+            this.coreCpu = '';
             this.openModal("host");
             this.herramienta = "cursor";
             break;
@@ -4729,7 +3678,6 @@ export default {
                     this.objectActiveLinkInitial.position = 'initial';
                   };
                   this.selected = link;
-                  console.log('L:'+ this.selected);
                   this.canvas.add(link);
                 }
                 // Si la interfaz de red es la segunda seleccion del enlace a realizar y su estado es NO conectado, el elemento inicial del enlace NO debe ser nulo
@@ -4821,6 +3769,11 @@ export default {
           case "label":
             break;
           case "delete":
+            var activeObject = this.canvas.getActiveObject();
+            if(activeObject){
+              this.deleteObjects(activeObject);
+            }
+            this.herramienta= 'cursor';
             break;
         }
       });
@@ -4981,24 +3934,144 @@ export default {
     });
       // Doble Click en elemento Host 
       this.canvas.on('mouse:dblclick', (e) =>{
-        var objectActive = this.canvas.getActiveObject();
-        if (objectActive != null) {
-          if(objectActive.id.charAt(0) == 'h'){
-            this.openModal('specific');
-          }
+        switch(this.herramienta){
+          case 'cursor':
+            var objectActive = this.canvas.getActiveObject();
+            if (objectActive != null) {
+              this.action = 'visor';              
+              var tagActive = objectActive.id;
+              this.tagElement = tagActive;
+              if(tagActive.charAt(0) == 'h'){
+                if(objectActive.ipHost){
+                  this.ipHost = objectActive.iPHost;
+                };
+                if(objectActive.sheduler){ 
+                  this.sheduler = objectActive.sheduler;
+                };
+                if(objectActive.cpuLimit){
+                  this.limitCpu = objectActive.cpuLimit;
+                };
+                if(objectActive.cpuCores){
+                this.coreCpu = objectActive.cpuCores;
+                };
+                this.openModal('host');
+              }else if(tagActive.charAt(0) == 's'){
+                if(objectActive.type){
+                  this.typeSwitch = objectActive.type;
+                };
+                if(objectActive.stp){ 
+                  this.stpSwitch = objectActive.stp;
+                };
+                if(objectActive.stpPriority){ 
+                  this.stpPriority = objectActive.stpPriority;
+                };
+                if(objectActive.ipSwitch){
+                  this.ipSwitch = objectActive.ipSwitch;
+                };
+                if(objectActive.dpctlPort){
+                  this.portSwitch = objectActive.dpctlPort;
+                };
+                if(objectActive.protocol){
+                  this.protocolSwitch = objectActive.protocol;
+                };
+                if(objectActive.dataPath){
+                  this.dataPath = objectActive.dataPath;
+                };
+                if(objectActive.dataPathId){
+                  this.dataPathId = objectActive.dataPathId;
+                };
+                if(objectActive.dataPathOpt){
+                  this.dataPathOpt = objectActive.dataPathOpt;
+                };
+                if(objectActive.failModel){
+                  this.failModel = objectActive.failModel;
+                };
+                if(objectActive.reconnectedSwitch){
+                  this.reconnectedSwitch = objectActive.reconnectedSwitch;
+                };
+                if(objectActive.inBand){
+                  this.inBand = objectActive.inBand;
+                };
+                if(objectActive.inNameSpace){
+                  this.inNameSpace = objectActive.inNameSpace;
+                };
+                if(objectActive.batch){
+                  this.batch = objectActive.batch;
+                };
+                if(objectActive.verbose){
+                  this.verbose = objectActive.verbose;
+                };
+                this.openModal('switch');
+              }else if(tagActive.charAt(0) == 'c'){
+                if(objectActive.type){
+                  this.typeController = objectActive.type;
+                };
+                if(objectActive.iPController){
+                  this.ipController = objectActive.iPController;
+                };
+                if(objectActive.portController){
+                  this.portController = objectActive.portController;
+                };
+                if(objectActive.protocl){
+                  this.protocolController = objectActive.protocol;
+                };
+                this.openModal('controller');
+              }else if(tagActive.charAt(0) == 'e'){
+                if(objectActive.ipPort){
+                  this.ipPort = objectActive.ipPort;
+                };
+                if(objectActive.state){ 
+                  if(objectActive.state == 'connected'){
+                    this.linkActive = true;
+                    objectActive.connection.forEach(cn =>{
+                      if(cn.id == 'link'){
+                        if(cn.loss){
+                          this.lossLink = cn.loss;
+                        };
+                        if(cn.queue){
+                          this.queueLink = cn.queue;
+                        };
+                        if(cn.jitter){
+                          this.jitterLink = cn.jitter;
+                        };
+                        if(cn.delay){
+                          this.delayLink = cn.dejay;
+                        };
+                        if(cn.bw){
+                          this.bwLink = cn.bw;
+                        };
+                      }
+                    });
+                  }else{
+                    this.linkActive = false;
+                    this.lossLink = '';
+                    this.queueLink = '';
+                    this.jitterLink = '';
+                    this.delayLink = '';
+                    this.bwLink = '';
+                  };
+                };
+                this.openModal('port');
+              }
+            }
+
         }
+
       });
     },
 
     openModal(mod) {
       var open = mod;
       if (open == "host") {
+        this.stateIpHost = null;
         return this.$bvModal.show("modal-host");
       }
       if (open == "controller") {
+        this.stateIpController = null;
         return this.$bvModal.show("modal-controller");
       }
       if (open == "switch") {
+        this.stateIpSwitch = null;
         return this.$bvModal.show("modal-switch");
       }
       if (open == "port") {
@@ -5071,20 +4144,47 @@ export default {
       if (open == 'specific'){
         return this.$bvModal.show("modal-specific");
       };
+      if (open == "link") {
+        return this.$bvModal.show("modal-link");
+      };
       
     },
 
     closeModal(mod) {
       if (mod == "host") {
+        this.ipHost = '';
+        this.sheduler = 'Ninguno';
+        this.limitCpu = '';
+        this.coreCpu = '';
         return this.$bvModal.hide("modal-host");
       }
       if (mod == "switch") {
+        this.typeSwitch = 'Ninguno';
+        this.stpSwitch = '';
+        this.stpPriority = '';
+        this.ipSwitch = '';
+        this.portSwitch = '';
+        this.protocolSwitch = 'OpenFlow 1.2';
+        this.dataPath = 'Ninguno';
+        this.dataPathId = '';
+        this.dataPathOpt ='';
+        this.failModel = 'Ninguno';
+        this.reconnectSwitch = '';
+        this.inBand = '';
+        this.inNameSpace = '';
+        this.batch = '';
+        this.verbose = '';
         return this.$bvModal.hide("modal-switch");
       }
       if (mod == "controller") {
+        this.typeController = 'Por Defecto';
+        this.ipController = '';
+        this.portController = '';
+        this.protocolController = 'Ninguno';
         return this.$bvModal.hide("modal-controller");
       }
       if (mod == "port") {
+        this.ipPort = '';
         return this.$bvModal.hide("modal-port");
       }
       if (mod == "single") {
@@ -5101,6 +4201,9 @@ export default {
       }
       if (mod == "info") {
         return this.$bvModal.hide("modal-info");
+      };
+      if (mod == "link") {
+        return this.$bvModal.hide("modal-link");
       }
     },
 
@@ -5122,7 +4225,9 @@ export default {
             cpuCores: obj.cpuCores,
           };
           this.elements.push(element);
-        } else if (obj.id.charAt(0) == "s") {
+        } 
+        //Recopila la información de cada Switch
+        else if (obj.id.charAt(0) == "s") {
           //Recopila la información de cada Switch
           var element = {
             id: obj.id,
@@ -5132,9 +4237,10 @@ export default {
             batch: obj.batch,
             inNameSpace: obj.inNameSpace,
             inBand: obj.inBand,
-            modej: obj.model,
-            dataPathArgs: obj.dataPathArgs,
-            dataPathIP: obj.dataPathIP,
+            failMode: obj.failModel,
+            reconnectedSwitch: obj.reconnectedSwitch,
+            dataPathOpt: obj.dataPathOpt,
+            dataPathId: obj.dataPathId,
             dataPath: obj.dataPath,
             protocol: obj.protocol,
             dpctlPort: obj.dpctlPort,
@@ -5142,21 +4248,26 @@ export default {
             stpPriority: obj.stpPriority,
             stp: obj.stp,
             type: obj.type,
+            controller: obj.controller,
           };
           this.elements.push(element);
-        } else if (obj.id.charAt(0) == "c") {
-          //Recopila la información de cada Controlador
+        } 
+        //Recopila la información de cada Controlador
+        else if (obj.id.charAt(0) == "c" && obj.id != 'controller') {
+          //Recopila la información de cada Controlador y evita que tome la asociacion de controlador
           var element = {
             id: obj.id,
             rX: obj.left,
             rY: obj.top,
             type: obj.type,
-            iPController: obj.iPController,
+            ipController: obj.ipController,
             portController: obj.portController,
             protocol: obj.protocol,
           };
           this.elements.push(element);
-        } else if (obj.id.charAt(0) == "l") {
+        }
+        //Recopila la información de cada Enlace
+        else if (obj.id.charAt(0) == "l") {
           //Recopila la información de cada Asociacion tipo Link
           var element = {
             id: obj.id,
@@ -5172,7 +4283,9 @@ export default {
             intfName2: obj.intfName2,
           };
           this.elements.push(element);
-        } else if (obj.id.charAt(1) == "a") {
+        } 
+        //Recopila la información de cada Label
+        else if (obj.id.charAt(1) == "a") {
           //Para los Labels identifica la letra a de lAbel - Recopila la información de cada Label
           var element = {
             id: obj.id,
@@ -5181,12 +4294,15 @@ export default {
             label: obj.label,
           };
           elements.push(element);
-        } else if (obj.id.charAt(0) == "e") {
+        } 
+        //Recopila la información de cada Puerto
+        else if (obj.id.charAt(0) == "e") {
           var element = {
             id: obj.id,
             rX: obj.left,
             rY: obj.top,
-            iPPort: obj.iPPort,
+            ipPort: obj.ipPort,
+            container: obj.elementContainer,
           };
           this.elements.push(element);
         }
@@ -5196,7 +4312,7 @@ export default {
     starEmulation() {
       this.loadInfoElements();
       this.llenarListaHost();
-      var ipClient = $("#inputIP_xclient").val();
+      var ipClient = this.ipClient;
       this.netWork["items"] = this.elements;
       this.netWork["IpClient"] = ipClient;
 
@@ -5211,7 +4327,6 @@ export default {
       axios
         .post(this.path, this.netWork)
         .then((response) => {
-          var h1 = $("#text-done");
           var validator = Object.keys(response.data).includes("red");
 
           if (validator == true) {
@@ -5757,35 +4872,28 @@ export default {
               this.datosYPmtu.push(0);
 
               //Server TCP
-              $('#modo_op_TCPServer').text(String(modeOp));
-              $('#protocol_TCPServer').text(String(protocol));
-              $('#duration_TCPServer').text(String(time_e));
-              $('#size_block_TCPServer').text(String(blkSize));
-              $('#bloque_TCPServer').text(String(blocks));
-              $('#tcp_mss_TCPServer').text(String(tcpMssDefault));
-              $('#snd_buffer_TCPServer').text(String(sndBufActual));
-              $('#rcv_buffer_TCPServer').text(String(rcvBufActual));
-              $('#total_bytes_TCPServer').text(String(totalBytesTxServer));
-              $('#prom_tbytes_TCPServer').text(String(promTotalBytesTxServer));
-              $('#prom_bit_TCPServer').text(String(promBitsPerSecondServer));
+              this.modeOpTcp = modeOp;
+              this.protocolTcp = protocol;
+              this.timeTcp = time_e;
+              this.blockTcp = blkSize;
+              this.blockTcp = blocks;
+              this.tcpMssTcp = tcpMssDefault;
+              this.sndBufferTcp = sndBufActual;
+              this.rcvBufferTcp = rcvBufActual;
+              this.totalBytesTcpServer = totalBytesTxServer;
+              this.promTotalBytesTcpServer = promTotalBytesTxServer;
+              this.promBitsPerSecondTcpServer = promBitsPerSecondServer;
+              
 
               //Cliente TCP
-              $('#modo_op').text(String(modeOp));
-              $('#protocol').text(String(protocol));
-              $('#duration').text(String(time_e));
-              $('#size_block').text(String(blkSize));
-              $('#bloque').text(String(blocks));
-              $('#tcp_mss').text(String(tcpMssDefault));
-              $('#snd_buffer').text(String(sndBufActual));
-              $('#rcv_buffer').text(String(rcvBufActual));
-              $('#total_bytes').text(String(totalBytesTx));
-              $('#prom_tbytes').text(String(promTotalBytesTx));
-              $('#prom_bit').text(String(promBitsPerSecond));
-              $('#prom_sndcwnd').text(String(promSndCwnd));
-              $('#prom_rtt').text(String(promRtt));
-              $('#prom_rtx').text(String(promRetransmits));
-              $('#prom_rttvar').text(String(promRttVar));
-              $('#prom_pmtu').text(String(promPmtu));
+              this.totalBytesTcpclient = totalBytesTx;
+              this.promTotalBytesTcpClient = promTotalBytesTx;
+              this.promBitsPerSecondTcpClient = promBitsPerSecond;
+              this.promSndCwndTcp = promSndCwnd;
+              this.promRttTcp = promRtt;
+              this.promRetransmitsTcp = promRetransmits;
+              this.promRttVarTcp = promRttVar
+              this.promPmtuTcp = promPmtu;             
 
             }
           }
@@ -5798,10 +4906,24 @@ export default {
         });
     },
     grafficGenerator() {
-      this.canvasAnswerClient = true;
+      this.canvasGraphic = true;
+      this.metrics = true;
+      this.protocolTrafficActual = 'TCP'; //Quitar esta Linea - solo es para pruebas
       if (this.protocolTrafficActual == 'TCP'){
-        
+        this.activeUdp = false;
+        this.activeTcp = true;
         if (this.trafficGraphic == "Servidor") {
+          this.totalAnswerUdp = false;
+          this.clientAnswerUdp = false;
+          this.serverAnswerUdp = false;
+          this.clientAnswerTcp = false;
+          this.totalAnswerTcp = false;
+          this.serverAnswerTcp = true;
+
+          this.totalBytesTcp = this.totalBytesTcpServer;
+          this.promTotalBytesTcp = this.promTotalBytesTcpServer;
+          this.promBitsPerSecondTcp = this.promBitsPerSecondTcpServer;
+
           this.chartdata = {
             labels: this.labelsGraphic,
             datasets: [
@@ -5834,15 +4956,22 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
           };
-          this.totalAnswerUdp = false;
-          this.clientAnswerUdp = false;
-          this.serverAnswerUdp = false;
-          this.clientAnswerTcp = false;
-          this.totalAnswerTcp = false;
-          this.serverAnswerTcp = true;
+
 
 
         } else if (this.trafficGraphic == "Cliente") {
+          this.totalAnswerUdp = false;
+          this.totalAnswerTcp = false;
+          this.clientAnswerUdp = false;
+          this.serverAnswerTcp = false;
+          this.serverAnswerUdp = false;
+          this.clientAnswerTcp = true;
+
+          
+          this.totalBytesTcp = this.totalBytesTcpclient;
+          this.promTotalBytesTcp = this.promTotalBytesTcpClient;
+          this.promBitsPerSecondTcp = this.promBitsPerSecondTcpClient;
+
           this.chartdata = {
             labels: this.labelsGraphic,
             datasets: [
@@ -5910,14 +5039,16 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
           };
+
+    
+        } else if (this.trafficGraphic == "General") {
           this.totalAnswerUdp = false;
-          this.totalAnswerTcp = false;
           this.clientAnswerUdp = false;
           this.serverAnswerTcp = false;
           this.serverAnswerUdp = false;
-          this.clientAnswerTcp = true;
-    
-        } else if (this.trafficGraphic == "General") {
+          this.clientAnswerTcp = false;
+          this.totalAnswerTcp = true;
+/*
           var totalDatosYNumBytes = [];
           var totalDatosYBitsPerSecond = [];
           var longClient = this.datosYNumBytes.length;
@@ -5952,7 +5083,7 @@ export default {
                 totalDatosYNumBytes[i] = total;
             }
           }
-          //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
+          //Suma los datos Totales de Numero de Bits por Segundo del Cliente y Servidor
           if(longClientBits > longServerBits){
             for(var i = 0; i < longClientBits; i ++){
               if (i >= longServerBits){
@@ -5978,7 +5109,23 @@ export default {
                 var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
                 totalDatosYBitsPerSecond[i] = total;
             }
-          }
+          };
+          // Calulo de Totales y Promedio Generales del Tráfico
+          var totalBytesTcpTotal = 0;
+          var promTototalBytesTcpTotal = 0;
+          var promBitsPerSecondTcpTotal = 0;
+
+          for(var i=0 ; i<totalDatosYNumBytes.length: i++){
+            totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
+          };
+          for(var i=0 ; i<totalDatosYBitsPerSecond.length: i++){
+            promTotalBitsPerSecondTcpTotal = promTotalBitsPerSecond + totalDatosYBitsPerSecond[i];
+          };
+
+          this.totalBytesTcp = totalBytesTcpTotal;
+          this.promTotalBytesTcp = totalBytesTcpTotal / totalDatosYNumBytes.length;
+          this.promBitsPerSecondTcp = promTotalBitsPerSecondTcpTotal / totalDatosYBitsPerSecond.length;
+
           this.chartdata = {
             labels: this.labelsGraphic,
             datasets: [
@@ -6010,20 +5157,19 @@ export default {
             },
             responsive: true,
             maintainAspectRatio: false,
-          };
-          this.totalAnswerUdp = false;
-          this.clientAnswerUdp = false;
-          this.serverAnswerTcp = false;
-          this.serverAnswerUdp = false;
-          this.clientAnswerTcp = false;
-          this.totalAnswerTcp = true;
+          };*/
+          
 
         }
+      }
+      else if(this.protocolTrafficActual == 'UDP'){
+        
       };
     },
     changeGraphic() {
       this.grafficGenerator();
     },
+
     // Creacion elementos Fabric
     makeLink(coords, linkType) {
       if (linkType == "controller") {
@@ -6034,14 +5180,16 @@ export default {
           selectable: false,
           hasBorders: false,
           hasControls: false,
-          /*   lockMovementX: true,
-               lockMovementY: true,
-               lockScalingX: true,
-               lockScalingY: true,
-               lockUniScaling: true,
-               lockRotation: true,*/
+          lockMovementX: true,
+          lockMovementY: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          lockUniScaling: true,
+          lockRotation: true,
           // evented: false,
           id: "controller",
+          // Si esta asosiado a un switch
+          swLoad: []
         });
       } else if (linkType == "portHost") {
         return new fabric.Line(coords, {
@@ -6059,6 +5207,8 @@ export default {
           lockRotation: true,
           // evented: false,
           id: "portHost",
+          belonging: '',
+          
         });
       } else if (linkType == "link") {
         return new fabric.Line(coords, {
@@ -6093,6 +5243,7 @@ export default {
           lockRotation: true,
           //evented: false,
           id: "portSwitch",
+          belonging: ''
         });
       } else {
         return new fabric.Line(coords, {
@@ -6115,110 +5266,158 @@ export default {
 
       //
     },
-
-
-// Esta funcion no hace nada ...
-    linkMaker(topo) {
-      var pareja;
-      var k = [];
-      if (topo == "single") {
-        // Creador de Pares de Conexión según la Red
-        for (var temp = 1; temp <= this.tagHost.length; temp++) {
-          pareja = "(s1," + this.tagHost[temp - 1] + ")";
-          k[temp - 1] = pareja;
-        }
-        // console.log("Conexiones:" + k);
-
-        // puntos iniciales del switch
-        var xInicial = this.netInfo[this.netInfo.length - 1].rX;
-        var yInicial = this.netInfo[this.netInfo.length - 1].rY;
-
-        for (var y = 0; y < this.netInfo.length - 1; y++) {
-          var xFinal = this.netInfo[y].rX;
-          var yFinal = this.netInfo[y].rY;
-          var line = this.makeLink(
-            [xInicial + 25, yInicial, xFinal + 28, yFinal + 25],
-            "normal"
-          );
-          this.link[y] = line;
-
-          this.canvas.add(line);
-        }
+    // Funcion que valida un ip sin mask
+    validateIp(ip){
+      const patronIp= new RegExp("^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$");
+      if(ip.search(patronIp) !== 0){
+        return false;
+      }else{
+        return true;
       }
     },
-
+    // Actualiza o Inserta un elemento con sus opciones
     element() {
       if (this.tagElement.charAt(0) == "h") {
-        var iPHost = $("#inputFancyIPHost").val();
-        var sheduler = $("#optionShedulerFancyHost option:selected").text();
-        var cpuLimit = $("#inputFancyCpuLimitHost").val();
-        var cpuCores = $("#inputFancyCPUCoresHost").val();
-        this.armElement("h");
-        // this.createElement("h");
-        this.tagHost.push(this.tagElement);
-
+        var ipHostOk = '';
+        if(this.ipHost != ''){
+          if(this.validateIp(this.ipHost)){
+            this.stateIpHost = true;
+            ipHostOk = this.ipHost;
+          }else{
+            this.stateIpHost = false;
+          };
+        }else{
+          this.stateIpHost = true;
+        };
+        if(this.stateIpHost == true || this.stateIpHost == null){ 
+          if(this.action != 'visor'){
+            this.armElement("h");
+            this.tagHost.push(this.tagElement);
+          };
         this.canvas.forEachObject((obj) => {
           if (obj.id == this.tagElement) {
-            obj.iPHost = iPHost;
-            obj.sheduler = sheduler;
-            obj.cpuLimit = cpuLimit;
-            obj.cpuCores = cpuCores;
+            obj.ipHost = ipHostOk;
+            obj.sheduler = this.sheduler;
+            obj.cpuLimit = this.limitCpu;
+            obj.cpuCores = this.coreCpu;
           }
         });
-        this.closeModal("host");
+          this.closeModal("host");
+          // Reiniciar Variables a su estado Inicial
+          this.ipHost = '';
+          this.sheduler = 'Ninguno';
+          this.limitCpu = '';
+          this.coreCpu = '';
+        };
       } else if (this.tagElement.charAt(0) == "s") {
-        var type = $("#optionTypeFancySwitch option:selected").text();
-        var stp = $("#STPFancySwitch:checkbox:checked").val();
-        var stpPriority = $("#inputFancySTPPriority").val();
-        var ipSwitch = $("#inputFancyIPSwitch").val();
-        var dpctlPort = $("#inputFancyDPCTLPort").val();
-        var protocol = $("#optionProtocolFancySwitch option:selected").text();
-        var dataPath = $("#optionDataPathFancySwitch option:selected").text();
-        var dataPathIP = $("#inputFancyDataPathIDSwitch").val();
-        var dataPathArgs = $("#inputFancyOfDataPathArgsSwitch").val();
-        var model = $("#optionFailModeFancySwitch option:selected").text();
-        var inBand = $("#InBandFancySwitch:checkbox:checked").val();
-        var inNameSpace = $("#InNameSpaceFancySwitch:checkbox:checked").val();
-        var batch = $("#BatchFancySwitch:checkbox:checked").val();
-        var verbose = $("#VerboseFancySwitch:checkbox:checked").val();
-        this.armElement("s");
-        this.tagSwitch.push(this.tagElement);
+        var ipSwitchOk ='';
+        if(this.ipSwitch != ''){
+          if(this.validateIp(this.ipSwitch)){
+            ipSwitchOk = this.ipSwitch;
+            this.stateIpSwitch = true;
+          }else{
+            this.stateIpSwitch = false;
+          }
+        }else{
+          this.stateIpSwitch = true;
+        };
 
+        if(this.stateIpSwitch == true || this.stateIpSwitch == null){ 
+          if(this.action != 'visor'){
+            this.armElement("s");
+            this.tagSwitch.push(this.tagElement);
+          };
         this.canvas.forEachObject((obj) => {
           if (obj.id == this.tagElement) {
-            obj.verbose = verbose;
-            obj.batch = batch;
-            obj.inNameSpace = inNameSpace;
-            obj.inBand = inBand;
-            obj.model = model;
-            obj.dataPathArgs = dataPathArgs;
-            obj.dataPathIP = dataPathIP;
-            obj.dataPath = dataPath;
-            obj.protocol = protocol;
-            obj.dpctlPort = dpctlPort;
-            obj.ipSwitch = ipSwitch;
-            obj.stpPriority = stpPriority;
-            obj.stp = stp;
-            obj.type = type;
+            obj.verbose = this.verbose;
+            obj.batch = this.batch;
+            obj.inNameSpace = this.inNameSpace;
+            obj.inBand = this.inBand;
+            obj.reconnectSwitch = this.reconnectSwitch;
+            obj.failModel = this.failModel;
+            obj.dataPathOpt = this.dataPathOpt;
+            obj.dataPathId = this.dataPathId;
+            obj.dataPath = this.dataPath;
+            obj.protocol = this.protocolSwitch;
+            obj.dpctlPort = this.portSwitch;
+            obj.ipSwitch = ipSwitchOk;
+            obj.stpPriority = this.stpPriority;
+            obj.stp = this.stpSwitch;
+            obj.type = this.typeSwitch;
           }
         });
+        this.closeModal("switch");
+        // Reiniciar variables a su estado Inicial
+        this.typeSwitch = 'Ninguno';
+        this.stpSwitch = '';
+        this.stpPriority = '';
+        this.ipSwitch = '';
+        this.portSwitch = '';
+        this.protocolSwitch = 'OpenFlow 1.2';
+        this.dataPath = 'Ninguno';
+        this.dataPathId = '';
+        this.dataPathOpt ='';
+        this.failModel = 'Ninguno';
+        this.reconnectSwitch = '';
+        this.inBand = '';
+        this.inNameSpace = '';
+        this.batch = '';
+        this.verbose = '';
+        }
+
       } else if (this.tagElement.charAt(0) == "c") {
-        var type = $("#optionTypeFancyController option:selected").text();
-        var iPController = $("#inputFancyIpController").val();
-        var portController = $("#inputFancyPuertoController").val();
-        var protocol = $(
-          "#optionProtocolFancyController option:selected"
-        ).text();
-        this.armElement("c");
-        this.tagController.push(this.tagElement);
+        var ipControllerOk = '';
+        if(this.ipController != ''){
+          if(validateIp(this.ipController)){
+            ipControllerOk = this.ipController;
+            this.stateIpController = true;
+          }else{
+            this.stateIpcontroller = false;
+          }
+        }else{
+          this.stateIpController = true;
+        };
+
+        if(this.stateIpSwitch == true || this.stateIpSwitch == null){
+          if(this.action != 'visor'){
+            this.armElement("c");
+            this.tagController.push(this.tagElement);
+          };
         this.canvas.forEachObject((obj) => {
-          if (obj.id && obj.id === tag) {
-            obj.type = type;
-            obj.iPController = iPController;
-            obj.portController = portController;
-            obj.protocol = protocol;
+          if (obj.id && obj.id === this.tagElement) {
+            obj.type = this.typeController;
+            obj.ipController = ipControllerOk;
+            obj.portController = this.portController;
+            obj.protocol = this.protocolController;
           }
         });
+        this.closeModal("controller");
+        // Reiniciar Variables a su estado Inicial
+        this.typeController = 'Por Defecto';
+        this.ipController = '';
+        this.portController = '';
+        this.protocolController = 'Ninguno';
+        };
+        
+      }
+      // Este no es para un puerto eth sino para el Link que contiene la opcion de agregar o no un puerto esta en addPort()
+      else if (this.tagElement.charAt(0) == "e"){
+        var port = this.canvas.getActiveObject();
+        port.connection.forEach(cn =>{
+          if(cn.id == 'link'){
+            cn.loss = this.lossLink;
+            cn.queue = this.queueLink;
+            cn.jitter = this.jitterLink;
+            cn.delay = this.delayLink;
+            cn.bw = this.bwLink;
+          };
+        });
+        this.closeModal('link');
+        this.lossLink = '';
+        this.queueLink = '';
+        this.jitterLink = '';
+        this.delayLink = '';
+        this.bwLink = '';
       }
     },
 
@@ -6284,22 +5483,21 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "portHost"
           );
-
+          link.belonging= this.tagElement;
           elemento.connectionLine.push(link);
           groupHost.connection.push(link);
         }
 
         // Asociamos el grupo con cada enlace
-        for (var i = 0; i < 2; i++) {
-          var line = elemento.connectionLine[i];
-          groupHost.line = line;
-        }
+        // for (var i = 0; i < 2; i++) {
+        //   var line = elemento.connectionLine[i];
+        //   groupHost.line = line;
+        // }
         var port = new Image();
         port.src = require("../assets/img/port.png");
 
         for (var i = 0; i < 2; i++) {
           var asociate = elemento.elementConnection[i].elementOrigin;
-
           if (asociate.charAt(0) == "h") {
             var pt = new fabric.Image(port);
             pt.set({
@@ -6310,6 +5508,7 @@ export default {
               connectionLine: [], // Contenedor de las lineas de conexión.
             });
             // Asignación de lineas por cada puerto
+            
             pt.connectionLine.push(elemento.connectionLine[i]);
 
             var label = new fabric.Textbox("eth" + i, {
@@ -6335,10 +5534,7 @@ export default {
 
             groupHostPort.connection.push(elemento.connectionLine[i]);
 
-            var li = elemento.connectionLine[i];
-
-            // Asignación de lineas por cada puerto en el grupo
-            groupHost.li = li;
+           
             this.canvas.add(groupHost.connection[i]);
             this.canvas.add(groupHostPort);
           }
@@ -6372,7 +5568,7 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "portSwitch"
           );
-
+          link.belonging = this.tagElement;
           elemento.connectionLine.push(link);
           groupSwitch.connection.push(link);
         }
@@ -6436,7 +5632,7 @@ export default {
         }
 
         this.canvas.add(groupSwitch);
-        this.closeModal("switch");
+        
       } else if (idElement == "c") {
         var groupController = new fabric.Group([elemento, text], {
           left: this.x0,
@@ -6449,7 +5645,7 @@ export default {
           connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
         });
         this.canvas.add(groupController);
-        this.closeModal("controller");
+        
       }
     },
 
@@ -6457,89 +5653,84 @@ export default {
       var objectActive = this.canvas.getActiveObject();
       
       if(objectActive != null){
-        console.log(objectActive.id);
-        if(objectActive.id.charAt(0) == 's' || objectActive.id.charAt(0) == 'h'){
-          var aux = objectActive.connection.length;
-          console.log(objectActive.connection[aux-1].id);
-          var interfaces = [];
-          this.canvas.forEachObject((object) =>{
-            if(object.elementContainer == objectActive.id){
-              interfaces.push(object);
+        if(this.action != 'visor'){ 
+          if(objectActive.id.charAt(0) == 's' || objectActive.id.charAt(0) == 'h'){
+            var aux = objectActive.connection.length;
+            console.log(objectActive.connection[aux-1].id);
+            var interfaces = [];
+            this.canvas.forEachObject((object) =>{
+              if(object.elementContainer == objectActive.id){
+                interfaces.push(object);
+              }
+            });
+
+            console.log(interfaces);
+            var obj = interfaces[interfaces.length-1];
+            var indice = parseInt(obj.id.split('eth')[1]) + 1;
+            
+            var left = obj.left;  
+            var top = obj.top;
+
+            var port = new Image();
+            port.src = require("../assets/img/port.png");
+            var pt = new fabric.Image(port);
+            pt.set({
+              scaleX: 0.035,
+              scaleY: 0.035,
+              padding: 0,
+              connectionLine: [], // Contenedor de las lineas de conexión.
+            });
+            var label = new fabric.Textbox("eth" + (indice) , {
+              top: 22,
+              left: -5,
+              fontFamily: "arial",
+              fill: "#15435d",
+              fontSize: 15,
+            });
+
+            var groupHostPort = new fabric.Group([pt, label], {
+              left: left+ (65 - 15),
+              top: top,
+              hasControls: false,
+              hasBorders: false,
+              transparentCorners: false,
+              selectable: true,
+              elementContainer: objectActive.id,
+              identificator: "Hp",
+              id: "eth" + (indice),
+              connection: [], // Contenedor de lineas de conexión del grupo.
+            });
+            this.canvas.add(groupHostPort);
+            var connection = {};
+            connection.type = "association";
+            connection.elementOrigin = objectActive.id;
+            connection.x1 = objectActive.left + 30; //Coordenadas del Host x "centro"
+            connection.y1 = objectActive.top + 35; //Coordenadas del Host y  "centro"
+            connection.x2 = left + 60;
+            connection.y2 = top + 7;
+            connection.id = "a" + indice;
+            if(objectActive.id.charAt(0) == 'h'){ 
+              var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portHost');
+              link.belonging = objectActive.id;
             }
-          });
-
-          console.log(interfaces);
-          var obj = interfaces[interfaces.length-1];
-          var indice = parseInt(obj.id.split('eth')[1]) + 1;
-          
-          var left = obj.left;  
-          var top = obj.top;
-
-          var port = new Image();
-          port.src = require("../assets/img/port.png");
-          var pt = new fabric.Image(port);
-          pt.set({
-            scaleX: 0.035,
-            scaleY: 0.035,
-            padding: 0,
-            connectionLine: [], // Contenedor de las lineas de conexión.
-          });
-          var label = new fabric.Textbox("eth" + (indice) , {
-            top: 22,
-            left: -5,
-            fontFamily: "arial",
-            fill: "#15435d",
-            fontSize: 15,
-          });
-
-          var groupHostPort = new fabric.Group([pt, label], {
-            left: left+ (65 - 15),
-            top: top,
-            hasControls: false,
-            hasBorders: false,
-            transparentCorners: false,
-            selectable: true,
-            elementContainer: objectActive.id,
-            identificator: "Hp",
-            id: "eth" + (indice),
-            connection: [], // Contenedor de lineas de conexión del grupo.
-          });
-          this.canvas.add(groupHostPort);
-          var connection = {};
-          connection.type = "association";
-          connection.elementOrigin = objectActive.id;
-          connection.x1 = objectActive.left + 30; //Coordenadas del Host x "centro"
-          connection.y1 = objectActive.top + 35; //Coordenadas del Host y  "centro"
-          connection.x2 = left + 60;
-          connection.y2 = top + 7;
-          connection.id = "a" + indice;
-          if(objectActive.id.charAt(0) == 'h')
-            var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portHost');
-          else
-            var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portSwitch');
-          objectActive.connection.push(link);
-          objectActive.line = link;
-          groupHostPort.connection.push(link);
-          if(this.ipPort != ''){
-            console.log(this.ipPort);
-            groupHostPort.ip = (this.ipPort);
-          }
-          this.canvas.add(link);
-          this.canvas.sendToBack(link);
-          this.herramienta = 'cursor';
-          
-          
-          
-          
-
-          // if(objectActive.co){}
-
-
-        
-        };
+            else{ 
+              var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portSwitch');
+              link.belonging = objectActive.id;
+            }
+            objectActive.connection.push(link);
+            objectActive.line = link;
+            groupHostPort.connection.push(link);
+            groupHostPort.ipPort = (this.ipPort);
+            this.canvas.add(link);
+            this.canvas.sendToBack(link);
+            this.herramienta = 'cursor';
+          };
+        }else{
+          objectActive.ipPort = this.ipPort;
+        }
       };
-      this.ipPort = ''
       this.closeModal('port');
+      this.ipPort = ''
     },
 
     createTopology() {
@@ -6552,7 +5743,7 @@ export default {
           break;
 
         case "single":
-          var numberHost = $("#inputHostTemplate").val();
+          var numberHost = this.numHostTopology;
           this.numHost = numberHost;
           this.topologyMaker();
           this.closeModal("single");
@@ -6626,7 +5817,7 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "portHost"
           );
-
+          link.belonging = tag,
           elemento.connectionLine.push(link);
           groupHost.connection.push(link);
 
@@ -6702,7 +5893,7 @@ export default {
               [connection.x1, connection.y1, connection.x2, connection.y2],
               "portSwitch"
             );
-
+            link.belonging = tag;
             elemento.connectionLine.push(link);
             groupSwitch.connection.push(link);
           }
@@ -6791,8 +5982,14 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "controller"
           );
-          // Agregamos la asociacion del controlador y el switch al arreglo del la red
-          this.netWork['controller_switch'][this.tagSwitch[this.tagSwitch.length-1]] = tag;
+          
+          // Agrega la asociacion del controlador y el switch al arreglo del la red
+          this.canvas.forEachObject((obj) =>{
+            if(obj.id == String(this.tagSwitch[this.tagSwitch.length-1]) ){
+              obj.controller = tag;
+              link.swLoad.push(String(this.tagSwitch[this.tagSwitch.length-1]));
+            };
+          });       
 
           // Agrega la asociacion al arreglo de conexciones del Controlador
           elemento.connectionLine.push(link);
@@ -7178,8 +6375,206 @@ export default {
       }
     },
 
+    // Elimina el contenido del Canvas y Reinicia Variables
+    newDocument(){
+      this.canvas.clear();
+      this.tagHost =[];
+      this.tagSwitch= [];
+      this.tagController = [];
+      this.netInfo = [];
+      this.link = [];
+    },
+    
+    deleteObjects(activeObject){
 
-// Esta funcion no sirve
+      // Para la eliminacion de un elemento se tiene en cuenta el siguiente orden:
+      // 1. Se eliminan (de tener) los enlaces, o asociaciones de controlador.
+      // 2. Se eliminan (de tener) las asociaciones de puerto.
+      // 3. Se elimina el elemento de Red.
+
+      if(activeObject){
+        // Si el elemento seleccionado es un Puerto
+        if(activeObject.id.charAt(0) == 'e'){
+          // Si el puerto tiene un enlace (state = connected) (se pone indice 1, porque esa es la asociacion con el Elemento de red (PortSwtich- PortHost))
+          if(activeObject.connection.length > 1){
+            activeObject.connection.forEach(cn => {
+              if(cn.id === 'link'){
+                // Se elimina visualmente en el Fabric
+                this.canvas.remove(cn);
+                // Se Elimina la relacion de conexion con el Puerto
+                var i = activeObject.connection.indexOf(cn);
+                activeObject.connection.splice(i,1);
+                activeObject.state = '';
+                // Identifica y Elimina la relacion con cualquier otro elemento del Canvas
+                this.canvas.forEachObject(obj =>{
+                  if(obj.connection){
+                    obj.connection.forEach(con =>{
+                      if(con === cn){
+                        obj.state = '';                        
+                        var i = obj.connection.indexOf(con);
+                        obj.connection.splice(i,1);
+                      }
+                    });
+                  }
+                  
+                });
+              }
+            });
+
+          }
+          // Si el puerto solo tiene la asociacion con el puerto
+          else{
+            // Se evita borrar el puerto por defecto de cualquier Elemento de Red
+            if(activeObject.id != 'eth0'){ 
+              this.canvas.remove(activeObject);
+              var cn = activeObject.connection[0];
+              this.canvas.remove(cn);
+              this.canvas.forEachObject(obj =>{
+                if(obj.connection){
+                  // Identifica y elimina la relacion con otro elemento en el canvas
+                  obj.connection.forEach(con =>{
+                    if(cn === con ){
+                      var i = obj.connection.indexOf(con); 
+                      obj.connection.splice(i,1);
+                    }
+                  });
+                }
+
+              });
+            }
+          }
+        }
+        // Si el Elemento Seleccionado es un Host
+        else if(activeObject.id.charAt(0) == 'h'){
+          // Se Elimina el Host visualmente del Canvas
+          this.canvas.remove(activeObject);
+          activeObject.connection.forEach(cn =>{
+            // Se Eliminan las asociaciones con Puertos visualmente del Canvas
+            this.canvas.remove(cn);
+          });
+          this.canvas.forEachObject(obj =>{
+            if(obj.elementContainer){
+              // Se elimina lo asociado al puerto
+              if(obj.elementContainer == activeObject.id){                
+                this.deleteObjects(obj);
+                // Se elimina visualmente el puerto del Canvas
+                this.canvas.remove(obj);
+              }
+            }
+          });
+        }
+        // Si el Elemento Seleccionado es un Switch
+        else if(activeObject.id.charAt(0) == 's'){
+          var connectionSize = activeObject.connection.length;
+          var count = 0;
+          activeObject.connection.forEach(cn =>{
+            if(cn.id != 'controller'){
+              count += 1; 
+            };
+          });
+          // Si son iguales indica que solo asocianes de Puerto y no de Enlace
+          if( count === connectionSize){
+            this.canvas.remove(activeObject);
+            activeObject.connection.forEach(cn =>{
+              this.canvas.remove(cn);
+            });
+            this.canvas.forEachObject(obj =>{
+            if(obj.elementContainer){
+              // Se elimina lo asociado al puerto
+              if(obj.elementContainer == activeObject.id){                
+                this.deleteObjects(obj);
+                // Se elimina visualmente el puerto del Canvas
+                this.canvas.remove(obj);
+              }
+            }
+          });
+          }else{
+            activeObject.connection.forEach(cn =>{
+              if(cn.id === 'controller'){
+                this.canvas.remove(cn);
+                var i = activeObject.connection.indexOf(cn);
+                activeObject.connection.splice(i,1);
+                this.canvas.forEachObject(obj =>{
+                  if(obj.connection){
+                    obj.connection.forEach(con =>{
+                      if(con === cn){
+                        var i = obj.connection.indexOf(con);
+                        obj.connection.splice(i,1);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+            
+            
+            
+            
+            /*else if(cn.id === 'controller'){
+              this.canvas.remove(cn);
+              var i = activeObject.connection.indexOf(cn);
+              activeObject.connection.splice(i,1);
+              this.canvas.forEachObject(obj =>{
+                if(obj.connection){
+                  obj.connection.forEach(con =>{
+                    if(con === cn){
+                      var i = obj.connection.indexOf(con);
+                      obj.connection.splice(i,1);
+                    }
+                  });
+                }
+              });
+            }*/
+
+          activeObject.connection.forEach(cn =>{
+            
+          });
+        }
+        // Si el Elemento Seleccionado es un Controlador
+        else if(activeObject.id.charAt(0) == 'c'){
+          if(activeObject.connection.length > 0){
+            activeObject.connection.forEach(cn =>{
+              this.canvas.remove(cn);
+              var i = activeObject.connection.indexOf(cn);
+              activeObject.connection.splice(i,1);
+              this.canvas.forEachObject(obj =>{
+                if(obj.connection){
+                  obj.connection.forEach(con =>{
+                    if(con === cn){
+                      var i = obj.connection.indexOf(con);
+                      obj.connection.splice(i,1);
+                      obj.controller = '';
+                    }
+                  })
+                }
+              });
+            })            
+          }else{
+            this.canvas.remove(activeObject);
+            this.canvas.forEachObject(obj =>{
+              if(obj.controller){
+                if(obj.controller === activeObject.id){
+                  obj.controller = '';
+                }
+              }
+            })
+          };
+        };
+      };
+    },
+    saveCanvas(){
+      console.log(this.canvas);
+      var currentCanvas = JSON.stringify(this.canvas); //Esta linea es de Prueba ya q la informacion de solo el canvas no es suficiente
+      this.savedFabric = currentCanvas;
+    },
+
+    loadCanvas(){
+      this.canvas.loadFromJSON(this.savedFabric);
+      this.canvas.renderAll();
+    },
+  // Esta funcion no sirve
     llenarListaHost() {
       if (this.tagHost.length > 0) {
         for (var h = 0; h < this.tagHost.length; h++) {
