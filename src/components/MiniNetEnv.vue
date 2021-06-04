@@ -530,8 +530,8 @@
                 v-model="dataPath"
               >
                 <option value="Ninguno" selected>Ninguno</option>
-                <option value="Kernel">Kernel</option>
-                <option value="User">User</option>
+                <option value="Kernel">kernel</option>
+                <option value="User">user</option>
               </select>
             </b-container>
 
@@ -572,8 +572,8 @@
                 v-model="failMode"
               >
                 <option value="Ninguno">Ninguno</option>
-                <option value="Secure">Secure</option>
-                <option value="Standalone">Standalone</option>
+                <option value="Secure">secure</option>
+                <option value="Standalone">standalone</option>
               </select>
             </b-container>
              <!-- Reconnect  Switch -->
@@ -4221,16 +4221,16 @@ export default {
           element['id'] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.ipHost != '' || obj.ipHost != undefined){
+          if(obj.ipHost != '' && obj.ipHost != undefined){
             element['ipHost'] = obj.ipHost;
           };
-          if(obj.shedule !='Ninguno' || obj.shedule != undefined){
+          if(obj.sheduler !='Ninguno' && obj.sheduler != undefined){
             element['sheduler']= obj.sheduler;
           };
-          if(obj.cpuLimit != '' || obj.cpuLimit != undefined){
+          if(obj.cpuLimit != '' && obj.cpuLimit != undefined){
             element['cpuLimit'] = obj.cpuLimit;
           };
-          if(obj.cpuCores != '' || obj.cpuCores != undefined){
+          if(obj.cpuCores != '' && obj.cpuCores != undefined){
             element['cpuCores'] = obj.cpuCores;
           };
 
@@ -4243,52 +4243,52 @@ export default {
           // element['top'] = obj.top;
           // element['left'] = obj.left;
           
-          if(obj.ipSwitch != '' || obj.ipSwitch != undefined){
+          if(obj.ipSwitch != '' && obj.ipSwitch != undefined){
             element['ipSwitch'] = obj.ipSwitch;
           };
-          if(obj.verbose != '' || obj.verbose != undefined){
+          if(obj.verbose != '' && obj.verbose != undefined && obj.verbose != 'not_accepted' ){
             element['verbose'] = obj.verbose;
           };
-          if(obj.batch != '' || obj.batch != undefined){
+          if(obj.batch != '' && obj.batch != undefined && obj.batch != 'not_accepted'){
             element['batch'] = obj.batch;
           };
-          if(obj.inNameSpace != '' || obj.inNameSpace != undefined){
+          if(obj.inNameSpace != '' && obj.inNameSpace != undefined && obj.inNameSpace != 'not_accepted'){
             element['inNameSpace'] = obj.inNameSpace;
           };
-          if(obj.inBand != '' || obj.inBand != undefined){
+          if(obj.inBand != '' && obj.inBand != undefined && obj.inBand != 'not_accepted'){
             element['inBand'] = obj.inBand;
           };
-          if(obj.failMode != 'Ninguno' || obj.failMode != undefined){
+          if(obj.failMode != 'Ninguno' && obj.failMode != undefined){
             element['failMode'] = obj.failMode;
           };
-          if(obj.reconnectedSwitch != '' || obj.reconnectSwitch != undefined){
+          if(obj.reconnectedSwitch != '' && obj.reconnectSwitch != undefined){
             element['reconnectedSwitch'] = obj.reconnectedSwitch;
           };
-          if(obj.dataPath != 'Ninguno' || obj.dataPath != undefined){
+          if(obj.dataPath != 'Ninguno' && obj.dataPath != undefined){
             element['dataPath'] = obj.dataPath;
           };
-          if(obj.dataPathId != '' || obj.dataPathId != undefined){
+          if(obj.dataPathId != '' && obj.dataPathId != undefined){
             element['dataPathId'] = obj.dataPathId;
           };
-          if(obj.dataPathOpt != '' || obj.dataPathOpt != undefined){
+          if(obj.dataPathOpt != '' && obj.dataPathOpt != undefined){
             element['dataPathOpt'] = obj.dataPathOpt;
           };
           if(obj.protocol != undefined){
             element['protocol'] = obj.protocol;
           };
-          if(obj.dpctlPort != '' || obj.dpctlPort != undefined){
+          if(obj.dpctlPort != '' && obj.dpctlPort != undefined){
             element['dpctlPort'] = obj.dpctlPort;
           };
-          if(obj.stpSwitch != '' || obj.stpSwitch != undefined || obj.stpSwitch != 'not_stp'){
+          if(obj.stpSwitch != '' && obj.stpSwitch != undefined && obj.stpSwitch != 'not_stp'){
             element['stp'] = obj.stpSwitch;
           };
-          if(obj.stpPriority != '' || obj.stpPriority != undefined){
+          if(obj.stpPriority != '' && obj.stpPriority != undefined){
             element['stpPriority'] = obj.stpPriority;
           };
-          if(obj.type != 'Ninguno' || obj.type != undefined){
+          if(obj.type != 'Ninguno' && obj.type != undefined){
             element['type'] = obj.type;
           };
-          if(obj.controller != '' || obj.controller != undefined){
+          if(obj.controller != '' && obj.controller != undefined){
             element['controller'] = obj.controller;
           };
 
@@ -4300,16 +4300,16 @@ export default {
           element['id'] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.type != 'Por Defecto' || obj.type != undefined){
+          if(obj.type != 'Por Defecto' && obj.type != undefined){
             element['type'] = obj.type;
           };
-          if(obj.ipController != '' || obj.ipController != undefined){
+          if(obj.ipController != '' && obj.ipController != undefined){
             element['ipController'] = obj.ipController;
           };
-          if(obj.portController != '' || obj.portController != undefined){
+          if(obj.portController != '' && obj.portController != undefined){
             element['port'] = obj.portController;
           };
-          if(obj.protocol != 'Ninguno' || obj.protocol != undefined){
+          if(obj.protocol != 'Ninguno' && obj.protocol != undefined){
             element['protocol'] = obj.protocol;
           };
           
@@ -4321,19 +4321,19 @@ export default {
           element['id'] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.loss != '' || obj.loss != undefined){
+          if(obj.loss != '' && obj.loss != undefined){
             element['loss'] = obj.loss;
           };
-          if(obj.queue != '' || obj.queue != undefined){
+          if(obj.queue != '' && obj.queue != undefined){
             element['queue'] = obj.queue;
           };
-          if(obj.jitter != '' || obj.jitterUdp != undefined){
+          if(obj.jitter != '' && obj.jitterUdp != undefined){
             element['jitter'] = obj.jitter;
           };
-          if(obj.delay != '' || obj.delay != undefined){
+          if(obj.delay != '' && obj.delay != undefined){
             element['delay'] = obj.delay;
           };
-          if(obj.bw != '' || obj.bw != undefined){
+          if(obj.bw != '' && obj.bw != undefined){
             element['bw'] = obj.bw;
           };
 
@@ -4363,7 +4363,8 @@ export default {
           // element['left'] = obj.left;
           element['intf'] = String(obj.elementContainer)+'-'+String(obj.id);
           
-          if(obj.ipPort != '' || obj.ipPort){
+
+          if(obj.ipPort != '' && obj.ipPort){
               element['ipPort'] = obj.ipPort;
           };
 
