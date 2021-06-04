@@ -5187,7 +5187,7 @@ export default {
             totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
           };
           for(var i=0 ; i<totalDatosYBitsPerSecond.length; i++){
-            promTotalBitsPerSecondTcpTotal = promTotalBitsPerSecond + totalDatosYBitsPerSecond[i];
+            promTotalBitsPerSecondTcpTotal = promTotalBitsPerSecondTcpTotal + totalDatosYBitsPerSecond[i];
           };
 
           this.totalBytesTcp = totalBytesTcpTotal;
