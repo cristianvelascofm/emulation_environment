@@ -4444,10 +4444,13 @@ export default {
       if(this.trafficModeSelected != ''){
         if(this.trafficModeSelected == 'global'){
           traficDir['global'] = 'true';
+          modeOp = 'GLOBAL';
           if(this.distributionMode == 'one'){
             traficDir['one_for_all'] = 'true';
+            modeOp = 'ONE FOR ALL';
           }else if(this.distributionMode =='all'){
             traficDir['all_for_all'] = 'true';
+            modeOp = 'ALL FOR ALL';
           }else{
             this.stateOKTrafic = false;
           }
@@ -4542,6 +4545,7 @@ export default {
         this.traficGenerator(traficDir,modeOp);
       }
     },
+
     traficGenerator(traficDir,modeOp) {
       this.closeModal("traffic");
       this.alertText = "Procesando Tráfico...";
@@ -4939,7 +4943,7 @@ export default {
               this.modeOpTcp = modeOp;
               this.protocolTcp = protocol;
               this.timeTcp = time_e;
-              this.blockTcp = blkSize;
+              this.sizeBlockTcp = blkSize;
               this.blockTcp = blocks;
               this.tcpMssTcp = tcpMssDefault;
               this.sndBufferTcp = sndBufActual;
@@ -5112,7 +5116,7 @@ export default {
           this.serverAnswerUdp = false;
           this.clientAnswerTcp = false;
           this.totalAnswerTcp = true;
-/*
+
           var totalDatosYNumBytes = [];
           var totalDatosYBitsPerSecond = [];
           var longClient = this.datosYNumBytes.length;
@@ -5221,7 +5225,7 @@ export default {
             },
             responsive: true,
             maintainAspectRatio: false,
-          };*/
+          };
           
 
         }
