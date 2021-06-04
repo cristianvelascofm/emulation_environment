@@ -5183,10 +5183,10 @@ export default {
           var promTototalBytesTcpTotal = 0;
           var promBitsPerSecondTcpTotal = 0;
 
-          for(var i=0 ; i<totalDatosYNumBytes.length: i++){
+          for(var i=0 ; i<totalDatosYNumBytes.length; i++){
             totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
           };
-          for(var i=0 ; i<totalDatosYBitsPerSecond.length: i++){
+          for(var i=0 ; i<totalDatosYBitsPerSecond.length; i++){
             promTotalBitsPerSecondTcpTotal = promTotalBitsPerSecond + totalDatosYBitsPerSecond[i];
           };
 
