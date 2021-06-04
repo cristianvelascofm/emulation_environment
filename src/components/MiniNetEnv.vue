@@ -5180,8 +5180,8 @@ export default {
           };
           // Calulo de Totales y Promedio Generales del Tráfico
           var totalBytesTcpTotal = 0;
-          var promTototalBytesTcpTotal = 0;
-          var promBitsPerSecondTcpTotal = 0;
+          var promTotalBytesTcpTotal = 0;
+          var promTotalBitsPerSecondTcpTotal = 0;
 
           for(var i=0 ; i<totalDatosYNumBytes.length; i++){
             totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
