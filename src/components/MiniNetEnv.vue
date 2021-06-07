@@ -1988,6 +1988,7 @@
               id="containerFancyInfoGraphicTCPClient"
               class="col-sm-5 col-md-5 col-lg-5 col-xl-5"
             >
+              <!-- Graficador Canvas -->
               <b-row
                 id="continerSelectClientServer"
                 class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2511,7 +2512,7 @@
               id="buttonModal"
               class="m-2 mr-4"
               value="Cancelar"
-              @click="closeModal('graffic')"
+              @click="closeModal('grafic')"
               >Cerrar</b-button
             >
           </b-col>
@@ -4195,6 +4196,9 @@ export default {
       }
       if (mod == "traffic") {
         return this.$bvModal.hide("modal-traffic");
+      }
+      if (mod == "grafic") {
+        return this.$bvModal.hide("modal-grafic");
       }
       if (mod == "done") {
         return this.$bvModal.hide("modal-done");
