@@ -17,10 +17,10 @@
             >Minimal</b-dropdown-item
           >
           <b-dropdown-item class="p-1" @click="openModal('single')"
-            >Single</b-dropdown-item
+            >Simple</b-dropdown-item
           >
           <b-dropdown-item class="p-1">Anillo</b-dropdown-item>
-          <b-dropdown-item class="p-1">Lineal</b-dropdown-item>
+          <b-dropdown-item class="p-1"  @click="openModal('linear')">Lineal</b-dropdown-item>
         </b-dropdown>
         <b-dropdown-item id="guardar" class="p-1">Guardar</b-dropdown-item>
         <b-dropdown-item id="salir" class="p-1">Salir</b-dropdown-item>
@@ -73,6 +73,9 @@
         >
         <b-dropdown-item href="#" id="odl" class="p-1"
           >Controlador OpenDayLigth</b-dropdown-item
+        >
+        <b-dropdown-item href="#" id="odl" class="p-1"
+          >Controlador Onos</b-dropdown-item
         >
       </b-dropdown>
       <b-dropdown
@@ -3661,7 +3664,7 @@ export default {
             };
             // Si es una Interfaz de Red (Puerto)
             if (active != null && active.id.charAt(0) == "e") {
-
+                
                 active.set({
                     opacity: 0.7,
                 });
@@ -3763,6 +3766,48 @@ export default {
                 // this.selected = null;
                 // this.objectActiveLinkInitial = null;
                 // this.objectActiveLinkFinal = null;
+            }else if (active != null && active.id.charAt(0) == "c"){
+              console.log(active)
+              active.set({
+                opacity: 0.7,
+              })
+
+              if(this.objectActiveLinkInitial == null && active.state != 'connected' && this.objectActiveLinkFinal == null){
+                this.objectActiveLinkInitial = active
+                var coordenadasEnlace = [];
+                coordenadasEnlace[0] = this.objectActiveLinkInitial.left+30;
+                coordenadasEnlace[1] = this.objectActiveLinkInitial.top+30;
+                coordenadasEnlace[2] = this.objectActiveLinkInitial.left+30;
+                coordenadasEnlace[3] = this.objectActiveLinkInitial.top+30;
+                var link = this.makeLink(coordenadasEnlace,'controller');
+                this.selected = link
+                this.canvas.add(link)
+              }
+              else if(this.objectActiveLinkInitial != null && active.state != 'connected' && this.objectActiveLinkFinal == null){
+                this.objectActiveLinkFinal = active
+                 this.selected.set({
+                      x2: this.objectActiveLinkFinal.connection[0].x2,
+                      y2: this.objectActiveLinkFinal.connection[0].y2,
+                    });
+                    
+                    this.objectActiveLinkInitial.state = "connected";
+                    this.objectActiveLinkFinal.state = "connected";
+                    this.objectActiveLinkInitial.line = this.selected;
+                    this.objectActiveLinkFinal.line = this.selected;
+                    this.objectActiveLinkInitial.connection.push(this.selected);
+                    this.objectActiveLinkFinal.connection.push(this.selected);
+                    this.objectActiveLinkFinal.position = "terminal";
+                    this.herramienta = 'cursor'
+                    // this.canvas.sendToBack(this.selected);
+                    // this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
+                    // this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
+                    // this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
+                    this.herramienta = 'cursor';
+                    this.selected = null;
+                    this.objectActiveLinkInitial = null;
+                    this.objectActiveLinkFinal = null;
+
+              }
             };
 
 
@@ -3781,6 +3826,8 @@ export default {
 
       this.canvas.on('object:moving', (e) =>{
         var elementMoving = e.target;
+        // var p = e.target;
+        console.log('Moving')
         switch(this.herramienta){
           case 'cursor':
             if(elementMoving != undefined){ 
@@ -3817,6 +3864,8 @@ export default {
                         // Si este Puerto inicia el enlace
                         if(elementMoving.position == 'initial'){
                           elementMoving.connection[i] && elementMoving.connection[i].set({
+                            // 'x1': elementMoving.left + 10,
+                            // 'y1': elementMoving.top + 7
                             'x1': elementMoving.left + 10,
                             'y1': elementMoving.top + 7
                           });
@@ -3825,8 +3874,8 @@ export default {
                         // Si este Puerto finaliza el enlace
                         else if(elementMoving.position == 'terminal'){
                           elementMoving.connection[i] && elementMoving.connection[i].set({
-                            'x2': elementMoving.left + 10,
-                            'y2': elementMoving.top + 7
+                            'x1': elementMoving.left + 10,
+                            'y1': elementMoving.top + 7
                           });
                           this.canvas.renderAll();
                         }
@@ -3834,7 +3883,7 @@ export default {
                         else{
                           elementMoving.connection[i] && elementMoving.connection[i].set({
                             'x1': elementMoving.left + 10,
-                            'y2': elementMoving.top + 7
+                            'y1': elementMoving.top + 7
                           });
                           this.canvas.renderAll();
                         };
@@ -3843,6 +3892,8 @@ export default {
                       else{
                         if(elementMoving.position == 'initial'){
                           elementMoving.connection[i] && elementMoving.connection[i].set({
+                            // 'x1': elementMoving.left + 10,
+                            // 'y1': elementMoving.top + 7
                             'x1': elementMoving.left + 10,
                             'y1': elementMoving.top + 7
                           });
@@ -3882,6 +3933,90 @@ export default {
                 }
               }
             }
+
+          //  case 'cursor':
+          //   if (p.id.charAt(0) != "e") {
+          //       for (var i = 0; i < p.connection.length; i++) {
+
+          //           //p.connection[i] && p.connection[i].set({ 'x1': p.left + 30, 'y1': p.top + 35 });
+
+
+          //           if (p.id.charAt(0) == "c") {
+
+          //               p.connection[i] && p.connection[i].set({
+          //                   'x2': p.left + 30,
+          //                   'y2': p.top + 35
+          //               });
+          //               this.canvas.renderAll();
+
+          //           } else {
+
+          //               p.connection[i] && p.connection[i].set({
+          //                   'x1': p.left + 30,
+          //                   'y1': p.top + 35
+          //               });
+          //               this.canvas.renderAll();
+
+          //           }
+          //       }
+          //       this.canvas.renderAll();
+
+          //   } else {
+          //       for (var i = 0; i < p.connection.length; i++) {
+
+          //           if (p.state == "connected") {
+
+          //               if (p.connection[i].id == "link") {
+          //                   if (p.elementContainer.charAt(0) == "s") {
+          //                       if (p.position == "initial") {
+          //                           p.connection[i] && p.connection[i].set({
+          //                               'x2': p.left + 10,
+          //                               'y2': p.top + 7
+          //                           });
+          //                           this.canvas.renderAll();
+          //                       } else if (p.position == "terminal") {
+          //                           p.connection[i] && p.connection[i].set({
+          //                               'x1': p.left + 10,
+          //                               'y1': p.top + 7
+          //                           });
+          //                           this.canvas.renderAll();
+
+          //                       } else {
+          //                           p.connection[i] && p.connection[i].set({
+          //                               'x1': p.left + 10,
+          //                               'y1': p.top + 7
+          //                           });
+          //                           this.canvas.renderAll();
+          //                       }
+
+          //                   } else {
+          //                       p.connection[i] && p.connection[i].set({
+          //                           'x2': p.left + 10,
+          //                           'y2': p.top + 7
+          //                       });
+          //                       this.canvas.renderAll();
+          //                   }
+
+          //               } else {
+          //                   //muevo la asociasion 
+          //                   p.connection[i] && p.connection[i].set({
+          //                       'x2': p.left + 10,
+          //                       'y2': p.top + 7
+          //                   });
+          //                   this.canvas.renderAll();
+          //               }
+          //           } else {
+          //               p.connection[i] && p.connection[i].set({
+          //                   'x2': p.left + 10,
+          //                   'y2': p.top + 7
+          //               });
+          //               this.canvas.renderAll();
+          //           }
+
+          //       }
+          //   }
+          //   break;
+
         }
       });
       //Mouse up event
@@ -4090,6 +4225,15 @@ export default {
         this.topologyType = "single";
         return this.$bvModal.show("modal-template");
       }
+       if (open == "linear") {
+        console.log('Topo Linear') 
+        this.topologyType = "linear";
+        return this.$bvModal.show("modal-template");
+      }
+       if (open == "ring") {
+        this.topologyType = "ring";
+        return this.$bvModal.show("modal-template");
+      }
       if (open == "play") {
         return this.$bvModal.show("modal-IpUser");
       }
@@ -4189,6 +4333,9 @@ export default {
         return this.$bvModal.hide("modal-port");
       }
       if (mod == "single") {
+        return this.$bvModal.hide("modal-template");
+      }
+      if (mod == "linear") {
         return this.$bvModal.hide("modal-template");
       }
       if (mod == "play") {
@@ -5819,10 +5966,13 @@ export default {
           this.numHost = numberHost;
           this.topologyMaker();
           this.closeModal("single");
-
           break;
-
+        
         case "linear":
+          var numberHost = this.numHostTopology
+          this.numHost = numberHost
+          this.topologyMaker();
+          this.closeModal('linear')
           break;
 
         case "anillo":
@@ -6085,7 +6235,355 @@ export default {
             }
           });
         }
-      }
+      }else if (topo == "linear") {
+        if (tag.charAt(0) == 'h') {
+
+            var groupHost = new fabric.Group([elemento, text], {
+                left: x,
+                top: y + 160,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                id: tag,
+                connection: [],
+            });
+
+
+            connection.type = "association";
+            connection.elementOrigin = tag;
+            connection.x1 = x + 30;
+            connection.y1 = y + 195;
+            connection.x2 = (x + (1 * 65)) - 35;
+            connection.y2 = y + 107;
+            connection.id = "a" + 0;
+
+            var link = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portHost");
+            groupHost.connection.push(link);
+
+
+
+            var line = groupHost.connection[i];
+            groupHost.line = line;
+
+
+            var port = new Image();
+            port.src = require("../assets/img/port.png");
+
+
+            var pt = new fabric.Image(port);
+            pt.set({
+                scaleX: 0.035,
+                scaleY: 0.035,
+                padding: 0,
+                id: tag,
+            });
+
+            var label = new fabric.Textbox("eth" + 0, {
+                top: 22,
+                left: -5,
+                fontFamily: 'arial',
+                fill: '#15435d',
+                fontSize: 15
+            });
+
+            var groupHostPort = new fabric.Group([pt, label], {
+
+                left: (x + (1 * 65)) - 48,
+                top: y + 100,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                elementContainer: tag,
+                identificator: 'Hp',
+                id: "eth" + 0,
+                connection: [], // Contenedor de lineas de conexión del grupo.
+
+            });
+            groupHostPort.connection.push(groupHost.connection[0]);
+
+            var l = groupHost.connection[0];
+
+            this.canvas.add(groupHost.connection[0]);
+            this.canvas.add(groupHostPort);
+
+            this.canvas.add(groupHost);
+            this.tagHost.push("h" + (this.tagHost.length + 1));
+
+        } else if (tag.charAt(0) == 's') {
+
+            var groupSwitch = new fabric.Group([elemento, text], {
+
+                //left: ((numHost * 100) / 2) + 35,
+                left: x - 90,
+                top: y - 35,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                id: tag,
+                connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[])) 
+                type: null
+            });
+
+            var port = new Image();
+            port.src = require("../assets/img/port.png");
+
+            var tagS = [];
+            tagS.push(tag);
+
+            connection.type = "association";
+            connection.elementOrigin = tag;
+            connection.x1 = x - 60;
+            connection.y1 = y - 3;
+            connection.x2 = (x - 130);
+            connection.y2 = y - 3;
+            connection.id = "a" + 0;
+
+            var link0 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
+            groupSwitch.connection.push(link0);
+
+
+            var pt0 = new fabric.Image(port);
+            pt0.set({
+                scaleX: 0.035,
+                scaleY: 0.035,
+                padding: 0,
+                id: tag,
+                connectionLine: [], // Contenedor de las lineas de conexión.
+            });
+
+            // Asignación de lineas por cada puerto  
+            //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+            var label0 = new fabric.Textbox("eth" + 0, {
+                top: 22,
+                left: -5,
+                fontFamily: 'arial',
+                fill: '#15435d',
+                fontSize: 15
+            });
+
+            var groupSwitchPort0 = new fabric.Group([pt0, label0], {
+
+                //left: (x + (i * 100)) - 19,
+                left: (x - 145),
+                top: y - 10,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                elementContainer: tag,
+                identificator: 'Sp',
+                id: "eth" + 0,
+                connection: [], // Contenedor de lineas de conexión del grupo.
+
+            });
+
+            var line0 = groupSwitch.connection[0];
+
+            groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+            groupSwitchPort0.line = line0;
+
+
+            connection.type = "association";
+            connection.elementOrigin = tag;
+            connection.x1 = x - 60;
+            connection.y1 = y;
+            connection.x2 = x - 60;
+            connection.y2 = y + 48;
+            connection.id = "a" + 1;
+
+            var link1 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
+            groupSwitch.connection.push(link1);
+
+
+            var pt1 = new fabric.Image(port);
+            pt1.set({
+                scaleX: 0.035,
+                scaleY: 0.035,
+                padding: 0,
+                id: tag,
+                connectionLine: [], // Contenedor de las lineas de conexión.
+            });
+
+            // Asignación de lineas por cada puerto  
+            // pt1.connectionLine.push(groupSwitch.connection[1]);
+
+            var label1 = new fabric.Textbox("eth" + 1, {
+                top: 22,
+                left: -5,
+                fontFamily: 'arial',
+                fill: '#15435d',
+                fontSize: 15
+            });
+
+            var groupSwitchPort1 = new fabric.Group([pt1, label1], {
+
+                //left: (x + (i * 100)) - 19,
+                left: (x - 73),
+                top: y + 48,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                elementContainer: tag,
+                identificator: 'Sp',
+                id: "eth" + 1,
+                connection: [], // Contenedor de lineas de conexión del grupo.
+
+            });
+
+            var line1 = groupSwitch.connection[1];
+
+            groupSwitchPort1.connection.push(groupSwitch.connection[1]);
+            groupSwitchPort1.line = line1;
+
+
+
+
+
+            connection.type = "association";
+            connection.elementOrigin = tag;
+            connection.x1 = x - 60;
+            connection.y1 = y - 1;
+            connection.x2 = x + 30;
+            connection.y2 = y - 3;
+            connection.id = "a" + 2;
+
+            var link2 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
+            groupSwitch.connection.push(link2);
+
+
+
+            var pt2 = new fabric.Image(port);
+            pt2.set({
+                scaleX: 0.035,
+                scaleY: 0.035,
+                padding: 0,
+                id: tag,
+                connectionLine: [], // Contenedor de las lineas de conexión.
+            });
+
+            // Asignación de lineas por cada puerto  
+            //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+            var label2 = new fabric.Textbox("eth" + 2, {
+                top: 22,
+                left: -5,
+                fontFamily: 'arial',
+                fill: '#15435d',
+                fontSize: 15
+            });
+
+            var groupSwitchPort2 = new fabric.Group([pt2, label2], {
+
+                //left: (x + (i * 100)) - 19,
+                left: (x + 10),
+                top: y - 10,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                elementContainer: tag,
+                identificator: 'Sp',
+                id: "eth" + 2,
+                connection: [], // Contenedor de lineas de conexión del grupo.
+
+            });
+
+            var line2 = groupSwitch.connection[2];
+
+            groupSwitchPort2.connection.push(groupSwitch.connection[2]);
+            groupSwitchPort2.line = line2;
+
+            groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+            groupSwitchPort0.line = line0;
+
+            this.canvas.add(groupSwitch.connection[0]);
+            this.canvas.add(groupSwitch.connection[1]);
+            this.canvas.add(groupSwitch.connection[2]);
+            this.canvas.add(groupSwitchPort0);
+            this.canvas.add(groupSwitchPort1);
+            this.canvas.add(groupSwitchPort2);
+
+
+
+
+
+            // }
+            this.canvas.add(groupSwitch);
+            this.tagSwitch.push("s" + (this.tagSwitch.length + 1));
+
+        } else if (tag.charAt(0) == 'c') {
+
+            var groupController = new fabric.Group([elemento, text], {
+
+                left: (144 * this.numHost),
+                top: y,
+                hasControls: false,
+                hasBorders: false,
+                transparentCorners: false,
+                selectable: true,
+                id: tag,
+                connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[])) 
+                type: null
+            });
+
+            for (var i = 0; i < this.numHost; i++) {
+
+                connection.type = "association";
+                connection.elementOrigin = tag;
+                connection.x2 = (this.numHost * 144) + 30; //punto del Controlador
+                connection.y2 = y + 35;
+                connection.x1 = ((i * 235) + 280); // punto del Switch
+                connection.y1 = y + 225;
+                connection.id = "a" + i;
+
+                var link = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "controller");
+                groupController.connection.push(link);
+
+            }
+
+            for (var i = 0; i < this.numHost; i++) {
+
+                var line = groupController.connection[i];
+                groupController.line = line;
+                this.canvas.add(line);
+                this.canvas.sendToBack(line);
+
+            }
+
+            this.canvas.add(groupController);
+            this.tagController.push(tag);
+
+            var tagLastSwitch = [];
+
+            for (var i = this.tagSwitch.length - this.numHost; i < this.tagSwitch.length; i++) {
+
+                tagLastSwitch.push(this.tagSwitch[i]);
+
+            }
+
+            this.canvas.forEachObject((obj)=> {
+
+                for (var i = 0; i < groupController.connection.length; i++) {
+
+                    var link = groupController.connection[i];
+
+                    if (obj.id == tagLastSwitch[i]) {
+
+                        obj.link = link;
+                        obj.connection.push(link);
+
+                    }
+                }
+
+            });
+
+        }
+    }
     },
 
     obtenerTool(id) {
@@ -6244,67 +6742,66 @@ export default {
             posX[r] = (r + 1) * 240;
             image = "img/host.png";
             var obj = {
-              value: tagHost[r],
+              value: this.tagHost[r],
               rX: posX[r],
               rY: pY + 80,
             };
 
             var objSw = {
-              value: tagSwitchOF[r],
+              value: this.tagSwitch[r],
               rX: posX[r] + 90,
               rY: pY + 80,
             };
 
-            netInfo.push(obj);
+            this.netInfo.push(obj);
             h[r] = obj;
 
-            netInfo.push(objSw);
+            this.netInfo.push(objSw);
             s[r] = objSw;
           }
 
-          var pCX1 = netInfo.length * 68;
+          var pCX1 = this.netInfo.length * 68;
 
           // Inserta Switch y Host de la Topolgía Linear
           for (var a = 0; a < h.length; a++) {
-            insertElement(
+            this.insertElementTopology(
               h[a].rX,
               h[a].rY,
-              "../static/img/host.png",
-              "h" + (tagHost.length + 1),
-              numHost,
-              topologyType
+              require("../assets/img/host.png"),
+              "h" + (this.tagHost.length + 1),
+              this.numHost,
+              this.topologyType
             );
-            insertElement(
+            this.insertElementTopology(
               s[a].rX,
               s[a].rY,
-              "../static/img/openflow_switch.png",
-              "s" + (tagSwitchOF.length + 1),
-              numHost,
-              topologyType
+              require("../assets/img/openflow_switch.png"),
+              "s" + (this.tagSwitch.length + 1),
+              this.numHost,
+              this.topologyType
             );
           }
-
-          var port0Delete = "s" + (tagSwitchOF.length - numHost + 1);
-          var port2Delete = "s" + tagSwitchOF.length;
-          canvas.forEachObject(function (obj) {
+          
+          var port0Delete = "s" + (this.tagSwitch.length - this.numHost + 1);
+          var port2Delete = "s" + this.tagSwitch.length;
+          this.canvas.forEachObject((obj) =>{
             if (obj.elementContainer == port0Delete && obj.id == "eth0") {
-              canvas.remove(obj);
-              canvas.remove(obj.line);
+              this.canvas.remove(obj);
+              this.canvas.remove(obj.line);
             }
             if (obj.elementContainer == port2Delete && obj.id == "eth2") {
-              canvas.remove(obj);
-              canvas.remove(obj.line);
+              this.canvas.remove(obj);
+              this.canvas.remove(obj.line);
             }
           });
-
           //Inserta el Controller de la Topología Linear
-          insertElement(
+          this.insertElementTopology(
             pCX1,
             pCY,
-            "../static/img/controller.png",
-            "c" + +(tagController.length + 1),
-            numHost,
-            topologyType
+            require("../assets/img/controller.png"),
+            "c" +(this.tagController.length + 1),
+            this.numHost,
+            this.topologyType
           );
         }
         // Esta sección Crea Los Links y Las Asociaciones al Controlador de la Red Linear
@@ -6319,9 +6816,9 @@ export default {
         var objController = [];
 
         // **--** Esta seccion busca y enlaza los eth0 de los Host y los eth1 de los Switchs ** -- ** -- ** -- ** -- **--** --** -- **
-        for (var i = tagHost.length - numHost; i <= tagHost.length; i++) {
+        for (var i = this.tagHost.length - this.numHost; i <= this.tagHost.length; i++) {
           id0.push("h" + (i + 1));
-          canvas.forEachObject(function (obj) {
+          this.canvas.forEachObject((obj)=> {
             if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
               if (obj.id == "eth0") {
                 posX2.push(obj.connection[0].x2);
@@ -6332,13 +6829,10 @@ export default {
           });
         }
 
-        for (
-          var i = tagSwitchOF.length - numHost;
-          i <= tagSwitchOF.length;
-          i++
+        for ( i = this.tagSwitch.length - this.numHost; i <= this.tagSwitch.length;i++
         ) {
           id1.push("s" + (i + 1));
-          canvas.forEachObject(function (obj) {
+          this.canvas.forEachObject((obj)=> {
             if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
               if (obj.id == "eth1") {
                 posX1.push(obj.connection[0].x2);
@@ -6350,12 +6844,14 @@ export default {
         }
 
         for (var s = 0; s < posX1.length; s++) {
-          var link = makeLink([posX1[s], posY1[s], posX2[s], posY2[s]], "link");
-          canvas.add(link);
-          canvas.sendToBack(link);
+          var link = this.makeLink([posX1[s], posY1[s], posX2[s], posY2[s]], "link");
+          this.canvas.add(link);
+          this.canvas.sendToBack(link);
 
           objSwitch[s].state = "connected";
+          objSwitch[s].position = "initial";
           objHost[s].state = "connected";
+          objHost[s].position = "terminal"
           objSwitch[s].connection.push(link);
           objHost[s].connection.push(link);
 
@@ -6384,12 +6880,12 @@ export default {
 
         // **--** Esta seccion busca y enlaza los eth0 de los Switchs y los eth2 de los Switchs ** -- ** -- ** -- ** -- **--** --** -- **
         for (
-          var i = tagSwitchOF.length - numHost;
-          i <= tagSwitchOF.length;
+          var i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
           i++
         ) {
           id0.push("s" + (i + 1));
-          canvas.forEachObject(function (obj) {
+          this.canvas.forEachObject((obj)=> {
             if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
               if (obj.id == "eth0") {
                 posX2.push(obj.connection[0].x2);
@@ -6400,15 +6896,15 @@ export default {
             }
           });
         }
-        console.log(objSwitchAux[0].id);
+        console.log(objSwitchAux[0]);
 
         for (
-          var i = tagSwitchOF.length - numHost;
-          i <= tagSwitchOF.length;
+          var i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
           i++
         ) {
           id1.push("s" + (i + 1));
-          canvas.forEachObject(function (obj) {
+          this.canvas.forEachObject((obj)=> {
             if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
               if (obj.id == "eth2") {
                 posX1.push(obj.connection[0].x2);
@@ -6421,12 +6917,14 @@ export default {
         }
 
         for (var s = 0; s < posX1.length; s++) {
-          var link = makeLink([posX2[s], posY2[s], posX1[s], posY1[s]], "link");
-          canvas.add(link);
-          canvas.sendToBack(link);
+          var link = this.makeLink([posX1[s], posY1[s], posX2[s], posY2[s]], "link");
+          this.canvas.add(link);
+          this.canvas.sendToBack(link);
 
           objSwitch[s].state = "connected";
+          // objSwitch[s].position = "terminal"
           objSwitchAux[s].state = "connected";
+          // objSwitchAux[s].position = "terminal"
           objSwitch[s].connection.push(link);
           objSwitchAux[s].connection.push(link);
 

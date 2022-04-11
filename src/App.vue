@@ -4,12 +4,12 @@
     <b-navbar toggleable="md" type="dark" id="bar-principal">
       <b-container class="m-0">
         <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-        <b-navbar-brand>Environment</b-navbar-brand>
-        <b-collapse is-nav id="nav_collapse">
+        <b-navbar-brand>Ambiente</b-navbar-brand>
+        <!-- <b-collapse is-nav id="nav_collapse">
           <b-navbar-nav>
             <b-nav-item v-for="list of environments" v-bind:key="list.id" :to="{ name: list.name}" exact>{{list.text}}</b-nav-item>
           </b-navbar-nav>
-        </b-collapse>
+        </b-collapse> -->
       </b-container>
     </b-navbar>
 
