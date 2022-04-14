@@ -19,8 +19,12 @@
           <b-dropdown-item class="p-1" @click="openModal('single')"
             >Simple</b-dropdown-item
           >
-          <b-dropdown-item class="p-1">Anillo</b-dropdown-item>
-          <b-dropdown-item class="p-1"  @click="openModal('linear')">Lineal</b-dropdown-item>
+          <b-dropdown-item class="p-1" @click="openModal('ring')"
+            >Anillo</b-dropdown-item
+          >
+          <b-dropdown-item class="p-1" @click="openModal('linear')"
+            >Lineal</b-dropdown-item
+          >
         </b-dropdown>
         <b-dropdown-item id="guardar" class="p-1">Guardar</b-dropdown-item>
         <b-dropdown-item id="salir" class="p-1">Salir</b-dropdown-item>
@@ -111,7 +115,6 @@
         class="btn btn-outline-primary m-md-2"
         id="guardar-direct-access"
         title="Guardar"
-        
       ></button>
       <button
         type="button"
@@ -152,7 +155,7 @@
         type="button"
         class="btn btn-outline-primary m-md-2"
         id="check-direct-access"
-        :disabled = 'play_activator'
+        :disabled="play_activator"
         @click="openModal('traffic')"
       ></button>
       <button
@@ -178,7 +181,7 @@
     <!-- Barra Lateral y Canvas -->
     <b-row class="p-0 m-0 w-100">
       <!-- Barra Lateral Elementos de Red -->
-      <b-col class="col-sm-2 col-md-2 col-lg-1 col-xl-1  m-0" id="bar-lat">
+      <b-col class="col-sm-2 col-md-2 col-lg-1 col-xl-1 m-0" id="bar-lat">
         <b-nav vertical>
           <button
             id="btn-element"
@@ -274,9 +277,7 @@
                 class="form-control form-control"
                 v-model="typeController"
               >
-                <option value="Por Defecto">
-                  Por Defecto
-                </option>
+                <option value="Por Defecto">Por Defecto</option>
                 <option value="OpenFlow">
                   OpenFlow Reference Implementation
                 </option>
@@ -295,7 +296,7 @@
                 class="form-control text-right"
                 v-model="ipController"
                 placeholder="0   .   0   .   0   .   0"
-                :state='stateIpController'
+                :state="stateIpController"
               />
             </b-container>
 
@@ -485,7 +486,7 @@
                 class="form-control text-right"
                 placeholder="0   .   0   .   0   .   0"
                 v-model="ipSwitch"
-                :state='stateIpSwitch'
+                :state="stateIpSwitch"
               />
             </b-container>
 
@@ -547,7 +548,7 @@
                 id="inputFancyDataPathIDSwitch"
                 type="text"
                 class="form-control text-right"
-                v-model= 'dataPathId'
+                v-model="dataPathId"
               />
             </b-container>
 
@@ -560,7 +561,7 @@
                 id="inputFancyOfDataPathArgsSwitch"
                 type="text"
                 class="form-control text-right"
-                v-model= 'dataPathOpt'
+                v-model="dataPathOpt"
               />
             </b-container>
 
@@ -579,7 +580,7 @@
                 <option value="Standalone">standalone</option>
               </select>
             </b-container>
-             <!-- Reconnect  Switch -->
+            <!-- Reconnect  Switch -->
             <b-container id="containerFailMode" class="form-group">
               <label for="labelType" id="labelReconnectModeSwitch" class="mt-1"
                 >Tiempo de Reconexión (ms)</label
@@ -733,10 +734,9 @@
                 id="inputFancyIPHost"
                 type="text"
                 class="form-control text-right"
-                :state = 'stateIpHost'
+                :state="stateIpHost"
                 placeholder="0   .   0   .   0   .   0"
                 v-model="ipHost"
-                
               />
             </b-container>
 
@@ -871,13 +871,18 @@
                   class="p-2 ml-4"
                   id="inputFancyPort"
                   v-model="ipPort"
-                  
                 />
-            <b-row id="containerPort" class="m-0 pt-3 text-rigth">
-              <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                <b-button size="sm" variant="success" v-if="linkActive" @click="openModal('link')">Enlace</b-button>
-              </b-col>
-            </b-row>
+                <b-row id="containerPort" class="m-0 pt-3 text-rigth">
+                  <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <b-button
+                      size="sm"
+                      variant="success"
+                      v-if="linkActive"
+                      @click="openModal('link')"
+                      >Enlace</b-button
+                    >
+                  </b-col>
+                </b-row>
               </b-col>
             </b-row>
           </b-form>
@@ -1062,9 +1067,7 @@
               /></b-col>
 
               <b-col class="col-sm-2 col-md-2 col-lg-2 col-xl-2"
-                ><label id="labelFancyLossLink" class="pt-2"
-                  >%</label
-                ></b-col
+                ><label id="labelFancyLossLink" class="pt-2">%</label></b-col
               >
             </b-row>
           </b-form>
@@ -1189,7 +1192,7 @@
 
       <!-- <p class="my-4">Vertically centered modal!</p> -->
     </b-modal>
-    
+
     <!-- Modal Detector IP Usuario -->
     <b-modal
       id="modal-IpUser"
@@ -1375,12 +1378,15 @@
       centered
       title="Resultado"
     >
-
       <template #modal-header>
         <!-- Emulate built in modal header close button action -->
         <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
           <b-col class="col-sm-5 col-md-5 col-lg-5 col-xl-5">
-            <b-icon v-if="errorServer" icon="question-circle-fill" aria-label="dark"></b-icon>
+            <b-icon
+              v-if="errorServer"
+              icon="question-circle-fill"
+              aria-label="dark"
+            ></b-icon>
             <b-button
               size="sm"
               pill
@@ -1421,11 +1427,9 @@
               </b-col>
             </b-row>
             <b-row id="containerErrorServer" class="m-0 pt-3">
-              <b-col
-                class="col-sm-12 col-md-12 col-lg-12 col-xl-12"
-              >
-                <span  v-if="errorServer">
-                  <small class="text-danger"  >{{ serverText }}</small>
+              <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <span v-if="errorServer">
+                  <small class="text-danger">{{ serverText }}</small>
                 </span>
               </b-col>
             </b-row>
@@ -1493,16 +1497,22 @@
 
           <!-- Sheduler Host -->
           <b-container id="containerSelectorraffic" class="form-group">
-            <label id="labelSelectorTraffic" class="mt-2 font-weight-bold text-uppercase"
+            <label
+              id="labelSelectorTraffic"
+              class="mt-2 font-weight-bold text-uppercase"
               >Seleccione el tipo de Tráfico:</label
             >
             <select
               id="optionSelectorTraffic"
               class="form-control form-control"
-              v-model= "typeTrafic"
+              v-model="typeTrafic"
             >
-              <option value="TCP" >Protocolo de Control de Transmisión (TCP)</option>
-              <option value="UDP">Protocolo de Datagrama de Usuario (UDP)</option>
+              <option value="TCP">
+                Protocolo de Control de Transmisión (TCP)
+              </option>
+              <option value="UDP">
+                Protocolo de Datagrama de Usuario (UDP)
+              </option>
             </select>
           </b-container>
           <b-row class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -1637,7 +1647,12 @@
             class="m-0 p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
           >
             <b-col class="m-0 p-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-              <b-form-radio name="option-radios" value="t" id="radioTime" v-model="radioTime">
+              <b-form-radio
+                name="option-radios"
+                value="t"
+                id="radioTime"
+                v-model="radioTime"
+              >
                 Tiempo de Emulación:
               </b-form-radio>
             </b-col>
@@ -1650,8 +1665,8 @@
                 min="1"
                 max="100000"
                 class=""
-                :state = 'stateTime'
-                :disabled = 'optionCheckerTime'
+                :state="stateTime"
+                :disabled="optionCheckerTime"
                 v-model="textTime"
             /></b-col>
           </b-row>
@@ -1662,7 +1677,12 @@
             class="m-0 mt-1 p-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
           >
             <b-col class="p-0 m-0 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-              <b-form-radio name="option-radios" value="n" id="radioPacket" v-model="radioPacket">
+              <b-form-radio
+                name="option-radios"
+                value="n"
+                id="radioPacket"
+                v-model="radioPacket"
+              >
                 Número de Bytes
               </b-form-radio>
             </b-col>
@@ -1674,9 +1694,9 @@
                 step="1"
                 min="1"
                 max="90000000"
-                :state = 'statePacket'
+                :state="statePacket"
                 class="ml-3 d-inline"
-                :disabled = 'optionCheckerPacket'
+                :disabled="optionCheckerPacket"
                 v-model="textPacket"
               />
             </b-col>
@@ -1688,8 +1708,8 @@
                   value="K"
                   class="p-2 ml-5 pl-1"
                   id="radioKBytesPacket"
-                  v-model= "radioKPacket"
-                  :disabled = 'optionCheckerPacket'
+                  v-model="radioKPacket"
+                  :disabled="optionCheckerPacket"
                 >
                   KB
                 </b-form-radio>
@@ -1699,7 +1719,7 @@
                   class="p-2 ml-5 pl-1"
                   id="radioMBytesPacket"
                   v-model="radioKPacket"
-                  :disabled = 'optionCheckerPacket'
+                  :disabled="optionCheckerPacket"
                 >
                   MB
                 </b-form-radio>
@@ -1731,9 +1751,9 @@
                 step="1"
                 min="1"
                 max="1024"
-                :state = 'stateLong'
+                :state="stateLong"
                 class="ml-3 d-inline"
-                :disabled = 'optionCheckerLong'
+                :disabled="optionCheckerLong"
                 v-model="textLong"
               />
             </b-col>
@@ -1746,7 +1766,7 @@
                   class="p-2 ml-5 pl-1"
                   id="radio-kbytes-long"
                   v-model="radioLong"
-                  :disabled = 'optionCheckerLong'
+                  :disabled="optionCheckerLong"
                 >
                   KB
                 </b-form-radio>
@@ -1777,9 +1797,9 @@
                 step="1"
                 min="1"
                 max="30000"
-                :state = 'stateWindow'
+                :state="stateWindow"
                 class="ml-3 d-inline"
-                :disabled= 'optionCheckerWindow'
+                :disabled="optionCheckerWindow"
                 v-model="textWindow"
               />
             </b-col>
@@ -1792,11 +1812,10 @@
                   class="p-2 ml-5 pl-1"
                   id="radioKBytesW"
                   v-model="radioWindow"
-                  :disabled = 'optionCheckerWindow'
+                  :disabled="optionCheckerWindow"
                 >
                   KB
                 </b-form-radio>
-               
               </b-row>
             </b-col>
           </b-row>
@@ -1824,9 +1843,9 @@
                 step="1"
                 min="1"
                 max="90000000"
-                :state = 'stateBw'
+                :state="stateBw"
                 class="ml-3 d-inline"
-                :disabled = 'optionCheckerBw'
+                :disabled="optionCheckerBw"
                 v-model="textBw"
               />
             </b-col>
@@ -1838,8 +1857,8 @@
                   value="K"
                   class="p-2 ml-5 pl-1"
                   id="radioKBitRate"
-                  v-model = 'radioBw'
-                  :disabled = 'optionCheckerBw'
+                  v-model="radioBw"
+                  :disabled="optionCheckerBw"
                 >
                   Kb/s
                 </b-form-radio>
@@ -1848,8 +1867,8 @@
                   value="M"
                   class="p-2 ml-4 pl-2 mt-0"
                   id="radioMBitRate"
-                  v-model = 'radioBw'
-                  :disabled = 'optionCheckerBw'
+                  v-model="radioBw"
+                  :disabled="optionCheckerBw"
                 >
                   Mb/s
                 </b-form-radio>
@@ -1880,9 +1899,9 @@
                 step="1"
                 min="1"
                 max="90000000"
-                :state = 'stateInterval'
+                :state="stateInterval"
                 class="ml-3 d-inline"
-                :disabled = "optionCheckerInterval"
+                :disabled="optionCheckerInterval"
                 v-model="textInterval"
               />
             </b-col>
@@ -1910,7 +1929,7 @@
               squared
               id="buttonModal"
               class="m-2 ml-5"
-              :disabled = 'stateOKTrafic'
+              :disabled="stateOKTrafic"
               @submit="validatorDataTrafic"
               @click="validatorDataTrafic"
               >Ok</b-button
@@ -2026,7 +2045,14 @@
                   <b-col
                     ><label
                       id="labelparameterMeter"
-                      class="pl-4 m-0 ml-2 text-center font-weight-bold text-uppercase"
+                      class="
+                        pl-4
+                        m-0
+                        ml-2
+                        text-center
+                        font-weight-bold
+                        text-uppercase
+                      "
                     >
                       MÉTRICAS DE DESEMPEÑO
                     </label></b-col
@@ -2224,7 +2250,6 @@
                 </b-row>
               </b-row>
 
-
               <!-- TCP -->
               <b-row
                 id="continerParameterTcpClient"
@@ -2286,7 +2311,7 @@
                 class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
                 v-if="clientAnswerTcp"
               >
-               <!-- Promedio de SND CWND -->
+                <!-- Promedio de SND CWND -->
                 <b-row
                   id="continerParameter_prom_sndcwnd"
                   class="m-0 col-sm-12 col-md-12 col-lg-12 col-xl-12"
@@ -2445,7 +2470,6 @@
                       disabled
                       readonly
                       v-model="promBitPerSecondUdp"
-                      
                     />
                   </b-col>
                 </b-row>
@@ -2498,8 +2522,6 @@
                   </b-col>
                 </b-row>
               </b-row>
-
-
             </b-col>
           </b-row>
         </b-form>
@@ -2580,7 +2602,7 @@
               id="divLabelHostSpecific"
               class="text-left m-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"
             >
-              <h6 class="info_hostS" id="idenHost">{{identTagHost}}</h6>
+              <h6 class="info_hostS" id="idenHost">{{ identTagHost }}</h6>
             </b-col>
             <b-col
               id="divlabelLink"
@@ -2636,7 +2658,13 @@
           >
             <b-col
               id="divLabelGeneral"
-              class="text-center m-0 mt-2 mb-2 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+              class="
+                text-center
+                m-0
+                mt-2
+                mb-2
+                col-sm-12 col-md-12 col-lg-12 col-xl-12
+              "
             >
               <h5 class="info_host" id="idenHost">Datos Generales</h5>
             </b-col>
@@ -3228,7 +3256,6 @@
           >
         </b-col>
       </b-row>
-      
     </b-modal>
   </div>
 </template>
@@ -3249,7 +3276,8 @@ export default {
 
     return {
       // Dirección del Servidor de Mininet - IMPORTANTE DEFINIR!!!
-      path: "http://10.55.6.188:5000/",
+      // path: "http://10.55.6.188:5000/",
+      path: "http://192.168.56.103:5000/",
       //Variable id Herramienta seleccionada (barra lateral izquierda - Barra de Elementos de Red)
       herramienta: "cursor",
 
@@ -3260,86 +3288,86 @@ export default {
 
       // Modelos para Los inputs Modales Elements
       // Modal Host
-      ipHost: '',
+      ipHost: "",
       stateIpHost: null,
-      sheduler: 'Ninguno',
-      limitCpu: '',
-      coreCpu: '',
+      sheduler: "Ninguno",
+      limitCpu: "",
+      coreCpu: "",
       // Modal Switch
-      typeSwitch: 'Ninguno',
-      stpSwitch: '',
-      stpPriority: '',
-      ipSwitch: '',
+      typeSwitch: "Ninguno",
+      stpSwitch: "",
+      stpPriority: "",
+      ipSwitch: "",
       stateIpSwitch: null,
-      portSwitch: '',
-      protocolSwitch: 'OpenFlow 1.2',
-      dataPath: 'Ninguno',
-      dataPathId: '',
-      dataPathOpt:'',
-      failMode: 'Ninguno',
-      reconnectSwitch: '',
-      inBand: '',
-      inNameSpace: '',
-      batch: '',
-      verbose: '',
+      portSwitch: "",
+      protocolSwitch: "OpenFlow 1.2",
+      dataPath: "Ninguno",
+      dataPathId: "",
+      dataPathOpt: "",
+      failMode: "Ninguno",
+      reconnectSwitch: "",
+      inBand: "",
+      inNameSpace: "",
+      batch: "",
+      verbose: "",
       // Modal Controller
-      typeController: 'Por Defecto',
-      ipController: '',
+      typeController: "Por Defecto",
+      ipController: "",
       stateIpController: null,
-      portController: '',
-      protocolController: 'Ninguno',
+      portController: "",
+      protocolController: "Ninguno",
       // Modal Puerto
-      ipPort : '',
+      ipPort: "",
       stateIpPort: null,
       // Modal Link
-      bwLink: '',
-      delayLink: '',
-      jitterLink: '',
-      queueLink: '',
-      lossLink: '',
+      bwLink: "",
+      delayLink: "",
+      jitterLink: "",
+      queueLink: "",
+      lossLink: "",
       // Modal Ip Usuario
-      ipClient: '',
+      ipClient: "",
       // Modal Template Topology
-      numHostTopology: '',
+      numHostTopology: "",
       // Modal Generador de Tráfico
       //Variables para las opciones de Tráfico
-      typeTrafic : 'TCP',
+      typeTrafic: "TCP",
       trafficModeSelected: "",
-      distributionMode: '',
+      distributionMode: "",
       checkerLong: false,
-      valueLong: '',
-      radioLong: '',
+      valueLong: "",
+      radioLong: "",
       checkerWindow: false,
-      valueWindow: '',
-      radioWindow: '',
+      valueWindow: "",
+      radioWindow: "",
       checkerBw: false,
-      valueBw: '',
-      radioBw: '',
-      radioTime: '',
+      valueBw: "",
+      radioBw: "",
+      radioTime: "",
       checkerTime: false,
-      radioPacket: '',
-      radioKPacket: '',
+      radioPacket: "",
+      radioKPacket: "",
       checkerPacket: false,
       checkerInterval: false,
-      valueInterval: '',
+      valueInterval: "",
       //Variable Generador Trafico
       selHostS: false,
       selHostG: false,
       // Variables Host Trafico Modo Especifico
-      selectedClientHost: '',
-      selectedServertHost: '',
+      selectedClientHost: "",
+      selectedServertHost: "",
       // Variables Datos Trafico
-      textTime: '',
+      textTime: "",
       stateTime: null,
-      textPacket: '',
+      textPacket: "",
       statePacket: null,
-      textLong: '',
+      textLong: "",
       stateLong: null,
-      textWindow: '',
+      textWindow: "",
       stateWindow: null,
-      textBw: '',
+      textBw: "",
       stateBw: null,
-      textInterval: '',
+      textInterval: "",
       stateInterval: null,
       stateOKTrafic: true,
       //  Modal Graphic
@@ -3355,42 +3383,41 @@ export default {
       activeUdp: false,
       metrics: false,
       // Variables TCP Cliente
-      // Valores Generales del Trafico 
-      modeOpTcp: '',
-      protocolTcp: '',
-      timeTcp: '',
-      sizeBlockTcp: '',
-      blockTcp: '',
-      tcpMssTcp: '',
-      sndBufferTcp: '',
-      rcvBufferTcp: '',
-      totalBytesTcp: '',
-      // Valores Promedio del Trafico Tcp 
-      promTotalBytesTcp: '',
-      promBitsPerSecondTcp: '',
-      promSndCwndTcp: '',
-      promRttTcp: '',
-      promRetransmitsTcp: '',
-      promRttVarTcp: '',
-      promPmtuTcp: '',
+      // Valores Generales del Trafico
+      modeOpTcp: "",
+      protocolTcp: "",
+      timeTcp: "",
+      sizeBlockTcp: "",
+      blockTcp: "",
+      tcpMssTcp: "",
+      sndBufferTcp: "",
+      rcvBufferTcp: "",
+      totalBytesTcp: "",
+      // Valores Promedio del Trafico Tcp
+      promTotalBytesTcp: "",
+      promBitsPerSecondTcp: "",
+      promSndCwndTcp: "",
+      promRttTcp: "",
+      promRetransmitsTcp: "",
+      promRttVarTcp: "",
+      promPmtuTcp: "",
       // Variables TCP Servidor
-      promTotalBytesUdp: '',
-      promBitPerSecondUdp: '',
-      jitterUdp: '',
-      packetsUdp: '',
+      promTotalBytesUdp: "",
+      promBitPerSecondUdp: "",
+      jitterUdp: "",
+      packetsUdp: "",
 
       // Variable para el Modal del Enlace Link
       linkActive: false,
 
       // Variables auxiliares para los datos del Trafico
       // TCP
-      totalBytesTcpclient: '',
-      promTotalBytesTcpClient: '',
-      promBitsPerSecondTcpClient: '',
-      totalBytesTcpServer: '',
-      promTotalBytesTcpServer: '',
-      promBitsPerSecondTcpServer: '',
-      
+      totalBytesTcpclient: "",
+      promTotalBytesTcpClient: "",
+      promBitsPerSecondTcpClient: "",
+      totalBytesTcpServer: "",
+      promTotalBytesTcpServer: "",
+      promBitsPerSecondTcpServer: "",
 
       infoModal: [],
       //Canvas
@@ -3411,7 +3438,7 @@ export default {
       //Variables Insertar elemento
       imgElement: "",
       tagElement: "",
-      
+
       //Eventos de uso en el canvas
       insertOP: false,
       imgUrl: "",
@@ -3566,61 +3593,66 @@ export default {
       //Mouse Down Event
       this.canvas.on("mouse:down", (options) => {
         var pointer = this.canvas.getPointer(options.e);
-        this.action = 'insert';
+        this.action = "insert";
         this.x0 = pointer.x; //get initial starting point of x
         this.y0 = pointer.y; //get initial starting point of y
         switch (this.herramienta) {
           case "cursor":
             var objectActive = this.canvas.getActiveObject();
-            
-            if (objectActive != null) {
 
+            if (objectActive != null) {
               console.log(objectActive);
               // Se reestablece el Libre movimiento del Elemento  Activo (Si por alguna otra instancia ha sido bloqueado)
-              objectActive && objectActive.set({
-                lockMovementX: false,
-                lockMovementY: false,
-                lockScalingX: false,
-                lockScalingY: false,
-                lockUniScaling: false,
-                lockRotation: false,
-              });
-              if(options.button === 3){
-                if(objectActive.id.charAt(0) == 'h'){
-                  this.openModal('specific');
+              objectActive &&
+                objectActive.set({
+                  lockMovementX: false,
+                  lockMovementY: false,
+                  lockScalingX: false,
+                  lockScalingY: false,
+                  lockUniScaling: false,
+                  lockRotation: false,
+                });
+              if (options.button === 3) {
+                if (objectActive.id.charAt(0) == "h") {
+                  this.openModal("specific");
                 }
               }
               //Si el Elemento Activo es una Asociación o Link aumenta su Grosor
-              if (objectActive.id.charAt(0) == "l" || objectActive.id.charAt(0) == "n") {
-                objActive && objActive.set({
+              if (
+                objectActive.id.charAt(0) == "l" ||
+                objectActive.id.charAt(0) == "n"
+              ) {
+                objActive &&
+                  objActive.set({
                     strokeWidth: 4,
-                });
+                  });
                 this.canvas.renderAll();
-              };
-              
+              }
+
               // Todos Los Elementos de Red Tendrán Una opacidad de 100% y el Elementro Activo una Opacidad del 70%
               this.canvas.forEachObject(function (obj) {
-                obj && obj.set({
+                obj &&
+                  obj.set({
                     opacity: 1,
-                });
+                  });
               });
 
               objectActive.set({
                 opacity: 0.7,
-              });          
-            }else{
+              });
+            } else {
               this.canvas.forEachObject(function (obj) {
                 if (obj.id.charAt(0) == "l" || obj.id.charAt(0) == "n") {
                   obj.set({
                     strokeWidth: 2,
                   });
-                };
+                }
                 obj.set({
                   opacity: 1,
                 });
                 // this.canvas.renderAll();
-                });
-            };
+              });
+            }
             break;
           case "controller":
             this.imgElement = require("../assets/img/controller.png");
@@ -3638,385 +3670,377 @@ export default {
             this.imgElement = require("../assets/img/host.png");
             this.tagElement = "h" + (this.tagHost.length + 1);
             // Reestablece las variables asociadas al Modal Host
-            this.ipHost = '';
-            this.sheduler = 'Ninguno';
-            this.limitCpu = '';
-            this.coreCpu = '';
+            this.ipHost = "";
+            this.sheduler = "Ninguno";
+            this.limitCpu = "";
+            this.coreCpu = "";
             this.openModal("host");
             this.herramienta = "cursor";
             break;
           case "port":
-            this.openModal('port');
-            this.herramienta = 'cursor';
+            this.openModal("port");
+            this.herramienta = "cursor";
             break;
           case "link":
-            var active = this.canvas.getActiveObject()
+            var active = this.canvas.getActiveObject();
             // Se bloquea el movimiento del Elemento de Red
-            if(active != null){
-              active && active.set({
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true,
-              });
-            };
+            if (active != null) {
+              active &&
+                active.set({
+                  lockMovementX: true,
+                  lockMovementY: true,
+                  lockScalingX: true,
+                  lockScalingY: true,
+                  lockUniScaling: true,
+                  lockRotation: true,
+                });
+            }
+            console.log('Activo: '+active.id)
             // Si es una Interfaz de Red (Puerto)
             if (active != null && active.id.charAt(0) == "e") {
+              active.set({
+                opacity: 0.7,
+              });
+              // Evaluacion de los casos de Enlace en un puerto
+              // Si la interfaz de red es la primera seleccion del enlace a realizar y su estado es NO conectado, el elemento final del enlace tambien debe ser nulo
+              if (
+                this.objectActiveLinkInitial == null &&
+                active.state != "connected" &&
+                this.objectActiveLinkFinal == null
+              ) {
+                this.objectActiveLinkInitial = active;
+                var coordenadasEnlace = [];
+                coordenadasEnlace[0] =
+                  this.objectActiveLinkInitial.connection[0].x2;
+                coordenadasEnlace[1] =
+                  this.objectActiveLinkInitial.connection[0].y2;
+                coordenadasEnlace[2] =
+                  this.objectActiveLinkInitial.connection[0].x2;
+                coordenadasEnlace[3] =
+                  this.objectActiveLinkInitial.connection[0].y2;
+                var link = this.makeLink(coordenadasEnlace, "link");
+                if (
+                  this.objectActiveLinkInitial.elementContainer.charAt(0) ==
+                    "s" ||
+                  this.objectActiveLinkInitial.elementContainer.charAt(0) == "h"
+                ) {
+                  this.objectActiveLinkInitial.position = "initial";
+                }
+                this.selected = link;
+                this.canvas.add(link);
+              }
+              // Si la interfaz de red es la segunda seleccion del enlace a realizar y su estado es NO conectado, el elemento inicial del enlace NO debe ser nulo
+              else if (
+                this.objectActiveLinkInitial != null &&
+                active.state != "connected" &&
+                this.objectActiveLinkFinal == null
+              ) {
+                this.objectActiveLinkFinal = active;
                 
-                active.set({
-                    opacity: 0.7,
-                });
-                // Evaluacion de los casos de Enlace en un puerto
-                // Si la interfaz de red es la primera seleccion del enlace a realizar y su estado es NO conectado, el elemento final del enlace tambien debe ser nulo
-                if(this.objectActiveLinkInitial == null && active.state != 'connected' && this.objectActiveLinkFinal == null){
-                  this.objectActiveLinkInitial = active;
-                  var coordenadasEnlace = [];
-                  coordenadasEnlace[0] = this.objectActiveLinkInitial.connection[0].x2;
-                  coordenadasEnlace[1] = this.objectActiveLinkInitial.connection[0].y2;
-                  coordenadasEnlace[2] = this.objectActiveLinkInitial.connection[0].x2;
-                  coordenadasEnlace[3] = this.objectActiveLinkInitial.connection[0].y2;
-                  var link = this.makeLink(coordenadasEnlace,'link');
-                  if(this.objectActiveLinkInitial.elementContainer.charAt(0) == 's' || this.objectActiveLinkInitial.elementContainer.charAt(0) == 'h'){
-                    this.objectActiveLinkInitial.position = 'initial';
-                  };
-                  this.selected = link;
-                  this.canvas.add(link);
-                }
-                // Si la interfaz de red es la segunda seleccion del enlace a realizar y su estado es NO conectado, el elemento inicial del enlace NO debe ser nulo
-                else if(this.objectActiveLinkInitial != null && active.state != 'connected' && this.objectActiveLinkFinal == null){
-                  this.objectActiveLinkFinal = active;
-                  // Si el Enlace es de un Switch a Otro Sitch Diferente
-                  if (this.objectActiveLinkFinal.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer != this.objectActiveLinkFinal.elementContainer) {
-                    this.selected.set({
-                      x2: this.objectActiveLinkFinal.connection[0].x2,
-                      y2: this.objectActiveLinkFinal.connection[0].y2,
-                    });
-                    this.objectActiveLinkInitial.state = "connected";
-                    this.objectActiveLinkFinal.state = "connected";
-                    this.objectActiveLinkInitial.line = this.selected;
-                    this.objectActiveLinkFinal.line = this.selected;
-                    this.objectActiveLinkInitial.connection.push(this.selected);
-                    this.objectActiveLinkFinal.connection.push(this.selected);
-                    this.objectActiveLinkFinal.position = "terminal";
-                    this.canvas.sendToBack(this.selected);
-                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
-                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
-                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
-                    this.herramienta = 'cursor';
-                    this.selected = null;
-                    this.objectActiveLinkInitial = null;
-                    this.objectActiveLinkFinal = null;
-                  } 
-                  // Si el Enlace es de un Switch a un Host
-                  else if(this.objectActiveLinkFinal.elementContainer.charAt(0) == 's' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 'h'){
-                    this.selected.set({
-                      x2: this.objectActiveLinkFinal.connection[0].x2,
-                      y2: this.objectActiveLinkFinal.connection[0].y2,
-                    });
-                    this.objectActiveLinkInitial.state = "connected";
-                    this.objectActiveLinkFinal.state = "connected";
-                    this.objectActiveLinkInitial.line = this.selected;
-                    this.objectActiveLinkFinal.line = this.selected;
-                    this.objectActiveLinkInitial.connection.push(this.selected);
-                    this.objectActiveLinkFinal.connection.push(this.selected);
-                    this.objectActiveLinkFinal.position = 'terminal';
-                    this.canvas.sendToBack(this.selected);
-                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
-                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
-                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
-                    this.herramienta = 'cursor';
-                    this.selected = null;
-                    this.objectActiveLinkInitial = null;
-                    this.objectActiveLinkFinal = null;
-                  }
-                  // Si el Enlace es de un Host a un Switch
-                  else if(this.objectActiveLinkFinal.elementContainer.charAt(0) == 'h' && this.objectActiveLinkInitial.elementContainer.charAt(0) == 's'){
-                    this.selected.set({
-                      x2: this.objectActiveLinkFinal.connection[0].x2,
-                      y2: this.objectActiveLinkFinal.connection[0].y2,
-                    });
-                    this.objectActiveLinkInitial.state = "connected";
-                    this.objectActiveLinkFinal.state = "connected";
-                    this.objectActiveLinkInitial.line = this.selected;
-                    this.objectActiveLinkFinal.line = this.selected;
-                    this.objectActiveLinkInitial.connection.push(this.selected);
-                    this.objectActiveLinkFinal.connection.push(this.selected);
-                    this.objectActiveLinkFinal.position = 'terminal';
-                    this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
-                    this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
-                    this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
-                    this.canvas.sendToBack(this.selected);
-                    this.herramienta = 'cursor';
-                    this.selected = null;
-                    this.objectActiveLinkInitial = null;
-                    this.objectActiveLinkFinal = null;
-                  }
-                }
-                // Si el Enlace Se hace al mismo Elemento de Red, este enlance se eliminará.
-                else if (this.objectActiveLinkInitial.elementContainer == this.objectActiveLinkFinal.elementContainer) {
-                  this.canvas.remove(this.selected);
-                  this.herramienta = 'cursor';
+                // Si el Enlace es de un Switch a Otro Sitch Diferente
+                if (
+                  this.objectActiveLinkFinal.elementContainer.charAt(0) ==
+                    "s" &&
+                  this.objectActiveLinkInitial.elementContainer.charAt(0) ==
+                    "s" &&
+                  this.objectActiveLinkInitial.elementContainer !=
+                    this.objectActiveLinkFinal.elementContainer
+                ) {
+                  this.selected.set({
+                    x2: this.objectActiveLinkFinal.connection[0].x2,
+                    y2: this.objectActiveLinkFinal.connection[0].y2,
+                  });
+                  this.objectActiveLinkInitial.state = "connected";
+                  this.objectActiveLinkFinal.state = "connected";
+                  this.objectActiveLinkInitial.line = this.selected;
+                  this.objectActiveLinkFinal.line = this.selected;
+                  this.objectActiveLinkInitial.connection.push(this.selected);
+                  this.objectActiveLinkFinal.connection.push(this.selected);
+                  this.objectActiveLinkFinal.position = "terminal";
+                  this.canvas.sendToBack(this.selected);
+                  this.selected.connectionLink =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "," +
+                    this.objectActiveLinkInitial.elementContainer;
+                  this.selected.intfName1 =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "-" +
+                    this.objectActiveLinkInitial.id;
+                  this.selected.intfName2 =
+                    this.objectActiveLinkFinal.elementContainer +
+                    "-" +
+                    this.objectActiveLinkFinal.id;
+                  this.herramienta = "cursor";
                   this.selected = null;
                   this.objectActiveLinkInitial = null;
                   this.objectActiveLinkFinal = null;
-                };
-                // this.herramienta = 'cursor';
-                // this.selected = null;
-                // this.objectActiveLinkInitial = null;
-                // this.objectActiveLinkFinal = null;
-            }else if (active != null && active.id.charAt(0) == "c"){
-              console.log(active)
+                }
+                // Si el Enlace es de un Switch a un Host
+                else if (
+                  this.objectActiveLinkFinal.elementContainer.charAt(0) ==
+                    "s" &&
+                  this.objectActiveLinkInitial.elementContainer.charAt(0) == "h"
+                ) {
+                  this.selected.set({
+                    x2: this.objectActiveLinkFinal.connection[0].x2,
+                    y2: this.objectActiveLinkFinal.connection[0].y2,
+                  });
+                  this.objectActiveLinkInitial.state = "connected";
+                  this.objectActiveLinkFinal.state = "connected";
+                  this.objectActiveLinkInitial.line = this.selected;
+                  this.objectActiveLinkFinal.line = this.selected;
+                  this.objectActiveLinkInitial.connection.push(this.selected);
+                  this.objectActiveLinkFinal.connection.push(this.selected);
+                  this.objectActiveLinkFinal.position = "terminal";
+                  this.canvas.sendToBack(this.selected);
+                  this.selected.connectionLink =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "," +
+                    this.objectActiveLinkInitial.elementContainer;
+                  this.selected.intfName1 =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "-" +
+                    this.objectActiveLinkInitial.id;
+                  this.selected.intfName2 =
+                    this.objectActiveLinkFinal.elementContainer +
+                    "-" +
+                    this.objectActiveLinkFinal.id;
+                  this.herramienta = "cursor";
+                  this.selected = null;
+                  this.objectActiveLinkInitial = null;
+                  this.objectActiveLinkFinal = null;
+                }
+                else if( this.objectActiveLinkFinal.elementContainer.charAt(0) ==
+                    "s" &&
+                  this.objectActiveLinkInitial.id.charAt(0) == "c"){
+                  console.log('Switch!!')
+                  }
+                // Si el Enlace es de un Host a un Switch
+                else if (
+                  this.objectActiveLinkFinal.elementContainer.charAt(0) ==
+                    "h" &&
+                  this.objectActiveLinkInitial.elementContainer.charAt(0) == "s"
+                ) {
+                  this.selected.set({
+                    x2: this.objectActiveLinkFinal.connection[0].x2,
+                    y2: this.objectActiveLinkFinal.connection[0].y2,
+                  });
+                  this.objectActiveLinkInitial.state = "connected";
+                  this.objectActiveLinkFinal.state = "connected";
+                  this.objectActiveLinkInitial.line = this.selected;
+                  this.objectActiveLinkFinal.line = this.selected;
+                  this.objectActiveLinkInitial.connection.push(this.selected);
+                  this.objectActiveLinkFinal.connection.push(this.selected);
+                  this.objectActiveLinkFinal.position = "terminal";
+                  this.selected.connectionLink =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "," +
+                    this.objectActiveLinkInitial.elementContainer;
+                  this.selected.intfName1 =
+                    this.objectActiveLinkInitial.elementContainer +
+                    "-" +
+                    this.objectActiveLinkInitial.id;
+                  this.selected.intfName2 =
+                    this.objectActiveLinkFinal.elementContainer +
+                    "-" +
+                    this.objectActiveLinkFinal.id;
+                  this.canvas.sendToBack(this.selected);
+                  this.herramienta = "cursor";
+                  this.selected = null;
+                  this.objectActiveLinkInitial = null;
+                  this.objectActiveLinkFinal = null;
+                }
+              }
+              // Si el Enlace Se hace al mismo Elemento de Red, este enlance se eliminará.
+              else if (
+                this.objectActiveLinkInitial.elementContainer ==
+                this.objectActiveLinkFinal.elementContainer
+              ) {
+                this.canvas.remove(this.selected);
+                this.herramienta = "cursor";
+                this.selected = null;
+                this.objectActiveLinkInitial = null;
+                this.objectActiveLinkFinal = null;
+              }
+              // this.herramienta = 'cursor';
+              // this.selected = null;
+              // this.objectActiveLinkInitial = null;
+              // this.objectActiveLinkFinal = null;
+            } else if (active != null && active.id.charAt(0) == "c") {
+              console.log(active);
+              console.log('CONTROLADOR')
               active.set({
                 opacity: 0.7,
-              })
+              });
 
-              if(this.objectActiveLinkInitial == null && active.state != 'connected' && this.objectActiveLinkFinal == null){
-                this.objectActiveLinkInitial = active
+              if (
+                this.objectActiveLinkInitial == null &&
+                active.state != "connected" &&
+                this.objectActiveLinkFinal == null
+              ) {
+                this.objectActiveLinkInitial = active;
                 var coordenadasEnlace = [];
-                coordenadasEnlace[0] = this.objectActiveLinkInitial.left+30;
-                coordenadasEnlace[1] = this.objectActiveLinkInitial.top+30;
-                coordenadasEnlace[2] = this.objectActiveLinkInitial.left+30;
-                coordenadasEnlace[3] = this.objectActiveLinkInitial.top+30;
-                var link = this.makeLink(coordenadasEnlace,'controller');
-                this.selected = link
-                this.canvas.add(link)
-              }
-              else if(this.objectActiveLinkInitial != null && active.state != 'connected' && this.objectActiveLinkFinal == null){
+                coordenadasEnlace[0] = this.objectActiveLinkInitial.left + 30;
+                coordenadasEnlace[1] = this.objectActiveLinkInitial.top + 30;
+                coordenadasEnlace[2] = this.objectActiveLinkInitial.left + 30;
+                coordenadasEnlace[3] = this.objectActiveLinkInitial.top + 30;
+                var link = this.makeLink(coordenadasEnlace, "controller");
+                this.selected = link;
+                this.canvas.add(link);
+              } else if (
+                this.objectActiveLinkInitial != null &&
+                active.state != "connected" &&
+                this.objectActiveLinkFinal == null
+              ) {
                 this.objectActiveLinkFinal = active
-                 this.selected.set({
-                      x2: this.objectActiveLinkFinal.connection[0].x2,
-                      y2: this.objectActiveLinkFinal.connection[0].y2,
-                    });
-                    
-                    this.objectActiveLinkInitial.state = "connected";
-                    this.objectActiveLinkFinal.state = "connected";
-                    this.objectActiveLinkInitial.line = this.selected;
-                    this.objectActiveLinkFinal.line = this.selected;
-                    this.objectActiveLinkInitial.connection.push(this.selected);
-                    this.objectActiveLinkFinal.connection.push(this.selected);
-                    this.objectActiveLinkFinal.position = "terminal";
-                    this.herramienta = 'cursor'
-                    // this.canvas.sendToBack(this.selected);
-                    // this.selected.connectionLink= this.objectActiveLinkInitial.elementContainer + ',' + this.objectActiveLinkInitial.elementContainer;
-                    // this.selected.intfName1 = this.objectActiveLinkInitial.elementContainer + '-' + this.objectActiveLinkInitial.id;
-                    // this.selected.intfName2 = this.objectActiveLinkFinal.elementContainer + '-' + this.objectActiveLinkFinal.id;
-                    this.herramienta = 'cursor';
-                    this.selected = null;
-                    this.objectActiveLinkInitial = null;
-                    this.objectActiveLinkFinal = null;
+                console.log('ACTIVEE: ', this.objectActiveLinkFinal)
+                this.selected.set({
+                  x2: this.objectActiveLinkFinal.x2,
+                  y2: this.objectActiveLinkFinal.y2,
+                });
 
+                this.canvas.remove(this.selected)
+                this.herramienta = "cursor";
+                this.selected = null;
+                this.objectActiveLinkInitial = null;
+                this.objectActiveLinkFinal = null;
               }
-            };
-
+            }
 
             break;
           case "label":
             break;
           case "delete":
             var activeObject = this.canvas.getActiveObject();
-            if(activeObject){
+            if (activeObject) {
               this.deleteObjects(activeObject);
             }
-            this.herramienta= 'cursor';
+            this.herramienta = "cursor";
             break;
         }
       });
 
-      this.canvas.on('object:moving', (e) =>{
+      this.canvas.on("object:moving", (e) => {
         var elementMoving = e.target;
         // var p = e.target;
-        console.log('Moving')
-        switch(this.herramienta){
-          case 'cursor':
-            if(elementMoving != undefined){ 
-              if(elementMoving.id.charAt(0) != 'e' ){
-                for(var i = 0; i< elementMoving.connection.length; i++){
+        console.log("Moving");
+        switch (this.herramienta) {
+          case "cursor":
+            if (elementMoving != undefined) {
+              if (elementMoving.id.charAt(0) != "e") {
+                for (var i = 0; i < elementMoving.connection.length; i++) {
                   // Definicion para el Movimiento para el Controlador y sus Asociaciones
-                  if(elementMoving.id.charAt(0) ==  'c'){
-                    elementMoving.connection[i] && elementMoving.connection[i].set({
-                      'x2': elementMoving.left + 30,
-                      'y2': elementMoving.top + 35
-                    });
+                  if (elementMoving.id.charAt(0) == "c") {
+                    elementMoving.connection[i] &&
+                      elementMoving.connection[i].set({
+                        x2: elementMoving.left + 30,
+                        y2: elementMoving.top + 35,
+                      });
                     this.canvas.renderAll();
                   }
                   // Definicion para el Movimiento de un Host o Switch y sus Asociaciones
-                  else{
-                    elementMoving.connection[i] && elementMoving.connection[i].set({
-                      'x1': elementMoving.left + 30,
-                      'y1': elementMoving.top + 35
-                    });
+                  else {
+                    elementMoving.connection[i] &&
+                      elementMoving.connection[i].set({
+                        x1: elementMoving.left + 30,
+                        y1: elementMoving.top + 35,
+                      });
                     this.canvas.renderAll();
                   }
                 }
               }
               // Definicion para el Movimiento de los Puertos y sus Enlaces y Asociaciones
-              else{
-                for(var i = 0; i<elementMoving.connection.length; i++){
-
+              else {
+                for (var i = 0; i < elementMoving.connection.length; i++) {
                   // Si el puerto esta en estado Conectado y tiene Enlaces
-                  if(elementMoving.state == 'connected'){
+                  if (elementMoving.state == "connected") {
                     // Movimiento para Los Enlaces del Puerto
-                    if(elementMoving.connection[i].id == 'link'){
+                    if (elementMoving.connection[i].id == "link") {
                       // Si el Puerto le Pertenece a un Switch
-                      if(elementMoving.elementContainer.charAt(0) == 's'){
+                      if (elementMoving.elementContainer.charAt(0) == "s") {
                         // Si este Puerto inicia el enlace
-                        if(elementMoving.position == 'initial'){
-                          elementMoving.connection[i] && elementMoving.connection[i].set({
-                            // 'x1': elementMoving.left + 10,
-                            // 'y1': elementMoving.top + 7
-                            'x1': elementMoving.left + 10,
-                            'y1': elementMoving.top + 7
-                          });
+                        if (elementMoving.position == "initial") {
+                          elementMoving.connection[i] &&
+                            elementMoving.connection[i].set({
+                              // 'x1': elementMoving.left + 10,
+                              // 'y1': elementMoving.top + 7
+                              x1: elementMoving.left + 10,
+                              y1: elementMoving.top + 7,
+                            });
                           this.canvas.renderAll();
                         }
                         // Si este Puerto finaliza el enlace
-                        else if(elementMoving.position == 'terminal'){
-                          elementMoving.connection[i] && elementMoving.connection[i].set({
-                            'x1': elementMoving.left + 10,
-                            'y1': elementMoving.top + 7
-                          });
+                        else if (elementMoving.position == "terminal") {
+                          if (elementMoving.elementContainer.charAt(0) == "s") {
+                            elementMoving.connection[i] &&
+                              elementMoving.connection[i].set({
+                                x2: elementMoving.left + 10,
+                                y2: elementMoving.top + 7,
+                              });
+                          } else {
+                            elementMoving.connection[i] &&
+                              elementMoving.connection[i].set({
+                                x1: elementMoving.left + 10,
+                                y1: elementMoving.top + 7,
+                              });
+                          }
+
                           this.canvas.renderAll();
                         }
                         // Si este Puerto No esta conectado
-                        else{
-                          elementMoving.connection[i] && elementMoving.connection[i].set({
-                            'x1': elementMoving.left + 10,
-                            'y1': elementMoving.top + 7
-                          });
+                        else {
+                          elementMoving.connection[i] &&
+                            elementMoving.connection[i].set({
+                              x1: elementMoving.left + 10,
+                              y1: elementMoving.top + 7,
+                            });
                           this.canvas.renderAll();
-                        };
+                        }
                       }
                       // Si el Puerto le Pertenece a un Host
-                      else{
-                        if(elementMoving.position == 'initial'){
-                          elementMoving.connection[i] && elementMoving.connection[i].set({
-                            // 'x1': elementMoving.left + 10,
-                            // 'y1': elementMoving.top + 7
-                            'x1': elementMoving.left + 10,
-                            'y1': elementMoving.top + 7
-                          });
+                      else {
+                        if (elementMoving.position == "initial") {
+                          elementMoving.connection[i] &&
+                            elementMoving.connection[i].set({
+                              // 'x1': elementMoving.left + 10,
+                              // 'y1': elementMoving.top + 7
+                              x1: elementMoving.left + 10,
+                              y1: elementMoving.top + 7,
+                            });
                           this.canvas.renderAll();
                         }
                         // Si este Puerto finaliza el enlace
-                        else if(elementMoving.position == 'terminal'){
-                          elementMoving.connection[i] && elementMoving.connection[i].set({
-                            'x2': elementMoving.left + 10,
-                            'y2': elementMoving.top + 7
-                          });
+                        else if (elementMoving.position == "terminal") {
+                          elementMoving.connection[i] &&
+                            elementMoving.connection[i].set({
+                              x2: elementMoving.left + 10,
+                              y2: elementMoving.top + 7,
+                            });
                           this.canvas.renderAll();
                         }
                       }
                     }
                     // Mover una Asociacion
                     else {
-                      //muevo la asociasion 
-                      elementMoving.connection[i] && elementMoving.connection[i].set({
-                          'x2': elementMoving.left + 10,
-                          'y2': elementMoving.top + 7
-                      });
+                      //muevo la asociasion
+                      elementMoving.connection[i] &&
+                        elementMoving.connection[i].set({
+                          x2: elementMoving.left + 10,
+                          y2: elementMoving.top + 7,
+                        });
                       this.canvas.renderAll();
-                  }
-
-                  }
-                  else {
-                    elementMoving.connection[i] && elementMoving.connection[i].set({
-                        'x2': elementMoving.left + 10,
-                        'y2': elementMoving.top + 7
-                    });
-                    this.canvas.renderAll();
                     }
-
-
-
+                  } else {
+                    elementMoving.connection[i] &&
+                      elementMoving.connection[i].set({
+                        x2: elementMoving.left + 10,
+                        y2: elementMoving.top + 7,
+                      });
+                    this.canvas.renderAll();
+                  }
                 }
               }
             }
-
-          //  case 'cursor':
-          //   if (p.id.charAt(0) != "e") {
-          //       for (var i = 0; i < p.connection.length; i++) {
-
-          //           //p.connection[i] && p.connection[i].set({ 'x1': p.left + 30, 'y1': p.top + 35 });
-
-
-          //           if (p.id.charAt(0) == "c") {
-
-          //               p.connection[i] && p.connection[i].set({
-          //                   'x2': p.left + 30,
-          //                   'y2': p.top + 35
-          //               });
-          //               this.canvas.renderAll();
-
-          //           } else {
-
-          //               p.connection[i] && p.connection[i].set({
-          //                   'x1': p.left + 30,
-          //                   'y1': p.top + 35
-          //               });
-          //               this.canvas.renderAll();
-
-          //           }
-          //       }
-          //       this.canvas.renderAll();
-
-          //   } else {
-          //       for (var i = 0; i < p.connection.length; i++) {
-
-          //           if (p.state == "connected") {
-
-          //               if (p.connection[i].id == "link") {
-          //                   if (p.elementContainer.charAt(0) == "s") {
-          //                       if (p.position == "initial") {
-          //                           p.connection[i] && p.connection[i].set({
-          //                               'x2': p.left + 10,
-          //                               'y2': p.top + 7
-          //                           });
-          //                           this.canvas.renderAll();
-          //                       } else if (p.position == "terminal") {
-          //                           p.connection[i] && p.connection[i].set({
-          //                               'x1': p.left + 10,
-          //                               'y1': p.top + 7
-          //                           });
-          //                           this.canvas.renderAll();
-
-          //                       } else {
-          //                           p.connection[i] && p.connection[i].set({
-          //                               'x1': p.left + 10,
-          //                               'y1': p.top + 7
-          //                           });
-          //                           this.canvas.renderAll();
-          //                       }
-
-          //                   } else {
-          //                       p.connection[i] && p.connection[i].set({
-          //                           'x2': p.left + 10,
-          //                           'y2': p.top + 7
-          //                       });
-          //                       this.canvas.renderAll();
-          //                   }
-
-          //               } else {
-          //                   //muevo la asociasion 
-          //                   p.connection[i] && p.connection[i].set({
-          //                       'x2': p.left + 10,
-          //                       'y2': p.top + 7
-          //                   });
-          //                   this.canvas.renderAll();
-          //               }
-          //           } else {
-          //               p.connection[i] && p.connection[i].set({
-          //                   'x2': p.left + 10,
-          //                   'y2': p.top + 7
-          //               });
-          //               this.canvas.renderAll();
-          //           }
-
-          //       }
-          //   }
-          //   break;
-
         }
       });
       //Mouse up event
@@ -4032,167 +4056,162 @@ export default {
         var x2 = pointer.x; //get the current value of X
         var y2 = pointer.y; //get the current value of Y
         switch (this.herramienta) {
+          case "cursor":
+            // if (options.target != null) {
 
-          case 'cursor':
-              // if (options.target != null) {
+            //     groupLabelController.set({
+            //         left: x2,
+            //         top: y2,
+            //     });
+            //     canvas.renderAll();
 
-              //     groupLabelController.set({
-              //         left: x2,
-              //         top: y2,
-              //     });
-              //     canvas.renderAll();
+            // } else {
 
-              // } else {
+            //     groupLabelController.set({
+            //         visible: false,
+            //     });
 
-              //     groupLabelController.set({
-              //         visible: false,
-              //     });
+            // }
 
-              // }
-
-              break;
-          case 'link':
+            break;
+          case "link":
             console.log(this.herramienta);
             if (this.selected != null) {
-
-                this.selected.set({
-                    x2: x2, //set the line's x2 to the current X value of the mouse
-                    y2: y2, //set the line's y2 to the current Y value of the mouse
-                    selectable: true,
-                    hasBorders: false,
-                    hasControls: false,
-                });
+              this.selected.set({
+                x2: x2, //set the line's x2 to the current X value of the mouse
+                y2: y2, //set the line's y2 to the current Y value of the mouse
+                selectable: true,
+                hasBorders: false,
+                hasControls: false,
+              });
             }
             this.canvas.renderAll();
             break;
-      };
-
-    });
-      // Doble Click en elemento Host 
-      this.canvas.on('mouse:dblclick', (e) =>{
-        switch(this.herramienta){
-          case 'cursor':
+        }
+      });
+      // Doble Click en elemento Host
+      this.canvas.on("mouse:dblclick", (e) => {
+        switch (this.herramienta) {
+          case "cursor":
             var objectActive = this.canvas.getActiveObject();
             if (objectActive != null) {
-              this.action = 'visor';              
+              this.action = "visor";
               var tagActive = objectActive.id;
               this.tagElement = tagActive;
-              if(tagActive.charAt(0) == 'h'){
-                if(objectActive.ipHost){
+              if (tagActive.charAt(0) == "h") {
+                if (objectActive.ipHost) {
                   this.ipHost = objectActive.iPHost;
-                };
-                if(objectActive.sheduler){ 
+                }
+                if (objectActive.sheduler) {
                   this.sheduler = objectActive.sheduler;
-                };
-                if(objectActive.cpuLimit){
+                }
+                if (objectActive.cpuLimit) {
                   this.limitCpu = objectActive.cpuLimit;
-                };
-                if(objectActive.cpuCores){
-                this.coreCpu = objectActive.cpuCores;
-                };
-                this.openModal('host');
-              }else if(tagActive.charAt(0) == 's'){
-                if(objectActive.type){
+                }
+                if (objectActive.cpuCores) {
+                  this.coreCpu = objectActive.cpuCores;
+                }
+                this.openModal("host");
+              } else if (tagActive.charAt(0) == "s") {
+                if (objectActive.type) {
                   this.typeSwitch = objectActive.type;
-                };
-                if(objectActive.stp){ 
+                }
+                if (objectActive.stp) {
                   this.stpSwitch = objectActive.stp;
-                };
-                if(objectActive.stpPriority){ 
+                }
+                if (objectActive.stpPriority) {
                   this.stpPriority = objectActive.stpPriority;
-                };
-                if(objectActive.ipSwitch){
+                }
+                if (objectActive.ipSwitch) {
                   this.ipSwitch = objectActive.ipSwitch;
-                };
-                if(objectActive.dpctlPort){
+                }
+                if (objectActive.dpctlPort) {
                   this.portSwitch = objectActive.dpctlPort;
-                };
-                if(objectActive.protocol){
+                }
+                if (objectActive.protocol) {
                   this.protocolSwitch = objectActive.protocol;
-                };
-                if(objectActive.dataPath){
+                }
+                if (objectActive.dataPath) {
                   this.dataPath = objectActive.dataPath;
-                };
-                if(objectActive.dataPathId){
+                }
+                if (objectActive.dataPathId) {
                   this.dataPathId = objectActive.dataPathId;
-                };
-                if(objectActive.dataPathOpt){
+                }
+                if (objectActive.dataPathOpt) {
                   this.dataPathOpt = objectActive.dataPathOpt;
-                };
-                if(objectActive.failMode){
+                }
+                if (objectActive.failMode) {
                   this.failMode = objectActive.failMode;
-                };
-                if(objectActive.reconnectedSwitch){
+                }
+                if (objectActive.reconnectedSwitch) {
                   this.reconnectedSwitch = objectActive.reconnectedSwitch;
-                };
-                if(objectActive.inBand){
+                }
+                if (objectActive.inBand) {
                   this.inBand = objectActive.inBand;
-                };
-                if(objectActive.inNameSpace){
+                }
+                if (objectActive.inNameSpace) {
                   this.inNameSpace = objectActive.inNameSpace;
-                };
-                if(objectActive.batch){
+                }
+                if (objectActive.batch) {
                   this.batch = objectActive.batch;
-                };
-                if(objectActive.verbose){
+                }
+                if (objectActive.verbose) {
                   this.verbose = objectActive.verbose;
-                };
-                this.openModal('switch');
-              }else if(tagActive.charAt(0) == 'c'){
-                if(objectActive.type){
+                }
+                this.openModal("switch");
+              } else if (tagActive.charAt(0) == "c") {
+                if (objectActive.type) {
                   this.typeController = objectActive.type;
-                };
-                if(objectActive.iPController){
+                }
+                if (objectActive.iPController) {
                   this.ipController = objectActive.iPController;
-                };
-                if(objectActive.portController){
+                }
+                if (objectActive.portController) {
                   this.portController = objectActive.portController;
-                };
-                if(objectActive.protocl){
+                }
+                if (objectActive.protocl) {
                   this.protocolController = objectActive.protocol;
-                };
-                this.openModal('controller');
-              }else if(tagActive.charAt(0) == 'e'){
-                if(objectActive.ipPort){
+                }
+                this.openModal("controller");
+              } else if (tagActive.charAt(0) == "e") {
+                if (objectActive.ipPort) {
                   this.ipPort = objectActive.ipPort;
-                };
-                if(objectActive.state){ 
-                  if(objectActive.state == 'connected'){
+                }
+                if (objectActive.state) {
+                  if (objectActive.state == "connected") {
                     this.linkActive = true;
-                    objectActive.connection.forEach(cn =>{
-                      if(cn.id == 'link'){
-                        if(cn.loss){
+                    objectActive.connection.forEach((cn) => {
+                      if (cn.id == "link") {
+                        if (cn.loss) {
                           this.lossLink = cn.loss;
-                        };
-                        if(cn.queue){
+                        }
+                        if (cn.queue) {
                           this.queueLink = cn.queue;
-                        };
-                        if(cn.jitter){
+                        }
+                        if (cn.jitter) {
                           this.jitterLink = cn.jitter;
-                        };
-                        if(cn.delay){
+                        }
+                        if (cn.delay) {
                           this.delayLink = cn.dejay;
-                        };
-                        if(cn.bw){
+                        }
+                        if (cn.bw) {
                           this.bwLink = cn.bw;
-                        };
+                        }
                       }
                     });
-                  }else{
+                  } else {
                     this.linkActive = false;
-                    this.lossLink = '';
-                    this.queueLink = '';
-                    this.jitterLink = '';
-                    this.delayLink = '';
-                    this.bwLink = '';
-                  };
-                };
-                this.openModal('port');
+                    this.lossLink = "";
+                    this.queueLink = "";
+                    this.jitterLink = "";
+                    this.delayLink = "";
+                    this.bwLink = "";
+                  }
+                }
+                this.openModal("port");
               }
             }
-
         }
-
       });
     },
 
@@ -4225,12 +4244,12 @@ export default {
         this.topologyType = "single";
         return this.$bvModal.show("modal-template");
       }
-       if (open == "linear") {
-        console.log('Topo Linear') 
+      if (open == "linear") {
+        console.log("Topo Linear");
         this.topologyType = "linear";
         return this.$bvModal.show("modal-template");
       }
-       if (open == "ring") {
+      if (open == "ring") {
         this.topologyType = "ring";
         return this.$bvModal.show("modal-template");
       }
@@ -4238,35 +4257,34 @@ export default {
         return this.$bvModal.show("modal-IpUser");
       }
       if (open == "traffic") {
-        
         this.stateOKTrafic = false;
-        this.typeTrafic = 'TCP';
+        this.typeTrafic = "TCP";
         this.trafficModeSelected = "";
-        this.distributionMode = '';
+        this.distributionMode = "";
         this.checkerLong = false;
-        this.valueLong = '';
-        this.radioLong = '';
+        this.valueLong = "";
+        this.radioLong = "";
         this.checkerWindow = false;
-        this.valueWindow = '';
-        this.radioWindow = '';
+        this.valueWindow = "";
+        this.radioWindow = "";
         this.checkerBw = false;
-        this.valueBw = '';
-        this.radioBw = '';
-        this.radioTime = '';
+        this.valueBw = "";
+        this.radioBw = "";
+        this.radioTime = "";
         this.checkerTime = false;
-        this.radioPacket = '';
-        this.radioKPacket = '';
+        this.radioPacket = "";
+        this.radioKPacket = "";
         this.checkerPacket = false;
         this.checkerInterval = false;
-        this.valueInterval = '';
-        this.selectedClientHost = '';
-        this.selectedServertHost = '';
-        this.textTime = '';
-        this.textPacket = '';
-        this.textLong = '';
-        this.textWindow = '';
-        this.textBw = '';
-        this.textInterval = '';
+        this.valueInterval = "";
+        this.selectedClientHost = "";
+        this.selectedServertHost = "";
+        this.textTime = "";
+        this.textPacket = "";
+        this.textLong = "";
+        this.textWindow = "";
+        this.textBw = "";
+        this.textInterval = "";
         this.stateTime = null;
         this.statePacket = null;
         this.stateLong = null;
@@ -4285,57 +4303,59 @@ export default {
       }
       if (open == "info") {
         return this.$bvModal.show("modal-info");
-      };
-      if (open == 'specific'){
+      }
+      if (open == "specific") {
         return this.$bvModal.show("modal-specific");
-      };
+      }
       if (open == "link") {
         return this.$bvModal.show("modal-link");
-      };
-      
+      }
     },
 
     closeModal(mod) {
       if (mod == "host") {
-        this.ipHost = '';
-        this.sheduler = 'Ninguno';
-        this.limitCpu = '';
-        this.coreCpu = '';
+        this.ipHost = "";
+        this.sheduler = "Ninguno";
+        this.limitCpu = "";
+        this.coreCpu = "";
         return this.$bvModal.hide("modal-host");
       }
       if (mod == "switch") {
-        this.typeSwitch = 'Ninguno';
-        this.stpSwitch = '';
-        this.stpPriority = '';
-        this.ipSwitch = '';
-        this.portSwitch = '';
-        this.protocolSwitch = 'OpenFlow 1.2';
-        this.dataPath = 'Ninguno';
-        this.dataPathId = '';
-        this.dataPathOpt ='';
-        this.failMode = 'Ninguno';
-        this.reconnectSwitch = '';
-        this.inBand = '';
-        this.inNameSpace = '';
-        this.batch = '';
-        this.verbose = '';
+        this.typeSwitch = "Ninguno";
+        this.stpSwitch = "";
+        this.stpPriority = "";
+        this.ipSwitch = "";
+        this.portSwitch = "";
+        this.protocolSwitch = "OpenFlow 1.2";
+        this.dataPath = "Ninguno";
+        this.dataPathId = "";
+        this.dataPathOpt = "";
+        this.failMode = "Ninguno";
+        this.reconnectSwitch = "";
+        this.inBand = "";
+        this.inNameSpace = "";
+        this.batch = "";
+        this.verbose = "";
         return this.$bvModal.hide("modal-switch");
       }
       if (mod == "controller") {
-        this.typeController = 'Por Defecto';
-        this.ipController = '';
-        this.portController = '';
-        this.protocolController = 'Ninguno';
+        this.typeController = "Por Defecto";
+        this.ipController = "";
+        this.portController = "";
+        this.protocolController = "Ninguno";
         return this.$bvModal.hide("modal-controller");
       }
       if (mod == "port") {
-        this.ipPort = '';
+        this.ipPort = "";
         return this.$bvModal.hide("modal-port");
       }
       if (mod == "single") {
         return this.$bvModal.hide("modal-template");
       }
       if (mod == "linear") {
+        return this.$bvModal.hide("modal-template");
+      }
+      if (mod == "ring") {
         return this.$bvModal.hide("modal-template");
       }
       if (mod == "play") {
@@ -4352,7 +4372,7 @@ export default {
       }
       if (mod == "info") {
         return this.$bvModal.hide("modal-info");
-      };
+      }
       if (mod == "link") {
         return this.$bvModal.hide("modal-link");
       }
@@ -4365,135 +4385,155 @@ export default {
     loadInfoElements() {
       this.canvas.forEachObject((obj) => {
         //Recopila la información de cada Host
-        
+
         if (obj.id.charAt(0) == "h") {
           var element = {};
 
-          element['id'] = obj.id;
+          element["id"] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.ipHost != '' && obj.ipHost != undefined){
-            element['ipHost'] = obj.ipHost;
-          };
-          if(obj.sheduler !='Ninguno' && obj.sheduler != undefined){
-            element['sheduler']= obj.sheduler;
-          };
-          if(obj.cpuLimit != '' && obj.cpuLimit != undefined){
-            element['cpuLimit'] = obj.cpuLimit;
-          };
-          if(obj.cpuCores != '' && obj.cpuCores != undefined){
-            element['cpuCores'] = obj.cpuCores;
-          };
+          if (obj.ipHost != "" && obj.ipHost != undefined) {
+            element["ipHost"] = obj.ipHost;
+          }
+          if (obj.sheduler != "Ninguno" && obj.sheduler != undefined) {
+            element["sheduler"] = obj.sheduler;
+          }
+          if (obj.cpuLimit != "" && obj.cpuLimit != undefined) {
+            element["cpuLimit"] = obj.cpuLimit;
+          }
+          if (obj.cpuCores != "" && obj.cpuCores != undefined) {
+            element["cpuCores"] = obj.cpuCores;
+          }
 
           this.elements.push(element);
-        } 
+        }
         //Recopila la información de cada Switch
         else if (obj.id.charAt(0) == "s") {
           var element = {};
-          element['id'] = obj.id;
+          element["id"] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          
-          if(obj.ipSwitch != '' && obj.ipSwitch != undefined){
-            element['ipSwitch'] = obj.ipSwitch;
-          };
-          if(obj.verbose != '' && obj.verbose != undefined && obj.verbose != 'not_accepted' ){
-            element['verbose'] = obj.verbose;
-          };
-          if(obj.batch != '' && obj.batch != undefined && obj.batch != 'not_accepted'){
-            element['batch'] = obj.batch;
-          };
-          if(obj.inNameSpace != '' && obj.inNameSpace != undefined && obj.inNameSpace != 'not_accepted'){
-            element['inNameSpace'] = obj.inNameSpace;
-          };
-          if(obj.inBand != '' && obj.inBand != undefined && obj.inBand != 'not_accepted'){
-            element['inBand'] = obj.inBand;
-          };
-          if(obj.failMode != 'Ninguno' && obj.failMode != undefined){
-            element['failMode'] = obj.failMode;
-          };
-          if(obj.reconnectedSwitch != '' && obj.reconnectSwitch != undefined){
-            element['reconnectedSwitch'] = obj.reconnectedSwitch;
-          };
-          if(obj.dataPath != 'Ninguno' && obj.dataPath != undefined){
-            element['dataPath'] = obj.dataPath;
-          };
-          if(obj.dataPathId != '' && obj.dataPathId != undefined){
-            element['dataPathId'] = obj.dataPathId;
-          };
-          if(obj.dataPathOpt != '' && obj.dataPathOpt != undefined){
-            element['dataPathOpt'] = obj.dataPathOpt;
-          };
-          if(obj.protocol != undefined){
-            element['protocol'] = obj.protocol;
-          };
-          if(obj.dpctlPort != '' && obj.dpctlPort != undefined){
-            element['dpctlPort'] = obj.dpctlPort;
-          };
-          if(obj.stpSwitch != '' && obj.stpSwitch != undefined && obj.stpSwitch != 'not_stp'){
-            element['stp'] = obj.stpSwitch;
-          };
-          if(obj.stpPriority != '' && obj.stpPriority != undefined){
-            element['stpPriority'] = obj.stpPriority;
-          };
-          if(obj.type != 'Ninguno' && obj.type != undefined){
-            element['type'] = obj.type;
-          };
-          if(obj.controller != '' && obj.controller != undefined){
-            element['controller'] = obj.controller;
-          };
+
+          if (obj.ipSwitch != "" && obj.ipSwitch != undefined) {
+            element["ipSwitch"] = obj.ipSwitch;
+          }
+          if (
+            obj.verbose != "" &&
+            obj.verbose != undefined &&
+            obj.verbose != "not_accepted"
+          ) {
+            element["verbose"] = obj.verbose;
+          }
+          if (
+            obj.batch != "" &&
+            obj.batch != undefined &&
+            obj.batch != "not_accepted"
+          ) {
+            element["batch"] = obj.batch;
+          }
+          if (
+            obj.inNameSpace != "" &&
+            obj.inNameSpace != undefined &&
+            obj.inNameSpace != "not_accepted"
+          ) {
+            element["inNameSpace"] = obj.inNameSpace;
+          }
+          if (
+            obj.inBand != "" &&
+            obj.inBand != undefined &&
+            obj.inBand != "not_accepted"
+          ) {
+            element["inBand"] = obj.inBand;
+          }
+          if (obj.failMode != "Ninguno" && obj.failMode != undefined) {
+            element["failMode"] = obj.failMode;
+          }
+          if (obj.reconnectedSwitch != "" && obj.reconnectSwitch != undefined) {
+            element["reconnectedSwitch"] = obj.reconnectedSwitch;
+          }
+          if (obj.dataPath != "Ninguno" && obj.dataPath != undefined) {
+            element["dataPath"] = obj.dataPath;
+          }
+          if (obj.dataPathId != "" && obj.dataPathId != undefined) {
+            element["dataPathId"] = obj.dataPathId;
+          }
+          if (obj.dataPathOpt != "" && obj.dataPathOpt != undefined) {
+            element["dataPathOpt"] = obj.dataPathOpt;
+          }
+          if (obj.protocol != undefined) {
+            element["protocol"] = obj.protocol;
+          }
+          if (obj.dpctlPort != "" && obj.dpctlPort != undefined) {
+            element["dpctlPort"] = obj.dpctlPort;
+          }
+          if (
+            obj.stpSwitch != "" &&
+            obj.stpSwitch != undefined &&
+            obj.stpSwitch != "not_stp"
+          ) {
+            element["stp"] = obj.stpSwitch;
+          }
+          if (obj.stpPriority != "" && obj.stpPriority != undefined) {
+            element["stpPriority"] = obj.stpPriority;
+          }
+          if (obj.type != "Ninguno" && obj.type != undefined) {
+            element["type"] = obj.type;
+          }
+          if (obj.controller != "" && obj.controller != undefined) {
+            element["controller"] = obj.controller;
+          }
 
           this.elements.push(element);
-        } 
+        }
         //Recopila la información de cada Controlador
-        else if (obj.id.charAt(0) == "c" && obj.id != 'controller') {
+        else if (obj.id.charAt(0) == "c" && obj.id != "controller") {
           var element = {};
-          element['id'] = obj.id;
+          element["id"] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.type != 'Por Defecto' && obj.type != undefined){
-            element['type'] = obj.type;
-          };
-          if(obj.ipController != '' && obj.ipController != undefined){
-            element['ipController'] = obj.ipController;
-          };
-          if(obj.portController != '' && obj.portController != undefined){
-            element['port'] = obj.portController;
-          };
-          if(obj.protocol != 'Ninguno' && obj.protocol != undefined){
-            element['protocol'] = obj.protocol;
-          };
-          
+          if (obj.type != "Por Defecto" && obj.type != undefined) {
+            element["type"] = obj.type;
+          }
+          if (obj.ipController != "" && obj.ipController != undefined) {
+            element["ipController"] = obj.ipController;
+          }
+          if (obj.portController != "" && obj.portController != undefined) {
+            element["port"] = obj.portController;
+          }
+          if (obj.protocol != "Ninguno" && obj.protocol != undefined) {
+            element["protocol"] = obj.protocol;
+          }
+
           this.elements.push(element);
         }
         //Recopila la información de cada Enlace
         else if (obj.id.charAt(0) == "l") {
           var element = {};
-          element['id'] = obj.id;
+          element["id"] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          if(obj.loss != '' && obj.loss != undefined){
-            element['loss'] = obj.loss;
-          };
-          if(obj.queue != '' && obj.queue != undefined){
-            element['queue'] = obj.queue;
-          };
-          if(obj.jitter != '' && obj.jitterUdp != undefined){
-            element['jitter'] = obj.jitter;
-          };
-          if(obj.delay != '' && obj.delay != undefined){
-            element['delay'] = obj.delay;
-          };
-          if(obj.bw != '' && obj.bw != undefined){
-            element['bw'] = obj.bw;
-          };
+          if (obj.loss != "" && obj.loss != undefined) {
+            element["loss"] = obj.loss;
+          }
+          if (obj.queue != "" && obj.queue != undefined) {
+            element["queue"] = obj.queue;
+          }
+          if (obj.jitter != "" && obj.jitterUdp != undefined) {
+            element["jitter"] = obj.jitter;
+          }
+          if (obj.delay != "" && obj.delay != undefined) {
+            element["delay"] = obj.delay;
+          }
+          if (obj.bw != "" && obj.bw != undefined) {
+            element["bw"] = obj.bw;
+          }
 
-          element['connection'] = obj.connectionLink;
-          element['intfName1'] = obj.intfName1;
-          element['intfName2'] = obj.intfName2;
-          
+          element["connection"] = obj.connectionLink;
+          element["intfName1"] = obj.intfName1;
+          element["intfName2"] = obj.intfName2;
+
           this.elements.push(element);
-        } 
+        }
         //Recopila la información de cada Label
         else if (obj.id.charAt(1) == "a") {
           var element = {};
@@ -4505,19 +4545,18 @@ export default {
             label: obj.label,
           };
           elements.push(element);
-        } 
+        }
         //Recopila la información de cada Puerto
         else if (obj.id.charAt(0) == "e") {
           var element = {};
-          element['id'] = obj.id;
+          element["id"] = obj.id;
           // element['top'] = obj.top;
           // element['left'] = obj.left;
-          element['intf'] = String(obj.elementContainer)+'-'+String(obj.id);
-          
+          element["intf"] = String(obj.elementContainer) + "-" + String(obj.id);
 
-          if(obj.ipPort != '' && obj.ipPort){
-              element['ipPort'] = obj.ipPort;
-          };
+          if (obj.ipPort != "" && obj.ipPort) {
+            element["ipPort"] = obj.ipPort;
+          }
 
           this.elements.push(element);
         }
@@ -4561,7 +4600,7 @@ export default {
         .catch((error) => {
           this.alertText = "Error en la Creación de la Red.";
           this.in_process = false;
-          this.serverText = "Error: Failed to Connect" ;
+          this.serverText = "Error: Failed to Connect";
           this.errorServer = true;
         });
     },
@@ -4577,8 +4616,7 @@ export default {
         this.traffic_activator = true;
       });
     },
-    validatorDataTrafic(){
-      
+    validatorDataTrafic() {
       this.labelsGraphic = [];
       this.datosYBitsPerSecond = [];
       this.datosYNumBytes = [];
@@ -4587,129 +4625,137 @@ export default {
       this.datosYRtt = [];
       this.datosYRttVar = [];
       this.datosYSndCwnd = [];
-      
+
       var modeOp = "";
       var traficDir = {};
       var auxTraficDir = {};
-      
-      if(this.trafficModeSelected != ''){
-        if(this.trafficModeSelected == 'global'){
-          traficDir['global'] = 'true';
-          modeOp = 'GLOBAL';
-          if(this.distributionMode == 'one'){
-            traficDir['one_for_all'] = 'true';
-            modeOp = 'ONE FOR ALL';
-          }else if(this.distributionMode =='all'){
-            traficDir['all_for_all'] = 'true';
-            modeOp = 'ALL FOR ALL';
-          }else{
+
+      if (this.trafficModeSelected != "") {
+        if (this.trafficModeSelected == "global") {
+          traficDir["global"] = "true";
+          modeOp = "GLOBAL";
+          if (this.distributionMode == "one") {
+            traficDir["one_for_all"] = "true";
+            modeOp = "ONE FOR ALL";
+          } else if (this.distributionMode == "all") {
+            traficDir["all_for_all"] = "true";
+            modeOp = "ALL FOR ALL";
+          } else {
             this.stateOKTrafic = false;
           }
-        }else if(this.trafficModeSelected == 'specific'){
-          traficDir['specific'] = [{}];
-          if(this.selectedClientHost != '' && this.selectedServertHost != '' && this.selectedServertHost != this.selectedClientHost){
-            traficDir['specific'][0]['host_client'] = String(this.selectedClientHost);
-            traficDir['specific'][0]['host_server'] = String(this.selectedServertHost); 
-          }else{
+        } else if (this.trafficModeSelected == "specific") {
+          traficDir["specific"] = [{}];
+          if (
+            this.selectedClientHost != "" &&
+            this.selectedServertHost != "" &&
+            this.selectedServertHost != this.selectedClientHost
+          ) {
+            traficDir["specific"][0]["host_client"] = String(
+              this.selectedClientHost
+            );
+            traficDir["specific"][0]["host_server"] = String(
+              this.selectedServertHost
+            );
+          } else {
             this.stateOKTrafic = false;
           }
-        }else if(this.trafficModeSelected == 'xtreme'){
-          traficDir['xtreme'] = true;
+        } else if (this.trafficModeSelected == "xtreme") {
+          traficDir["xtreme"] = true;
         }
-      }else{
+      } else {
         this.stateOKTrafic = false;
       }
-      
 
-      if (this.radioTime == 't'){
-        if(this.textTime != ''){
+      if (this.radioTime == "t") {
+        if (this.textTime != "") {
           this.stateTime = true;
-          auxTraficDir['t'] = String(this.textTime);
+          auxTraficDir["t"] = String(this.textTime);
           this.stateOKTrafic = true;
-        }else{
-          this.stateTime =false;
+        } else {
+          this.stateTime = false;
           this.stateOKTrafic = false;
         }
-      };
-      if(this.radioPacket == 'n'){
-        if(this.textPacket != ''){
+      }
+      if (this.radioPacket == "n") {
+        if (this.textPacket != "") {
           this.statePacket = true;
-          auxTraficDir['n'] = String(this.textPacket)+String(this.radioKPacket);
+          auxTraficDir["n"] =
+            String(this.textPacket) + String(this.radioKPacket);
           this.stateOKTrafic = true;
-        }else{
+        } else {
           this.statePacket = false;
           this.stateOKTrafic = false;
         }
-      };
-      if(this.valueLong == 'l'){
-        if(this.textLong != ''){
+      }
+      if (this.valueLong == "l") {
+        if (this.textLong != "") {
           this.stateLong = true;
-          auxTraficDir['l'] = String(this.textLong)+String(this.radioLong);
+          auxTraficDir["l"] = String(this.textLong) + String(this.radioLong);
           this.stateOKTrafic = true;
-        }else{
-          this.stateLong= false;
+        } else {
+          this.stateLong = false;
           this.stateOKTrafic = false;
         }
-      };
-      if(this.valueWindow == 'w'){
-        if(this.textWindow != ''){
+      }
+      if (this.valueWindow == "w") {
+        if (this.textWindow != "") {
           this.stateWindow = true;
-          auxTraficDir['w'] = String(this.textWindow)+String(this.radioWindow);
+          auxTraficDir["w"] =
+            String(this.textWindow) + String(this.radioWindow);
           this.stateOKTrafic = true;
-        }else{
+        } else {
           this.stateWindow = false;
           this.stateOKTrafic = false;
         }
-      };
-      if(this.valueBw == 'b'){
-        if(this.textBw != ''){
+      }
+      if (this.valueBw == "b") {
+        if (this.textBw != "") {
           this.stateBw = true;
-          auxTraficDir['b'] = String(this.textBw)+String(this.radioBw);
+          auxTraficDir["b"] = String(this.textBw) + String(this.radioBw);
           this.stateOKTrafic = true;
-        }else{
+        } else {
           this.stateBw = false;
           this.stateOKTrafic = false;
         }
-      };
-      if(this.valueInterval == 'i'){
-        if(this.textInterval != ''){
+      }
+      if (this.valueInterval == "i") {
+        if (this.textInterval != "") {
           this.stateInterval = true;
-          auxTraficDir['i'] = String(this.textInterval);
+          auxTraficDir["i"] = String(this.textInterval);
           this.stateOKTrafic = true;
-        }else{
+        } else {
           this.stateInterval = false;
           this.stateOKTrafic = false;
-
         }
-      };
+      }
       if (this.typeTrafic == "TCP") {
         traficDir["TCP"] = [auxTraficDir];
         this.protocolTrafficActual = "TCP";
-      } else if(this.typeTrafic == 'UDP'){
+      } else if (this.typeTrafic == "UDP") {
         traficDir["UDP"] = [auxTraficDir];
         this.protocolTrafficActual = "UDP";
       }
 
-      
-      if(this.stateOKTrafic == true){
-        this.closeModal('traffic');
-        this.traficGenerator(traficDir,modeOp);
+      if (this.stateOKTrafic == true) {
+        this.closeModal("traffic");
+        this.traficGenerator(traficDir, modeOp);
       }
     },
 
-    traficGenerator(traficDir,modeOp) {
+    traficGenerator(traficDir, modeOp) {
       this.closeModal("traffic");
       this.alertText = "Procesando Tráfico...";
       this.in_process = true;
       this.errorServer = false;
       this.openModal("done");
-      
+
       axios
         .post(this.path, traficDir)
         .then((response) => {
           // Mensaje Confirmación de Tráfico
           var data = response.data;
-          if ( Object.keys(data).length == 0 ||
+          if (
+            Object.keys(data).length == 0 ||
             Object.keys(data).includes("Error") ||
             data == ""
           ) {
@@ -5040,13 +5086,11 @@ export default {
                       );
 
                       var totalNumBytes = valActualNumBytes + valorSumar;
-                      trafficValuesServer[
-                        llave + "_bits_per_second"
-                      ] = totalNumBytes;
+                      trafficValuesServer[llave + "_bits_per_second"] =
+                        totalNumBytes;
                     } else {
-                      trafficValuesServer[
-                        llave + "_bits_per_second"
-                      ] = parseInt(data[k]["speciffic"][t]["bits_per_second"]);
+                      trafficValuesServer[llave + "_bits_per_second"] =
+                        parseInt(data[k]["speciffic"][t]["bits_per_second"]);
                     }
                   }
                   protocol = String(data[k]["general"]["protocol"]);
@@ -5102,7 +5146,6 @@ export default {
               this.totalBytesTcpServer = totalBytesTxServer;
               this.promTotalBytesTcpServer = promTotalBytesTxServer;
               this.promBitsPerSecondTcpServer = promBitsPerSecondServer;
-              
 
               //Cliente TCP
               this.totalBytesTcpclient = totalBytesTx;
@@ -5111,24 +5154,23 @@ export default {
               this.promSndCwndTcp = promSndCwnd;
               this.promRttTcp = promRtt;
               this.promRetransmitsTcp = promRetransmits;
-              this.promRttVarTcp = promRttVar
-              this.promPmtuTcp = promPmtu;             
-
+              this.promRttVarTcp = promRttVar;
+              this.promPmtuTcp = promPmtu;
             }
           }
         })
         .catch((error) => {
           this.alertText = "Error en la Creación del Tráfico.";
           this.in_process = false;
-          this.serverText = "Error: Failed to Connect" ;
+          this.serverText = "Error: Failed to Connect";
           this.errorServer = true;
         });
     },
     grafficGenerator() {
       this.canvasGraphic = true;
       this.metrics = true;
-      this.protocolTrafficActual = 'TCP'; //Quitar esta Linea - solo es para pruebas
-      if (this.protocolTrafficActual == 'TCP'){
+      this.protocolTrafficActual = "TCP"; //Quitar esta Linea - solo es para pruebas
+      if (this.protocolTrafficActual == "TCP") {
         this.activeUdp = false;
         this.activeTcp = true;
         if (this.trafficGraphic == "Servidor") {
@@ -5175,9 +5217,6 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
           };
-
-
-
         } else if (this.trafficGraphic == "Cliente") {
           this.totalAnswerUdp = false;
           this.totalAnswerTcp = false;
@@ -5186,7 +5225,6 @@ export default {
           this.serverAnswerUdp = false;
           this.clientAnswerTcp = true;
 
-          
           this.totalBytesTcp = this.totalBytesTcpclient;
           this.promTotalBytesTcp = this.promTotalBytesTcpClient;
           this.promBitsPerSecondTcp = this.promBitsPerSecondTcpClient;
@@ -5258,8 +5296,6 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
           };
-
-    
         } else if (this.trafficGraphic == "General") {
           this.totalAnswerUdp = false;
           this.clientAnswerUdp = false;
@@ -5276,74 +5312,84 @@ export default {
           var longClientBits = this.datosYBitsPerSecond.length;
 
           //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
-          if(longClient > longServer){
-            for(var i = 0; i < longClient; i ++){
-              if (i >= longServer){
+          if (longClient > longServer) {
+            for (var i = 0; i < longClient; i++) {
+              if (i >= longServer) {
                 var total = this.datosYNumBytes[i] + 0;
                 totalDatosYNumBytes[i] = total;
-              }else{
-                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
+              } else {
+                var total =
+                  this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
                 totalDatosYNumBytes[i] = total;
               }
             }
-          }else if(longClient < longServer){
-            for(var i = 0; i < longServer; i ++){
-              if (i >= longClient){
+          } else if (longClient < longServer) {
+            for (var i = 0; i < longServer; i++) {
+              if (i >= longClient) {
                 var total = this.datosYNumBytesServer[i] + 0;
                 totalDatosYNumBytes[i] = total;
-              }else{
-                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
+              } else {
+                var total =
+                  this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
                 totalDatosYNumBytes[i] = total;
               }
             }
-          }else{
-            for(var i = 0; i < longClient; i ++){
-                var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i]
-                totalDatosYNumBytes[i] = total;
+          } else {
+            for (var i = 0; i < longClient; i++) {
+              var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
+              totalDatosYNumBytes[i] = total;
             }
           }
           //Suma los datos Totales de Numero de Bits por Segundo del Cliente y Servidor
-          if(longClientBits > longServerBits){
-            for(var i = 0; i < longClientBits; i ++){
-              if (i >= longServerBits){
+          if (longClientBits > longServerBits) {
+            for (var i = 0; i < longClientBits; i++) {
+              if (i >= longServerBits) {
                 var total = this.datosYBitsPerSecond[i] + 0;
                 totalDatosYBitsPerSecond[i] = total;
-              }else{
-                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
+              } else {
+                var total =
+                  this.datosYBitsPerSecond[i] +
+                  this.datosYBitsPerSecondServer[i];
                 totalDatosYBitsPerSecon[i] = total;
               }
             }
-          }else if(longClientBits < longServerBits){
-            for(var i = 0; i < longServerBits; i ++){
-              if (i >= longClientBits){
+          } else if (longClientBits < longServerBits) {
+            for (var i = 0; i < longServerBits; i++) {
+              if (i >= longClientBits) {
                 var total = this.datosYBitsPerSecondServer[i] + 0;
                 totalDatosYBitsPerSecond[i] = total;
-              }else{
-                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
+              } else {
+                var total =
+                  this.datosYBitsPerSecond[i] +
+                  this.datosYBitsPerSecondServer[i];
                 totalDatosYBitsPerSecond[i] = total;
               }
             }
-          }else{
-            for(var i = 0; i < longClient; i ++){
-                var total = this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i]
-                totalDatosYBitsPerSecond[i] = total;
+          } else {
+            for (var i = 0; i < longClient; i++) {
+              var total =
+                this.datosYBitsPerSecond[i] + this.datosYBitsPerSecondServer[i];
+              totalDatosYBitsPerSecond[i] = total;
             }
-          };
+          }
           // Calulo de Totales y Promedio Generales del Tráfico
           var totalBytesTcpTotal = 0;
           var promTotalBytesTcpTotal = 0;
           var promTotalBitsPerSecondTcpTotal = 0;
 
-          for(var i=0 ; i<totalDatosYNumBytes.length; i++){
+          for (var i = 0; i < totalDatosYNumBytes.length; i++) {
             totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
-          };
-          for(var i=0 ; i<totalDatosYBitsPerSecond.length; i++){
-            promTotalBitsPerSecondTcpTotal = promTotalBitsPerSecondTcpTotal + totalDatosYBitsPerSecond[i];
-          };
+          }
+          for (var i = 0; i < totalDatosYBitsPerSecond.length; i++) {
+            promTotalBitsPerSecondTcpTotal =
+              promTotalBitsPerSecondTcpTotal + totalDatosYBitsPerSecond[i];
+          }
 
           this.totalBytesTcp = totalBytesTcpTotal;
-          this.promTotalBytesTcp = totalBytesTcpTotal / totalDatosYNumBytes.length;
-          this.promBitsPerSecondTcp = promTotalBitsPerSecondTcpTotal / totalDatosYBitsPerSecond.length;
+          this.promTotalBytesTcp =
+            totalBytesTcpTotal / totalDatosYNumBytes.length;
+          this.promBitsPerSecondTcp =
+            promTotalBitsPerSecondTcpTotal / totalDatosYBitsPerSecond.length;
 
           this.chartdata = {
             labels: this.labelsGraphic,
@@ -5377,13 +5423,9 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
           };
-          
-
         }
+      } else if (this.protocolTrafficActual == "UDP") {
       }
-      else if(this.protocolTrafficActual == 'UDP'){
-        
-      };
     },
     changeGraphic() {
       this.grafficGenerator();
@@ -5408,7 +5450,7 @@ export default {
           // evented: false,
           id: "controller",
           // Si esta asosiado a un switch
-          swLoad: []
+          swLoad: [],
         });
       } else if (linkType == "portHost") {
         return new fabric.Line(coords, {
@@ -5426,8 +5468,7 @@ export default {
           lockRotation: true,
           // evented: false,
           id: "portHost",
-          belonging: '',
-          
+          belonging: "",
         });
       } else if (linkType == "link") {
         return new fabric.Line(coords, {
@@ -5462,7 +5503,7 @@ export default {
           lockRotation: true,
           //evented: false,
           id: "portSwitch",
-          belonging: ''
+          belonging: "",
         });
       } else {
         return new fabric.Line(coords, {
@@ -5486,157 +5527,157 @@ export default {
       //
     },
     // Funcion que valida un ip sin mask
-    validateIp(ip){
-      const patronIp= new RegExp("^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$");
-      if(ip.search(patronIp) !== 0){
+    validateIp(ip) {
+      const patronIp = new RegExp(
+        "^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$"
+      );
+      if (ip.search(patronIp) !== 0) {
         return false;
-      }else{
+      } else {
         return true;
       }
     },
     // Actualiza o Inserta un elemento con sus opciones
     element() {
       if (this.tagElement.charAt(0) == "h") {
-        var ipHostOk = '';
-        if(this.ipHost != ''){
-          if(this.validateIp(this.ipHost)){
+        var ipHostOk = "";
+        if (this.ipHost != "") {
+          if (this.validateIp(this.ipHost)) {
             this.stateIpHost = true;
             ipHostOk = this.ipHost;
-          }else{
+          } else {
             this.stateIpHost = false;
-          };
-        }else{
+          }
+        } else {
           this.stateIpHost = true;
-        };
-        if(this.stateIpHost == true || this.stateIpHost == null){ 
-          if(this.action != 'visor'){
+        }
+        if (this.stateIpHost == true || this.stateIpHost == null) {
+          if (this.action != "visor") {
             this.armElement("h");
             this.tagHost.push(this.tagElement);
-          };
-        this.canvas.forEachObject((obj) => {
-          if (obj.id == this.tagElement) {
-            obj.ipHost = ipHostOk;
-            obj.sheduler = this.sheduler;
-            obj.cpuLimit = this.limitCpu;
-            obj.cpuCores = this.coreCpu;
           }
-        });
+          this.canvas.forEachObject((obj) => {
+            if (obj.id == this.tagElement) {
+              obj.ipHost = ipHostOk;
+              obj.sheduler = this.sheduler;
+              obj.cpuLimit = this.limitCpu;
+              obj.cpuCores = this.coreCpu;
+            }
+          });
           this.closeModal("host");
           // Reiniciar Variables a su estado Inicial
-          this.ipHost = '';
-          this.sheduler = 'Ninguno';
-          this.limitCpu = '';
-          this.coreCpu = '';
-        };
+          this.ipHost = "";
+          this.sheduler = "Ninguno";
+          this.limitCpu = "";
+          this.coreCpu = "";
+        }
       } else if (this.tagElement.charAt(0) == "s") {
-        var ipSwitchOk ='';
-        if(this.ipSwitch != ''){
-          if(this.validateIp(this.ipSwitch)){
+        var ipSwitchOk = "";
+        if (this.ipSwitch != "") {
+          if (this.validateIp(this.ipSwitch)) {
             ipSwitchOk = this.ipSwitch;
             this.stateIpSwitch = true;
-          }else{
+          } else {
             this.stateIpSwitch = false;
           }
-        }else{
+        } else {
           this.stateIpSwitch = true;
-        };
-
-        if(this.stateIpSwitch == true || this.stateIpSwitch == null){ 
-          if(this.action != 'visor'){
-            this.armElement("s");
-            this.tagSwitch.push(this.tagElement);
-          };
-        this.canvas.forEachObject((obj) => {
-          if (obj.id == this.tagElement) {
-            obj.verbose = this.verbose;
-            obj.batch = this.batch;
-            obj.inNameSpace = this.inNameSpace;
-            obj.inBand = this.inBand;
-            obj.reconnectSwitch = this.reconnectSwitch;
-            obj.failMode = this.failMode;
-            obj.dataPathOpt = this.dataPathOpt;
-            obj.dataPathId = this.dataPathId;
-            obj.dataPath = this.dataPath;
-            obj.protocol = this.protocolSwitch;
-            obj.dpctlPort = this.portSwitch;
-            obj.ipSwitch = ipSwitchOk;
-            obj.stpPriority = this.stpPriority;
-            obj.stp = this.stpSwitch;
-            obj.type = this.typeSwitch;
-          }
-        });
-        this.closeModal("switch");
-        // Reiniciar variables a su estado Inicial
-        this.typeSwitch = 'Ninguno';
-        this.stpSwitch = '';
-        this.stpPriority = '';
-        this.ipSwitch = '';
-        this.portSwitch = '';
-        this.protocolSwitch = 'OpenFlow 1.2';
-        this.dataPath = 'Ninguno';
-        this.dataPathId = '';
-        this.dataPathOpt ='';
-        this.failMode = 'Ninguno';
-        this.reconnectSwitch = '';
-        this.inBand = '';
-        this.inNameSpace = '';
-        this.batch = '';
-        this.verbose = '';
         }
 
+        if (this.stateIpSwitch == true || this.stateIpSwitch == null) {
+          if (this.action != "visor") {
+            this.armElement("s");
+            this.tagSwitch.push(this.tagElement);
+          }
+          this.canvas.forEachObject((obj) => {
+            if (obj.id == this.tagElement) {
+              obj.verbose = this.verbose;
+              obj.batch = this.batch;
+              obj.inNameSpace = this.inNameSpace;
+              obj.inBand = this.inBand;
+              obj.reconnectSwitch = this.reconnectSwitch;
+              obj.failMode = this.failMode;
+              obj.dataPathOpt = this.dataPathOpt;
+              obj.dataPathId = this.dataPathId;
+              obj.dataPath = this.dataPath;
+              obj.protocol = this.protocolSwitch;
+              obj.dpctlPort = this.portSwitch;
+              obj.ipSwitch = ipSwitchOk;
+              obj.stpPriority = this.stpPriority;
+              obj.stp = this.stpSwitch;
+              obj.type = this.typeSwitch;
+            }
+          });
+          this.closeModal("switch");
+          // Reiniciar variables a su estado Inicial
+          this.typeSwitch = "Ninguno";
+          this.stpSwitch = "";
+          this.stpPriority = "";
+          this.ipSwitch = "";
+          this.portSwitch = "";
+          this.protocolSwitch = "OpenFlow 1.2";
+          this.dataPath = "Ninguno";
+          this.dataPathId = "";
+          this.dataPathOpt = "";
+          this.failMode = "Ninguno";
+          this.reconnectSwitch = "";
+          this.inBand = "";
+          this.inNameSpace = "";
+          this.batch = "";
+          this.verbose = "";
+        }
       } else if (this.tagElement.charAt(0) == "c") {
-        var ipControllerOk = '';
-        if(this.ipController != ''){
-          if(validateIp(this.ipController)){
+        var ipControllerOk = "";
+        if (this.ipController != "") {
+          if (validateIp(this.ipController)) {
             ipControllerOk = this.ipController;
             this.stateIpController = true;
-          }else{
+          } else {
             this.stateIpcontroller = false;
           }
-        }else{
+        } else {
           this.stateIpController = true;
-        };
+        }
 
-        if(this.stateIpSwitch == true || this.stateIpSwitch == null){
-          if(this.action != 'visor'){
+        if (this.stateIpSwitch == true || this.stateIpSwitch == null) {
+          if (this.action != "visor") {
             this.armElement("c");
             this.tagController.push(this.tagElement);
-          };
-        this.canvas.forEachObject((obj) => {
-          if (obj.id && obj.id === this.tagElement) {
-            obj.type = this.typeController;
-            obj.ipController = ipControllerOk;
-            obj.portController = this.portController;
-            obj.protocol = this.protocolController;
           }
-        });
-        this.closeModal("controller");
-        // Reiniciar Variables a su estado Inicial
-        this.typeController = 'Por Defecto';
-        this.ipController = '';
-        this.portController = '';
-        this.protocolController = 'Ninguno';
-        };
-        
+          this.canvas.forEachObject((obj) => {
+            if (obj.id && obj.id === this.tagElement) {
+              obj.type = this.typeController;
+              obj.ipController = ipControllerOk;
+              obj.portController = this.portController;
+              obj.protocol = this.protocolController;
+            }
+          });
+          this.closeModal("controller");
+          // Reiniciar Variables a su estado Inicial
+          this.typeController = "Por Defecto";
+          this.ipController = "";
+          this.portController = "";
+          this.protocolController = "Ninguno";
+        }
       }
       // Este no es para un puerto eth sino para el Link que contiene la opcion de agregar o no un puerto esta en addPort()
-      else if (this.tagElement.charAt(0) == "e"){
+      else if (this.tagElement.charAt(0) == "e") {
         var port = this.canvas.getActiveObject();
-        port.connection.forEach(cn =>{
-          if(cn.id == 'link'){
+        port.connection.forEach((cn) => {
+          if (cn.id == "link") {
             cn.loss = this.lossLink;
             cn.queue = this.queueLink;
             cn.jitter = this.jitterLink;
             cn.delay = this.delayLink;
             cn.bw = this.bwLink;
-          };
+          }
         });
-        this.closeModal('link');
-        this.lossLink = '';
-        this.queueLink = '';
-        this.jitterLink = '';
-        this.delayLink = '';
-        this.bwLink = '';
+        this.closeModal("link");
+        this.lossLink = "";
+        this.queueLink = "";
+        this.jitterLink = "";
+        this.delayLink = "";
+        this.bwLink = "";
       }
     },
 
@@ -5702,7 +5743,7 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "portHost"
           );
-          link.belonging= this.tagElement;
+          link.belonging = this.tagElement;
           elemento.connectionLine.push(link);
           groupHost.connection.push(link);
         }
@@ -5727,7 +5768,7 @@ export default {
               connectionLine: [], // Contenedor de las lineas de conexión.
             });
             // Asignación de lineas por cada puerto
-            
+
             pt.connectionLine.push(elemento.connectionLine[i]);
 
             var label = new fabric.Textbox("eth" + i, {
@@ -5753,7 +5794,6 @@ export default {
 
             groupHostPort.connection.push(elemento.connectionLine[i]);
 
-           
             this.canvas.add(groupHost.connection[i]);
             this.canvas.add(groupHostPort);
           }
@@ -5851,7 +5891,6 @@ export default {
         }
 
         this.canvas.add(groupSwitch);
-        
       } else if (idElement == "c") {
         var groupController = new fabric.Group([elemento, text], {
           left: this.x0,
@@ -5864,30 +5903,32 @@ export default {
           connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
         });
         this.canvas.add(groupController);
-        
       }
     },
 
-    addPort(){
+    addPort() {
       var objectActive = this.canvas.getActiveObject();
-      
-      if(objectActive != null){
-        if(this.action != 'visor'){ 
-          if(objectActive.id.charAt(0) == 's' || objectActive.id.charAt(0) == 'h'){
+
+      if (objectActive != null) {
+        if (this.action != "visor") {
+          if (
+            objectActive.id.charAt(0) == "s" ||
+            objectActive.id.charAt(0) == "h"
+          ) {
             var aux = objectActive.connection.length;
-            console.log(objectActive.connection[aux-1].id);
+            console.log(objectActive.connection[aux - 1].id);
             var interfaces = [];
-            this.canvas.forEachObject((object) =>{
-              if(object.elementContainer == objectActive.id){
+            this.canvas.forEachObject((object) => {
+              if (object.elementContainer == objectActive.id) {
                 interfaces.push(object);
               }
             });
 
             console.log(interfaces);
-            var obj = interfaces[interfaces.length-1];
-            var indice = parseInt(obj.id.split('eth')[1]) + 1;
-            
-            var left = obj.left;  
+            var obj = interfaces[interfaces.length - 1];
+            var indice = parseInt(obj.id.split("eth")[1]) + 1;
+
+            var left = obj.left;
             var top = obj.top;
 
             var port = new Image();
@@ -5899,7 +5940,7 @@ export default {
               padding: 0,
               connectionLine: [], // Contenedor de las lineas de conexión.
             });
-            var label = new fabric.Textbox("eth" + (indice) , {
+            var label = new fabric.Textbox("eth" + indice, {
               top: 22,
               left: -5,
               fontFamily: "arial",
@@ -5908,7 +5949,7 @@ export default {
             });
 
             var groupHostPort = new fabric.Group([pt, label], {
-              left: left+ (65 - 15),
+              left: left + (65 - 15),
               top: top,
               hasControls: false,
               hasBorders: false,
@@ -5916,7 +5957,7 @@ export default {
               selectable: true,
               elementContainer: objectActive.id,
               identificator: "Hp",
-              id: "eth" + (indice),
+              id: "eth" + indice,
               connection: [], // Contenedor de lineas de conexión del grupo.
             });
             this.canvas.add(groupHostPort);
@@ -5928,28 +5969,33 @@ export default {
             connection.x2 = left + 60;
             connection.y2 = top + 7;
             connection.id = "a" + indice;
-            if(objectActive.id.charAt(0) == 'h'){ 
-              var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portHost');
+            if (objectActive.id.charAt(0) == "h") {
+              var link = this.makeLink(
+                [connection.x1, connection.y1, connection.x2, connection.y2],
+                "portHost"
+              );
               link.belonging = objectActive.id;
-            }
-            else{ 
-              var link = this.makeLink([connection.x1,connection.y1, connection.x2, connection.y2], 'portSwitch');
+            } else {
+              var link = this.makeLink(
+                [connection.x1, connection.y1, connection.x2, connection.y2],
+                "portSwitch"
+              );
               link.belonging = objectActive.id;
             }
             objectActive.connection.push(link);
             objectActive.line = link;
             groupHostPort.connection.push(link);
-            groupHostPort.ipPort = (this.ipPort);
+            groupHostPort.ipPort = this.ipPort;
             this.canvas.add(link);
             this.canvas.sendToBack(link);
-            this.herramienta = 'cursor';
-          };
-        }else{
+            this.herramienta = "cursor";
+          }
+        } else {
           objectActive.ipPort = this.ipPort;
         }
-      };
-      this.closeModal('port');
-      this.ipPort = ''
+      }
+      this.closeModal("port");
+      this.ipPort = "";
     },
 
     createTopology() {
@@ -5967,15 +6013,19 @@ export default {
           this.topologyMaker();
           this.closeModal("single");
           break;
-        
+
         case "linear":
-          var numberHost = this.numHostTopology
-          this.numHost = numberHost
+          var numberHost = this.numHostTopology;
+          this.numHost = numberHost;
           this.topologyMaker();
-          this.closeModal('linear')
+          this.closeModal("linear");
           break;
 
-        case "anillo":
+        case "ring":
+          var numberHost = this.numHostTopology;
+          this.numHost = numberHost;
+          this.topologyMaker();
+          this.closeModal("ring");
           break;
       }
     },
@@ -6039,8 +6089,7 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "portHost"
           );
-          link.belonging = tag,
-          elemento.connectionLine.push(link);
+          (link.belonging = tag), elemento.connectionLine.push(link);
           groupHost.connection.push(link);
 
           var line = elemento.connectionLine[0];
@@ -6204,14 +6253,16 @@ export default {
             [connection.x1, connection.y1, connection.x2, connection.y2],
             "controller"
           );
-          
+
           // Agrega la asociacion del controlador y el switch al arreglo del la red
-          this.canvas.forEachObject((obj) =>{
-            if(obj.id == String(this.tagSwitch[this.tagSwitch.length-1]) ){
+          this.canvas.forEachObject((obj) => {
+            if (obj.id == String(this.tagSwitch[this.tagSwitch.length - 1])) {
               obj.controller = tag;
-              link.swLoad.push(String(this.tagSwitch[this.tagSwitch.length-1]));
-            };
-          });       
+              link.swLoad.push(
+                String(this.tagSwitch[this.tagSwitch.length - 1])
+              );
+            }
+          });
 
           // Agrega la asociacion al arreglo de conexciones del Controlador
           elemento.connectionLine.push(link);
@@ -6235,355 +6286,680 @@ export default {
             }
           });
         }
-      }else if (topo == "linear") {
-        if (tag.charAt(0) == 'h') {
+      } else if (topo == "linear") {
+        if (tag.charAt(0) == "h") {
+          var groupHost = new fabric.Group([elemento, text], {
+            left: x,
+            top: y + 160,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [],
+          });
 
-            var groupHost = new fabric.Group([elemento, text], {
-                left: x,
-                top: y + 160,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                id: tag,
-                connection: [],
-            });
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x + 30;
+          connection.y1 = y + 195;
+          connection.x2 = x + 1 * 65 - 35;
+          connection.y2 = y + 107;
+          connection.id = "a" + 0;
 
+          var link = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portHost"
+          );
+          groupHost.connection.push(link);
 
+          var line = groupHost.connection[i];
+          groupHost.line = line;
+
+          var port = new Image();
+          port.src = require("../assets/img/port.png");
+
+          var pt = new fabric.Image(port);
+          pt.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+          });
+
+          var label = new fabric.Textbox("eth" + 0, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupHostPort = new fabric.Group([pt, label], {
+            left: x + 1 * 65 - 48,
+            top: y + 100,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Hp",
+            id: "eth" + 0,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+          groupHostPort.connection.push(groupHost.connection[0]);
+
+          var l = groupHost.connection[0];
+
+          this.canvas.add(groupHost.connection[0]);
+          this.canvas.add(groupHostPort);
+
+          this.canvas.add(groupHost);
+          this.tagHost.push("h" + (this.tagHost.length + 1));
+        } else if (tag.charAt(0) == "s") {
+          var groupSwitch = new fabric.Group([elemento, text], {
+            //left: ((numHost * 100) / 2) + 35,
+            left: x - 90,
+            top: y - 35,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
+            type: null,
+          });
+
+          var port = new Image();
+          port.src = require("../assets/img/port.png");
+
+          var tagS = [];
+          tagS.push(tag);
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y - 3;
+          connection.x2 = x - 130;
+          connection.y2 = y - 3;
+          connection.id = "a" + 0;
+
+          var link0 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link0);
+
+          var pt0 = new fabric.Image(port);
+          pt0.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+          var label0 = new fabric.Textbox("eth" + 0, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort0 = new fabric.Group([pt0, label0], {
+            //left: (x + (i * 100)) - 19,
+            left: x - 145,
+            top: y - 10,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 0,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line0 = groupSwitch.connection[0];
+
+          groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+          groupSwitchPort0.line = line0;
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y;
+          connection.x2 = x - 60;
+          connection.y2 = y + 48;
+          connection.id = "a" + 1;
+
+          var link1 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link1);
+
+          var pt1 = new fabric.Image(port);
+          pt1.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          // pt1.connectionLine.push(groupSwitch.connection[1]);
+
+          var label1 = new fabric.Textbox("eth" + 1, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort1 = new fabric.Group([pt1, label1], {
+            //left: (x + (i * 100)) - 19,
+            left: x - 73,
+            top: y + 48,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 1,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line1 = groupSwitch.connection[1];
+
+          groupSwitchPort1.connection.push(groupSwitch.connection[1]);
+          groupSwitchPort1.line = line1;
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y - 1;
+          connection.x2 = x + 30;
+          connection.y2 = y - 3;
+          connection.id = "a" + 2;
+
+          var link2 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link2);
+
+          var pt2 = new fabric.Image(port);
+          pt2.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+          var label2 = new fabric.Textbox("eth" + 2, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort2 = new fabric.Group([pt2, label2], {
+            //left: (x + (i * 100)) - 19,
+            left: x + 10,
+            top: y - 10,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 2,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line2 = groupSwitch.connection[2];
+
+          groupSwitchPort2.connection.push(groupSwitch.connection[2]);
+          groupSwitchPort2.line = line2;
+
+          groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+          groupSwitchPort0.line = line0;
+
+          this.canvas.add(groupSwitch.connection[0]);
+          this.canvas.add(groupSwitch.connection[1]);
+          this.canvas.add(groupSwitch.connection[2]);
+          this.canvas.add(groupSwitchPort0);
+          this.canvas.add(groupSwitchPort1);
+          this.canvas.add(groupSwitchPort2);
+
+          // }
+          this.canvas.add(groupSwitch);
+          this.tagSwitch.push("s" + (this.tagSwitch.length + 1));
+        } else if (tag.charAt(0) == "c") {
+          var groupController = new fabric.Group([elemento, text], {
+            left: 144 * this.numHost,
+            top: y,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
+            type: null,
+          });
+
+          for (var i = 0; i < this.numHost; i++) {
             connection.type = "association";
             connection.elementOrigin = tag;
-            connection.x1 = x + 30;
-            connection.y1 = y + 195;
-            connection.x2 = (x + (1 * 65)) - 35;
-            connection.y2 = y + 107;
-            connection.id = "a" + 0;
+            connection.x2 = this.numHost * 144 + 30; //punto del Controlador
+            connection.y2 = y + 35;
+            connection.x1 = i * 235 + 280; // punto del Switch
+            connection.y1 = y + 225;
+            connection.id = "a" + i;
 
-            var link = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portHost");
-            groupHost.connection.push(link);
+            var link = this.makeLink(
+              [connection.x1, connection.y1, connection.x2, connection.y2],
+              "controller"
+            );
+            groupController.connection.push(link);
+            // Agrega la asociacion del controlador y el switch al arreglo del la red
+            this.canvas.forEachObject((obj) => {
+              
+              for(var o = 0; o<= this.tagSwitch.length-1; o ++){
+              if (obj.id == String(this.tagSwitch[o])) {
+                obj.controller = tag;
+                link.swLoad.push(
+                  String(this.tagSwitch[o])
+                );
+              }
 
-
-
-            var line = groupHost.connection[i];
-            groupHost.line = line;
-
-
-            var port = new Image();
-            port.src = require("../assets/img/port.png");
-
-
-            var pt = new fabric.Image(port);
-            pt.set({
-                scaleX: 0.035,
-                scaleY: 0.035,
-                padding: 0,
-                id: tag,
+              }
+              
             });
-
-            var label = new fabric.Textbox("eth" + 0, {
-                top: 22,
-                left: -5,
-                fontFamily: 'arial',
-                fill: '#15435d',
-                fontSize: 15
-            });
-
-            var groupHostPort = new fabric.Group([pt, label], {
-
-                left: (x + (1 * 65)) - 48,
-                top: y + 100,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                elementContainer: tag,
-                identificator: 'Hp',
-                id: "eth" + 0,
-                connection: [], // Contenedor de lineas de conexión del grupo.
-
-            });
-            groupHostPort.connection.push(groupHost.connection[0]);
-
-            var l = groupHost.connection[0];
-
-            this.canvas.add(groupHost.connection[0]);
-            this.canvas.add(groupHostPort);
-
-            this.canvas.add(groupHost);
-            this.tagHost.push("h" + (this.tagHost.length + 1));
-
-        } else if (tag.charAt(0) == 's') {
-
-            var groupSwitch = new fabric.Group([elemento, text], {
-
-                //left: ((numHost * 100) / 2) + 35,
-                left: x - 90,
-                top: y - 35,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                id: tag,
-                connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[])) 
-                type: null
-            });
-
-            var port = new Image();
-            port.src = require("../assets/img/port.png");
-
-            var tagS = [];
-            tagS.push(tag);
-
-            connection.type = "association";
-            connection.elementOrigin = tag;
-            connection.x1 = x - 60;
-            connection.y1 = y - 3;
-            connection.x2 = (x - 130);
-            connection.y2 = y - 3;
-            connection.id = "a" + 0;
-
-            var link0 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
-            groupSwitch.connection.push(link0);
-
-
-            var pt0 = new fabric.Image(port);
-            pt0.set({
-                scaleX: 0.035,
-                scaleY: 0.035,
-                padding: 0,
-                id: tag,
-                connectionLine: [], // Contenedor de las lineas de conexión.
-            });
-
-            // Asignación de lineas por cada puerto  
-            //pt0.connectionLine.push(elemento.connectionLine[0]);
-
-            var label0 = new fabric.Textbox("eth" + 0, {
-                top: 22,
-                left: -5,
-                fontFamily: 'arial',
-                fill: '#15435d',
-                fontSize: 15
-            });
-
-            var groupSwitchPort0 = new fabric.Group([pt0, label0], {
-
-                //left: (x + (i * 100)) - 19,
-                left: (x - 145),
-                top: y - 10,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                elementContainer: tag,
-                identificator: 'Sp',
-                id: "eth" + 0,
-                connection: [], // Contenedor de lineas de conexión del grupo.
-
-            });
-
-            var line0 = groupSwitch.connection[0];
-
-            groupSwitchPort0.connection.push(groupSwitch.connection[0]);
-            groupSwitchPort0.line = line0;
-
-
-            connection.type = "association";
-            connection.elementOrigin = tag;
-            connection.x1 = x - 60;
-            connection.y1 = y;
-            connection.x2 = x - 60;
-            connection.y2 = y + 48;
-            connection.id = "a" + 1;
-
-            var link1 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
-            groupSwitch.connection.push(link1);
-
-
-            var pt1 = new fabric.Image(port);
-            pt1.set({
-                scaleX: 0.035,
-                scaleY: 0.035,
-                padding: 0,
-                id: tag,
-                connectionLine: [], // Contenedor de las lineas de conexión.
-            });
-
-            // Asignación de lineas por cada puerto  
-            // pt1.connectionLine.push(groupSwitch.connection[1]);
-
-            var label1 = new fabric.Textbox("eth" + 1, {
-                top: 22,
-                left: -5,
-                fontFamily: 'arial',
-                fill: '#15435d',
-                fontSize: 15
-            });
-
-            var groupSwitchPort1 = new fabric.Group([pt1, label1], {
-
-                //left: (x + (i * 100)) - 19,
-                left: (x - 73),
-                top: y + 48,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                elementContainer: tag,
-                identificator: 'Sp',
-                id: "eth" + 1,
-                connection: [], // Contenedor de lineas de conexión del grupo.
-
-            });
-
-            var line1 = groupSwitch.connection[1];
-
-            groupSwitchPort1.connection.push(groupSwitch.connection[1]);
-            groupSwitchPort1.line = line1;
-
-
-
-
-
-            connection.type = "association";
-            connection.elementOrigin = tag;
-            connection.x1 = x - 60;
-            connection.y1 = y - 1;
-            connection.x2 = x + 30;
-            connection.y2 = y - 3;
-            connection.id = "a" + 2;
-
-            var link2 = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "portSwitch");
-            groupSwitch.connection.push(link2);
-
-
-
-            var pt2 = new fabric.Image(port);
-            pt2.set({
-                scaleX: 0.035,
-                scaleY: 0.035,
-                padding: 0,
-                id: tag,
-                connectionLine: [], // Contenedor de las lineas de conexión.
-            });
-
-            // Asignación de lineas por cada puerto  
-            //pt0.connectionLine.push(elemento.connectionLine[0]);
-
-            var label2 = new fabric.Textbox("eth" + 2, {
-                top: 22,
-                left: -5,
-                fontFamily: 'arial',
-                fill: '#15435d',
-                fontSize: 15
-            });
-
-            var groupSwitchPort2 = new fabric.Group([pt2, label2], {
-
-                //left: (x + (i * 100)) - 19,
-                left: (x + 10),
-                top: y - 10,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                elementContainer: tag,
-                identificator: 'Sp',
-                id: "eth" + 2,
-                connection: [], // Contenedor de lineas de conexión del grupo.
-
-            });
-
-            var line2 = groupSwitch.connection[2];
-
-            groupSwitchPort2.connection.push(groupSwitch.connection[2]);
-            groupSwitchPort2.line = line2;
-
-            groupSwitchPort0.connection.push(groupSwitch.connection[0]);
-            groupSwitchPort0.line = line0;
-
-            this.canvas.add(groupSwitch.connection[0]);
-            this.canvas.add(groupSwitch.connection[1]);
-            this.canvas.add(groupSwitch.connection[2]);
-            this.canvas.add(groupSwitchPort0);
-            this.canvas.add(groupSwitchPort1);
-            this.canvas.add(groupSwitchPort2);
-
-
-
-
-
-            // }
-            this.canvas.add(groupSwitch);
-            this.tagSwitch.push("s" + (this.tagSwitch.length + 1));
-
-        } else if (tag.charAt(0) == 'c') {
-
-            var groupController = new fabric.Group([elemento, text], {
-
-                left: (144 * this.numHost),
-                top: y,
-                hasControls: false,
-                hasBorders: false,
-                transparentCorners: false,
-                selectable: true,
-                id: tag,
-                connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[])) 
-                type: null
-            });
-
-            for (var i = 0; i < this.numHost; i++) {
-
-                connection.type = "association";
-                connection.elementOrigin = tag;
-                connection.x2 = (this.numHost * 144) + 30; //punto del Controlador
-                connection.y2 = y + 35;
-                connection.x1 = ((i * 235) + 280); // punto del Switch
-                connection.y1 = y + 225;
-                connection.id = "a" + i;
-
-                var link = this.makeLink([connection.x1, connection.y1, connection.x2, connection.y2], "controller");
-                groupController.connection.push(link);
-
+          }
+
+          for (var i = 0; i < this.numHost; i++) {
+            var line = groupController.connection[i];
+            groupController.line = line;
+            this.canvas.add(line);
+            this.canvas.sendToBack(line);
+          }
+
+          this.canvas.add(groupController);
+          this.tagController.push(tag);
+
+          var tagLastSwitch = [];
+
+          for (
+            var i = this.tagSwitch.length - this.numHost;
+            i < this.tagSwitch.length;
+            i++
+          ) {
+            tagLastSwitch.push(this.tagSwitch[i]);
+          }
+
+          this.canvas.forEachObject((obj) => {
+            for (var i = 0; i < groupController.connection.length; i++) {
+              var link = groupController.connection[i];
+
+              if (obj.id == tagLastSwitch[i]) {
+                obj.link = link;
+                obj.connection.push(link);
+              }
             }
-
-            for (var i = 0; i < this.numHost; i++) {
-
-                var line = groupController.connection[i];
-                groupController.line = line;
-                this.canvas.add(line);
-                this.canvas.sendToBack(line);
-
-            }
-
-            this.canvas.add(groupController);
-            this.tagController.push(tag);
-
-            var tagLastSwitch = [];
-
-            for (var i = this.tagSwitch.length - this.numHost; i < this.tagSwitch.length; i++) {
-
-                tagLastSwitch.push(this.tagSwitch[i]);
-
-            }
-
-            this.canvas.forEachObject((obj)=> {
-
-                for (var i = 0; i < groupController.connection.length; i++) {
-
-                    var link = groupController.connection[i];
-
-                    if (obj.id == tagLastSwitch[i]) {
-
-                        obj.link = link;
-                        obj.connection.push(link);
-
-                    }
-                }
-
-            });
-
+          });
         }
-    }
+      } else if (topo == "ring") {
+        if (tag.charAt(0) == "h") {
+          var groupHost = new fabric.Group([elemento, text], {
+            left: x,
+            top: y + 160,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [],
+          });
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x + 30;
+          connection.y1 = y + 195;
+          connection.x2 = x + 1 * 65 - 35;
+          connection.y2 = y + 107;
+          connection.id = "a" + 0;
+
+          var link = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portHost"
+          );
+          groupHost.connection.push(link);
+
+          var line = groupHost.connection[i];
+          groupHost.line = line;
+
+          var port = new Image();
+          port.src = require("../assets/img/port.png");
+
+          var pt = new fabric.Image(port);
+          pt.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+          });
+
+          var label = new fabric.Textbox("eth" + 0, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupHostPort = new fabric.Group([pt, label], {
+            left: x + 1 * 65 - 48,
+            top: y + 100,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Hp",
+            id: "eth" + 0,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+          groupHostPort.connection.push(groupHost.connection[0]);
+
+          var l = groupHost.connection[0];
+
+          this.canvas.add(groupHost.connection[0]);
+          this.canvas.add(groupHostPort);
+
+          this.canvas.add(groupHost);
+          this.tagHost.push("h" + (this.tagHost.length + 1));
+        } else if (tag.charAt(0) == "s") {
+          var groupSwitch = new fabric.Group([elemento, text], {
+            //left: ((numHost * 100) / 2) + 35,
+            left: x - 90,
+            top: y - 35,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
+            type: null,
+          });
+
+          var port = new Image();
+          port.src = require("../assets/img/port.png");
+
+          var tagS = [];
+          tagS.push(tag);
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y - 3;
+          connection.x2 = x - 130;
+          connection.y2 = y - 3;
+          connection.id = "a" + 0;
+
+          var link0 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link0);
+
+          var pt0 = new fabric.Image(port);
+          pt0.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+          var label0 = new fabric.Textbox("eth" + 0, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort0 = new fabric.Group([pt0, label0], {
+            //left: (x + (i * 100)) - 19,
+            left: x - 145,
+            top: y - 10,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 0,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line0 = groupSwitch.connection[0];
+
+          groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+          groupSwitchPort0.line = line0;
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y;
+          connection.x2 = x - 60;
+          connection.y2 = y + 48;
+          connection.id = "a" + 1;
+
+          var link1 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link1);
+
+          var pt1 = new fabric.Image(port);
+          pt1.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          // pt1.connectionLine.push(groupSwitch.connection[1]);
+
+          var label1 = new fabric.Textbox("eth" + 1, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort1 = new fabric.Group([pt1, label1], {
+            //left: (x + (i * 100)) - 19,
+            left: x - 73,
+            top: y + 48,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 1,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line1 = groupSwitch.connection[1];
+
+          groupSwitchPort1.connection.push(groupSwitch.connection[1]);
+          groupSwitchPort1.line = line1;
+
+          connection.type = "association";
+          connection.elementOrigin = tag;
+          connection.x1 = x - 60;
+          connection.y1 = y - 1;
+          connection.x2 = x + 30;
+          connection.y2 = y - 3;
+          connection.id = "a" + 2;
+
+          var link2 = this.makeLink(
+            [connection.x1, connection.y1, connection.x2, connection.y2],
+            "portSwitch"
+          );
+          groupSwitch.connection.push(link2);
+
+          var pt2 = new fabric.Image(port);
+          pt2.set({
+            scaleX: 0.035,
+            scaleY: 0.035,
+            padding: 0,
+            id: tag,
+            connectionLine: [], // Contenedor de las lineas de conexión.
+          });
+
+          // Asignación de lineas por cada puerto
+          //pt0.connectionLine.push(elemento.connectionLine[0]);
+
+          var label2 = new fabric.Textbox("eth" + 2, {
+            top: 22,
+            left: -5,
+            fontFamily: "arial",
+            fill: "#15435d",
+            fontSize: 15,
+          });
+
+          var groupSwitchPort2 = new fabric.Group([pt2, label2], {
+            //left: (x + (i * 100)) - 19,
+            left: x + 10,
+            top: y - 10,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            elementContainer: tag,
+            identificator: "Sp",
+            id: "eth" + 2,
+            connection: [], // Contenedor de lineas de conexión del grupo.
+          });
+
+          var line2 = groupSwitch.connection[2];
+
+          groupSwitchPort2.connection.push(groupSwitch.connection[2]);
+          groupSwitchPort2.line = line2;
+
+          groupSwitchPort0.connection.push(groupSwitch.connection[0]);
+          groupSwitchPort0.line = line0;
+
+          this.canvas.add(groupSwitch.connection[0]);
+          this.canvas.add(groupSwitch.connection[1]);
+          this.canvas.add(groupSwitch.connection[2]);
+          this.canvas.add(groupSwitchPort0);
+          this.canvas.add(groupSwitchPort1);
+          this.canvas.add(groupSwitchPort2);
+
+          // }
+          this.canvas.add(groupSwitch);
+          this.tagSwitch.push("s" + (this.tagSwitch.length + 1));
+        } else if (tag.charAt(0) == "c") {
+          var groupController = new fabric.Group([elemento, text], {
+            left: 144 * this.numHost,
+            top: y,
+            hasControls: false,
+            hasBorders: false,
+            transparentCorners: false,
+            selectable: true,
+            id: tag,
+            connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
+            type: null,
+          });
+
+          for (var i = 0; i < this.numHost; i++) {
+            connection.type = "association";
+            connection.elementOrigin = tag;
+            connection.x2 = this.numHost * 144 + 30; //punto del Controlador
+            connection.y2 = y + 35;
+            connection.x1 = i * 235 + 280; // punto del Switch
+            connection.y1 = y + 225;
+            connection.id = "a" + i;
+
+            var link = this.makeLink(
+              [connection.x1, connection.y1, connection.x2, connection.y2],
+              "controller"
+            );
+            groupController.connection.push(link);
+            // Agrega la asociacion del controlador y el switch al arreglo del la red
+            this.canvas.forEachObject((obj) => {
+              
+              for(var o = 0; o<= this.tagSwitch.length-1; o ++){
+              if (obj.id == String(this.tagSwitch[o])) {
+                obj.controller = tag;
+                link.swLoad.push(
+                  String(this.tagSwitch[o])
+                );
+              }
+
+              }
+              
+            });
+
+          }
+
+          for (var i = 0; i < this.numHost; i++) {
+            var line = groupController.connection[i];
+            groupController.line = line;
+            this.canvas.add(line);
+            this.canvas.sendToBack(line);
+          }
+
+          this.canvas.add(groupController);
+          this.tagController.push(tag);
+
+          var tagLastSwitch = [];
+
+          for (
+            var i = this.tagSwitch.length - this.numHost;
+            i < this.tagSwitch.length;
+            i++
+          ) {
+            tagLastSwitch.push(this.tagSwitch[i]);
+          }
+
+          this.canvas.forEachObject((obj) => {
+            for (var i = 0; i < groupController.connection.length; i++) {
+              var link = groupController.connection[i];
+
+              if (obj.id == tagLastSwitch[i]) {
+                obj.link = link;
+                obj.connection.push(link);
+              }
+            }
+          });
+        }
+      }
     },
 
     obtenerTool(id) {
@@ -6718,8 +7094,7 @@ export default {
 
             objSwitch[s].link = link;
             objHost[s].link = link;
-            
-            
+
             // SO IMPORTANT!!!!!
             //Emparejamiento
             link.connectionLink =
@@ -6781,10 +7156,10 @@ export default {
               this.topologyType
             );
           }
-          
+
           var port0Delete = "s" + (this.tagSwitch.length - this.numHost + 1);
           var port2Delete = "s" + this.tagSwitch.length;
-          this.canvas.forEachObject((obj) =>{
+          this.canvas.forEachObject((obj) => {
             if (obj.elementContainer == port0Delete && obj.id == "eth0") {
               this.canvas.remove(obj);
               this.canvas.remove(obj.line);
@@ -6799,7 +7174,7 @@ export default {
             pCX1,
             pCY,
             require("../assets/img/controller.png"),
-            "c" +(this.tagController.length + 1),
+            "c" + (this.tagController.length + 1),
             this.numHost,
             this.topologyType
           );
@@ -6816,9 +7191,13 @@ export default {
         var objController = [];
 
         // **--** Esta seccion busca y enlaza los eth0 de los Host y los eth1 de los Switchs ** -- ** -- ** -- ** -- **--** --** -- **
-        for (var i = this.tagHost.length - this.numHost; i <= this.tagHost.length; i++) {
+        for (
+          var i = this.tagHost.length - this.numHost;
+          i <= this.tagHost.length;
+          i++
+        ) {
           id0.push("h" + (i + 1));
-          this.canvas.forEachObject((obj)=> {
+          this.canvas.forEachObject((obj) => {
             if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
               if (obj.id == "eth0") {
                 posX2.push(obj.connection[0].x2);
@@ -6829,10 +7208,13 @@ export default {
           });
         }
 
-        for ( i = this.tagSwitch.length - this.numHost; i <= this.tagSwitch.length;i++
+        for (
+          i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
+          i++
         ) {
           id1.push("s" + (i + 1));
-          this.canvas.forEachObject((obj)=> {
+          this.canvas.forEachObject((obj) => {
             if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
               if (obj.id == "eth1") {
                 posX1.push(obj.connection[0].x2);
@@ -6844,14 +7226,17 @@ export default {
         }
 
         for (var s = 0; s < posX1.length; s++) {
-          var link = this.makeLink([posX1[s], posY1[s], posX2[s], posY2[s]], "link");
+          var link = this.makeLink(
+            [posX1[s], posY1[s], posX2[s], posY2[s]],
+            "link"
+          );
           this.canvas.add(link);
           this.canvas.sendToBack(link);
 
           objSwitch[s].state = "connected";
           objSwitch[s].position = "initial";
           objHost[s].state = "connected";
-          objHost[s].position = "terminal"
+          objHost[s].position = "terminal";
           objSwitch[s].connection.push(link);
           objHost[s].connection.push(link);
 
@@ -6885,11 +7270,12 @@ export default {
           i++
         ) {
           id0.push("s" + (i + 1));
-          this.canvas.forEachObject((obj)=> {
+          this.canvas.forEachObject((obj) => {
             if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
               if (obj.id == "eth0") {
                 posX2.push(obj.connection[0].x2);
                 posY2.push(obj.connection[0].y2);
+                //obj.position = "terminal";
                 obj.position = "terminal";
                 objSwitchAux.push(obj);
               }
@@ -6904,12 +7290,14 @@ export default {
           i++
         ) {
           id1.push("s" + (i + 1));
-          this.canvas.forEachObject((obj)=> {
+          this.canvas.forEachObject((obj) => {
             if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
               if (obj.id == "eth2") {
                 posX1.push(obj.connection[0].x2);
                 posY1.push(obj.connection[0].y2);
                 obj.position = "initial";
+                // obj.position = "terminal";
+
                 objSwitch.push(obj);
               }
             }
@@ -6917,7 +7305,10 @@ export default {
         }
 
         for (var s = 0; s < posX1.length; s++) {
-          var link = this.makeLink([posX1[s], posY1[s], posX2[s], posY2[s]], "link");
+          var link = this.makeLink(
+            [posX1[s], posY1[s], posX2[s], posY2[s]],
+            "link"
+          );
           this.canvas.add(link);
           this.canvas.sendToBack(link);
 
@@ -6943,89 +7334,353 @@ export default {
         }
         // **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- **
       }
+      //Creador Topología Ring - N Host conectados a N Conmutadores (conectados entre sí)
+      else if (this.topologyType == "ring") {
+        if (this.numHost < 2) {
+          alert("No es Posible Realizar la Red");
+        } else {
+          // Host
+          for (var r = 0; r < this.numHost; r++) {
+            var pY = 3 * 60;
+            posX[r] = (r + 1) * 240;
+            image = "img/host.png";
+            var obj = {
+              value: this.tagHost[r],
+              rX: posX[r],
+              rY: pY + 80,
+            };
+
+            var objSw = {
+              value: this.tagSwitch[r],
+              rX: posX[r] + 90,
+              rY: pY + 80,
+            };
+
+            this.netInfo.push(obj);
+            h[r] = obj;
+
+            this.netInfo.push(objSw);
+            s[r] = objSw;
+          }
+
+          var pCX1 = this.netInfo.length * 68;
+
+          // Inserta Switch y Host de la Topolgía Ring
+          for (var a = 0; a < h.length; a++) {
+            this.insertElementTopology(
+              h[a].rX,
+              h[a].rY,
+              require("../assets/img/host.png"),
+              "h" + (this.tagHost.length + 1),
+              this.numHost,
+              this.topologyType
+            );
+            this.insertElementTopology(
+              s[a].rX,
+              s[a].rY,
+              require("../assets/img/openflow_switch.png"),
+              "s" + (this.tagSwitch.length + 1),
+              this.numHost,
+              this.topologyType
+            );
+          }
+
+          var objPort0;
+          var objPort2;
+          var port0Delete = "s" + (this.tagSwitch.length - this.numHost + 1);
+          var port2Delete = "s" + this.tagSwitch.length;
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer == port0Delete && obj.id == "eth0") {
+              objPort0 = obj;
+              this.canvas.remove(obj);
+              this.canvas.remove(obj.line);
+            }
+            if (obj.elementContainer == port2Delete && obj.id == "eth2") {
+              objPort2 = obj;
+              this.canvas.remove(obj);
+              this.canvas.remove(obj.line);
+            }
+          });
+
+          //Inserta el Controller de la Topología Ring
+          this.insertElementTopology(
+            pCX1,
+            pCY,
+            require("../assets/img/controller.png"),
+            "c" + +(this.tagController.length + 1),
+            this.numHost,
+            this.topologyType
+          );
+        }
+
+        var id0 = [];
+        var id1 = [];
+        var posX1 = [];
+        var posY1 = [];
+        var posX2 = [];
+        var posY2 = [];
+        var objHost = [];
+        var objSwitch = [];
+        var objController = [];
+
+        // **--** Esta seccion busca y enlaza los eth0 de los Host y los eth1 de los Switchs ** -- ** -- ** -- ** -- **--** --** -- **
+        for (
+          var i = this.tagHost.length - this.numHost;
+          i <= this.tagHost.length;
+          i++
+        ) {
+          id0.push("h" + (i + 1));
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
+              if (obj.id == "eth0") {
+                posX2.push(obj.connection[0].x2);
+                posY2.push(obj.connection[0].y2);
+                objHost.push(obj);
+              }
+            }
+          });
+        }
+
+        for (
+          var i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
+          i++
+        ) {
+          id1.push("s" + (i + 1));
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
+              if (obj.id == "eth1") {
+                posX1.push(obj.connection[0].x2);
+                posY1.push(obj.connection[0].y2);
+
+                objSwitch.push(obj);
+              }
+            }
+          });
+        }
+
+        for (var s = 0; s < posX1.length; s++) {
+          var link = this.makeLink(
+            [posX1[s], posY1[s], posX2[s], posY2[s]],
+            "link"
+          );
+          this.canvas.add(link);
+          this.canvas.sendToBack(link);
+
+          objSwitch[s].state = "connected";
+          objHost[s].state = "connected";
+          objSwitch[s].connection.push(link);
+          objHost[s].connection.push(link);
+          objSwitch[s].position = "initial";
+          objHost[s].position = "terminal";
+          objSwitch[s].link = link;
+          objHost[s].link = link;
+        
+ //Emparejamiento
+          link.connectionLink =
+            objSwitch[s].elementContainer + "," + objHost[s].elementContainer;
+          link.intfName1 =
+            objSwitch[s].elementContainer + "-" + objSwitch[s].id;
+          link.intfName2 = objHost[s].elementContainer + "-" + objHost[s].id;
+}
+        // **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- **
+
+        id0 = [];
+        id1 = [];
+        posX1 = [];
+        posY1 = [];
+        posX2 = [];
+        posY2 = [];
+        objHost = [];
+        objSwitch = [];
+        objController = [];
+        var objSwitchAux = [];
+
+        // **--** Esta seccion busca y enlaza los eth0 de los Switchs y los eth2 de los Switchs ** -- ** -- ** -- ** -- **--** --** -- **
+        for (
+          var i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
+          i++
+        ) {
+          id0.push("s" + (i + 1));
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer && obj.elementContainer == id0[i - 1]) {
+              if (obj.id == "eth0") {
+                posX2.push(obj.connection[0].x2);
+                posY2.push(obj.connection[0].y2);
+                //obj.position = "terminal";
+                obj.position = "initial";
+                objSwitchAux.push(obj);
+              }
+            }
+          });
+        }
+        console.log(objSwitchAux[0].id);
+
+        for (
+          var i = this.tagSwitch.length - this.numHost;
+          i <= this.tagSwitch.length;
+          i++
+        ) {
+          id1.push("s" + (i + 1));
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer && obj.elementContainer == id1[i - 1]) {
+              if (obj.id == "eth2") {
+                posX1.push(obj.connection[0].x2);
+                posY1.push(obj.connection[0].y2);
+                // obj.position = "initial";
+                obj.position = "terminal";
+                objSwitch.push(obj);
+              }
+            }
+          });
+        }
+
+        for (var s = 0; s < posX1.length; s++) {
+          var link = this.makeLink(
+            [posX2[s], posY2[s], posX1[s], posY1[s]],
+            "link"
+          );
+          this.canvas.add(link);
+          this.canvas.sendToBack(link);
+
+          objSwitch[s].state = "connected";
+          objSwitchAux[s].state = "connected";
+          objSwitch[s].connection.push(link);
+          objSwitchAux[s].connection.push(link);
+
+          objSwitch[s].link = link;
+          objSwitchAux[s].link = link;
+          //Emparejamiento
+          link.connectionLink =
+            objSwitch[s].elementContainer +
+            "," +
+            objSwitchAux[s].elementContainer;
+          link.intfName1 =
+            objSwitch[s].elementContainer + "-" + objSwitch[s].id;
+          link.intfName2 =
+            objSwitchAux[s].elementContainer + "-" + objSwitchAux[s].id;
+        }
+        // **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- **
+
+        objPort0.top = 280;
+        objPort0.line.set({ y2: 288 });
+        objPort2.top = 280;
+        objPort2.line.set({ y2: 288 });
+
+        this.canvas.add(objPort0);
+        this.canvas.add(objPort2);
+        this.canvas.add(objPort0.line);
+        this.canvas.add(objPort2.line);
+        this.canvas.sendToBack(objPort0.line);
+        this.canvas.sendToBack(objPort2.line);
+        var l = this.makeLink(
+          [
+            objPort0.line.get("x2"),
+            objPort0.line.get("y2"),
+            objPort2.line.get("x2"),
+            objPort2.line.get("y2"),
+          ],
+          "link"
+        );
+
+        objPort0.position = "initial";
+        objPort0.connection.push(l);
+        objPort2.position = "terminal";
+        objPort2.connection.push(l);
+        objPort0.state = "connected";
+        objPort2.state = "connected";
+        objPort0.line = l;
+        objPort2.line = l;
+
+        //Emparejamiento
+        l.connectionLink =
+          objPort0.elementContainer + "," + objPort2.elementContainer;
+        l.intfName1 = objPort0.elementContainer + "-" + objPort0.id;
+        l.intfName2 = objPort2.elementContainer + "-" + objPort2.id;
+
+        this.canvas.add(l);
+        this.canvas.sendToBack(l);
+      }
     },
 
     // Elimina el contenido del Canvas y Reinicia Variables
-    newDocument(){
+    newDocument() {
       this.canvas.clear();
-      this.tagHost =[];
-      this.tagSwitch= [];
+      this.tagHost = [];
+      this.tagSwitch = [];
       this.tagController = [];
       this.netInfo = [];
       this.link = [];
     },
-    
-    deleteObjects(activeObject){
 
+    deleteObjects(activeObject) {
       // Para la eliminacion de un elemento se tiene en cuenta el siguiente orden:
       // 1. Se eliminan (de tener) los enlaces, o asociaciones de controlador.
       // 2. Se eliminan (de tener) las asociaciones de puerto.
       // 3. Se elimina el elemento de Red.
 
-      if(activeObject){
+      if (activeObject) {
         // Si el elemento seleccionado es un Puerto
-        if(activeObject.id.charAt(0) == 'e'){
+        if (activeObject.id.charAt(0) == "e") {
           // Si el puerto tiene un enlace (state = connected) (se pone indice 1, porque esa es la asociacion con el Elemento de red (PortSwtich- PortHost))
-          if(activeObject.connection.length > 1){
-            activeObject.connection.forEach(cn => {
-              if(cn.id === 'link'){
+          if (activeObject.connection.length > 1) {
+            activeObject.connection.forEach((cn) => {
+              if (cn.id === "link") {
                 // Se elimina visualmente en el Fabric
                 this.canvas.remove(cn);
                 // Se Elimina la relacion de conexion con el Puerto
                 var i = activeObject.connection.indexOf(cn);
-                activeObject.connection.splice(i,1);
-                activeObject.state = '';
+                activeObject.connection.splice(i, 1);
+                activeObject.state = "";
                 // Identifica y Elimina la relacion con cualquier otro elemento del Canvas
-                this.canvas.forEachObject(obj =>{
-                  if(obj.connection){
-                    obj.connection.forEach(con =>{
-                      if(con === cn){
-                        obj.state = '';                        
+                this.canvas.forEachObject((obj) => {
+                  if (obj.connection) {
+                    obj.connection.forEach((con) => {
+                      if (con === cn) {
+                        obj.state = "";
                         var i = obj.connection.indexOf(con);
-                        obj.connection.splice(i,1);
+                        obj.connection.splice(i, 1);
                       }
                     });
                   }
-                  
                 });
               }
             });
-
           }
           // Si el puerto solo tiene la asociacion con el puerto
-          else{
+          else {
             // Se evita borrar el puerto por defecto de cualquier Elemento de Red
-            if(activeObject.id != 'eth0'){ 
+            if (activeObject.id != "eth0") {
               this.canvas.remove(activeObject);
               var cn = activeObject.connection[0];
               this.canvas.remove(cn);
-              this.canvas.forEachObject(obj =>{
-                if(obj.connection){
+              this.canvas.forEachObject((obj) => {
+                if (obj.connection) {
                   // Identifica y elimina la relacion con otro elemento en el canvas
-                  obj.connection.forEach(con =>{
-                    if(cn === con ){
-                      var i = obj.connection.indexOf(con); 
-                      obj.connection.splice(i,1);
+                  obj.connection.forEach((con) => {
+                    if (cn === con) {
+                      var i = obj.connection.indexOf(con);
+                      obj.connection.splice(i, 1);
                     }
                   });
                 }
-
               });
             }
           }
         }
         // Si el Elemento Seleccionado es un Host
-        else if(activeObject.id.charAt(0) == 'h'){
+        else if (activeObject.id.charAt(0) == "h") {
           // Se Elimina el Host visualmente del Canvas
           this.canvas.remove(activeObject);
-          activeObject.connection.forEach(cn =>{
+          activeObject.connection.forEach((cn) => {
             // Se Eliminan las asociaciones con Puertos visualmente del Canvas
             this.canvas.remove(cn);
           });
-          this.canvas.forEachObject(obj =>{
-            if(obj.elementContainer){
+          this.canvas.forEachObject((obj) => {
+            if (obj.elementContainer) {
               // Se elimina lo asociado al puerto
-              if(obj.elementContainer == activeObject.id){                
+              if (obj.elementContainer == activeObject.id) {
                 this.deleteObjects(obj);
                 // Se elimina visualmente el puerto del Canvas
                 this.canvas.remove(obj);
@@ -7034,42 +7689,42 @@ export default {
           });
         }
         // Si el Elemento Seleccionado es un Switch
-        else if(activeObject.id.charAt(0) == 's'){
+        else if (activeObject.id.charAt(0) == "s") {
           var connectionSize = activeObject.connection.length;
           var count = 0;
-          activeObject.connection.forEach(cn =>{
-            if(cn.id != 'controller'){
-              count += 1; 
-            };
-          });
-          // Si son iguales indica que solo asocianes de Puerto y no de Enlace
-          if( count === connectionSize){
-            this.canvas.remove(activeObject);
-            activeObject.connection.forEach(cn =>{
-              this.canvas.remove(cn);
-            });
-            this.canvas.forEachObject(obj =>{
-            if(obj.elementContainer){
-              // Se elimina lo asociado al puerto
-              if(obj.elementContainer == activeObject.id){                
-                this.deleteObjects(obj);
-                // Se elimina visualmente el puerto del Canvas
-                this.canvas.remove(obj);
-              }
+          activeObject.connection.forEach((cn) => {
+            if (cn.id != "controller") {
+              count += 1;
             }
           });
-          }else{
-            activeObject.connection.forEach(cn =>{
-              if(cn.id === 'controller'){
+          // Si son iguales indica que solo asocianes de Puerto y no de Enlace
+          if (count === connectionSize) {
+            this.canvas.remove(activeObject);
+            activeObject.connection.forEach((cn) => {
+              this.canvas.remove(cn);
+            });
+            this.canvas.forEachObject((obj) => {
+              if (obj.elementContainer) {
+                // Se elimina lo asociado al puerto
+                if (obj.elementContainer == activeObject.id) {
+                  this.deleteObjects(obj);
+                  // Se elimina visualmente el puerto del Canvas
+                  this.canvas.remove(obj);
+                }
+              }
+            });
+          } else {
+            activeObject.connection.forEach((cn) => {
+              if (cn.id === "controller") {
                 this.canvas.remove(cn);
                 var i = activeObject.connection.indexOf(cn);
-                activeObject.connection.splice(i,1);
-                this.canvas.forEachObject(obj =>{
-                  if(obj.connection){
-                    obj.connection.forEach(con =>{
-                      if(con === cn){
+                activeObject.connection.splice(i, 1);
+                this.canvas.forEachObject((obj) => {
+                  if (obj.connection) {
+                    obj.connection.forEach((con) => {
+                      if (con === cn) {
                         var i = obj.connection.indexOf(con);
-                        obj.connection.splice(i,1);
+                        obj.connection.splice(i, 1);
                       }
                     });
                   }
@@ -7078,11 +7733,7 @@ export default {
             });
           }
 
-            
-            
-            
-            
-            /*else if(cn.id === 'controller'){
+          /*else if(cn.id === 'controller'){
               this.canvas.remove(cn);
               var i = activeObject.connection.indexOf(cn);
               activeObject.connection.splice(i,1);
@@ -7098,53 +7749,51 @@ export default {
               });
             }*/
 
-          activeObject.connection.forEach(cn =>{
-            
-          });
+          activeObject.connection.forEach((cn) => {});
         }
         // Si el Elemento Seleccionado es un Controlador
-        else if(activeObject.id.charAt(0) == 'c'){
-          if(activeObject.connection.length > 0){
-            activeObject.connection.forEach(cn =>{
+        else if (activeObject.id.charAt(0) == "c") {
+          if (activeObject.connection.length > 0) {
+            activeObject.connection.forEach((cn) => {
               this.canvas.remove(cn);
               var i = activeObject.connection.indexOf(cn);
-              activeObject.connection.splice(i,1);
-              this.canvas.forEachObject(obj =>{
-                if(obj.connection){
-                  obj.connection.forEach(con =>{
-                    if(con === cn){
+              activeObject.connection.splice(i, 1);
+              this.canvas.forEachObject((obj) => {
+                if (obj.connection) {
+                  obj.connection.forEach((con) => {
+                    if (con === cn) {
                       var i = obj.connection.indexOf(con);
-                      obj.connection.splice(i,1);
-                      obj.controller = '';
+                      obj.connection.splice(i, 1);
+                      obj.controller = "";
                     }
-                  })
+                  });
                 }
               });
-            })            
-          }else{
+            });
+          } else {
             this.canvas.remove(activeObject);
-            this.canvas.forEachObject(obj =>{
-              if(obj.controller){
-                if(obj.controller === activeObject.id){
-                  obj.controller = '';
+            this.canvas.forEachObject((obj) => {
+              if (obj.controller) {
+                if (obj.controller === activeObject.id) {
+                  obj.controller = "";
                 }
               }
-            })
-          };
-        };
-      };
+            });
+          }
+        }
+      }
     },
-    saveCanvas(){
+    saveCanvas() {
       console.log(this.canvas);
       var currentCanvas = JSON.stringify(this.canvas); //Esta linea es de Prueba ya q la informacion de solo el canvas no es suficiente
       this.savedFabric = currentCanvas;
     },
 
-    loadCanvas(){
+    loadCanvas() {
       this.canvas.loadFromJSON(this.savedFabric);
       this.canvas.renderAll();
     },
-  // Esta funcion no sirve
+    // Esta funcion no sirve
     llenarListaHost() {
       if (this.tagHost.length > 0) {
         for (var h = 0; h < this.tagHost.length; h++) {
@@ -7407,7 +8056,7 @@ export default {
         info["Descripción"] =
           "Tamaño máximo de segmento de TCP (MSS). El MSS suele ser el MTU - 40 bytes para el encabezado TCP / IP. Para Ethernet, el MSS es de 1460 bytes (MTU de 1500 bytes).";
         this.infoModal.push(info);
-        
+
         this.$bvModal.show("modal-info");
       }
       if (id == "graffic") {
@@ -7416,11 +8065,10 @@ export default {
         info["Descripción"] =
           "Permite seleccionar entre los modos de operación de los host (general, servidor y/o cliente), a fin de visualizar las métricas de desempeño de la red.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Métricas de desempeño";
-        info["Descripción"] =
-          "Refiere a las medidas de calidad de la red.";
+        info["Descripción"] = "Refiere a las medidas de calidad de la red.";
         this.infoModal.push(info);
 
         info = {};
@@ -7428,7 +8076,7 @@ export default {
         info["Descripción"] =
           "Refiere al modo de operación seleccionado por el usuario para el funcionamiento de la red.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Protocolo";
         info["Descripción"] =
@@ -7436,18 +8084,17 @@ export default {
           "   TCP-  Transfer Control Protocol:  Protocolo para el intercambio de datos de manera segura, requeriendo la autorización de conexión entre el emisor y el receptor, o el cliente y el servidor, antes de producirse la transferencia; una vez ambas partes hayan autorizado la transmisión, podrá iniciarse el envío y recepción de datos." +
           "   UDP - User Datagram Protocol: Protocolo del nivel de transporte basado en el intercambio de datagramas, que permite el envío de datagramas a través de la red sin que se haya establecido previamente una conexión";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Duración";
         info["Descripción"] = "Tiempo en segundos que dura la emulación.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Tamaño Bloque";
-        info["Descripción"] =
-          "Número de datos a transmitir.";
+        info["Descripción"] = "Número de datos a transmitir.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Bloques";
         info["Descripción"] = "Número de paquetes para transmitir.";
@@ -7464,29 +8111,29 @@ export default {
         info["Descripción"] =
           "Espacio reservado para el almacenamiento de los datos de envió.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Buffer Recepción";
         info["Descripción"] =
           "Espacio reservado para el almacenamiento de los datos de recepción.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Total Bytes";
-        info["Descripción"] =
-          "Bytes transmitidos.";
+        info["Descripción"] = "Bytes transmitidos.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Prom Total Bytes";
         info["Descripción"] = "Promedio Bytes transmitidos.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Prom Bit por Seg";
-        info["Descripción"] = "Promedio del ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).";
+        info["Descripción"] =
+          "Promedio del ancho de banda de destino en n bits / seg (predeterminado 1 Mbit / seg para UDP, ilimitado para TCP).";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Prom SND CWND";
         info["Descripción"] =
@@ -7501,10 +8148,9 @@ export default {
 
         info = {};
         info["Valor"] = "Prom R-Tx";
-        info["Descripción"] =
-          "Promedio de pauetes retransmitidos.";
+        info["Descripción"] = "Promedio de pauetes retransmitidos.";
         this.infoModal.push(info);
-        
+
         info = {};
         info["Valor"] = "Prom RTTVAR";
         info["Descripción"] =
@@ -7519,8 +8165,7 @@ export default {
 
         info = {};
         info["Valor"] = "Medidas solo para el protocolo UDP";
-        info["Descripción"] =
-          "El jitter y los paquetes son solo para UDP.";
+        info["Descripción"] = "El jitter y los paquetes son solo para UDP.";
         this.infoModal.push(info);
 
         info = {};
@@ -7528,13 +8173,13 @@ export default {
         info["Descripción"] =
           "Variación en el tiempo en la llegada de los paquetes, causada por congestión de red, perdida de sincronización o por las diferentes rutas seguidas por los paquetes para llegar al destino.";
         this.infoModal.push(info);
-         
+
         info = {};
         info["Valor"] = "Paquetes";
         info["Descripción"] =
           "Cada uno de los bloques en que se divide la información para enviar, en el nivel de red.";
         this.infoModal.push(info);
-        
+
         this.$bvModal.show("modal-info");
       }
       if (id == "controller") {
@@ -7680,103 +8325,93 @@ export default {
     //En el Modal de Trafico identifica el modo de traffico seleccionado y habilita la seleccion de host en el modo especifico
     specifficTrafficMode() {
       if (this.trafficModeSelected == "global") {
-        
         return this.selHostS;
-        
       }
       if (this.trafficModeSelected == "xtreme") {
         return this.selHostS;
-        
       }
       if (this.trafficModeSelected == "specific") {
         return !this.selHostS;
       }
     },
 
-    traficDistribution(){
-       if (this.trafficModeSelected == "global") {
-        
+    traficDistribution() {
+      if (this.trafficModeSelected == "global") {
         return !this.selHostG;
-        
       }
       if (this.trafficModeSelected == "xtreme") {
         return this.selHostG;
-        
       }
       if (this.trafficModeSelected == "specific") {
         return this.selHostG;
       }
     },
-    optionCheckerTime(){
-      if (this.radioTime == 't'){
-          this.radioPacket = '';
-          this.radioKPacket = '';
-          this.textPacket = '';
-          return this.checkerTime;
-      }else{
+    optionCheckerTime() {
+      if (this.radioTime == "t") {
+        this.radioPacket = "";
+        this.radioKPacket = "";
+        this.textPacket = "";
+        return this.checkerTime;
+      } else {
         this.stateTime = null;
         return !this.checkerTime;
       }
-      
-      
     },
-    optionCheckerPacket(){
-      if (this.radioPacket == 'n'){
-        this.radioTime = '';
-        this.radioKPacket = 'K';
+    optionCheckerPacket() {
+      if (this.radioPacket == "n") {
+        this.radioTime = "";
+        this.radioKPacket = "K";
         this.stateTime = null;
-        this.textTime = '';
+        this.textTime = "";
         return this.checkerPacket;
-      }else{  
-        this.radioPacket = '';
+      } else {
+        this.radioPacket = "";
         this.statePacket = null;
         return !this.checkerPacket;
       }
-
     },
-    optionCheckerWindow(){
-      if (this.valueWindow == 'w'){
-          this.radioWindow = 'K';
-          return this.checkerWindow;
-      }else{
-        this.radioWindow = '';
-        this.textWindow = '';
+    optionCheckerWindow() {
+      if (this.valueWindow == "w") {
+        this.radioWindow = "K";
+        return this.checkerWindow;
+      } else {
+        this.radioWindow = "";
+        this.textWindow = "";
         this.stateWindow = null;
         return !this.checkerWindow;
-      } 
+      }
     },
-    optionCheckerLong(){
-      if (this.valueLong == 'l'){
-          this.radioLong = 'K';
-          return this.checkerLong;
-      }else{
-        this.radioLong = '';
-        this.textLong = '';
+    optionCheckerLong() {
+      if (this.valueLong == "l") {
+        this.radioLong = "K";
+        return this.checkerLong;
+      } else {
+        this.radioLong = "";
+        this.textLong = "";
         this.stateLong = null;
         return !this.checkerLong;
-      } 
+      }
     },
-    optionCheckerBw(){
-      if (this.valueBw == 'b'){
-          this.radioBw = 'K';
-          return this.checkerBw;
-      }else{
-        this.radioBw = '';
-        this.textBw = '';
+    optionCheckerBw() {
+      if (this.valueBw == "b") {
+        this.radioBw = "K";
+        return this.checkerBw;
+      } else {
+        this.radioBw = "";
+        this.textBw = "";
         this.stateBw = null;
         return !this.checkerBw;
-      } 
+      }
     },
-    optionCheckerInterval(){
-      if (this.valueInterval == 'i'){
-          
-          return this.checkerInverval;
-      }else{
-        this.radioBw = '';
-        this.textInterval = '';
+    optionCheckerInterval() {
+      if (this.valueInterval == "i") {
+        return this.checkerInverval;
+      } else {
+        this.radioBw = "";
+        this.textInterval = "";
         this.stateInterval = null;
         return !this.checkerInterval;
-      } 
+      }
     },
   },
 
