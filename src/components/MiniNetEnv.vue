@@ -277,18 +277,22 @@
                 class="form-control form-control"
                 v-model="typeController"
               >
-                <option value="Por Defecto">Por Defecto</option>
                 <option value="OpenFlow">
                   OpenFlow Reference Implementation
                 </option>
-                <option value="NOX">NOX</option>
-                <option value="OVS">OVS</option>
-                <option value="OpenDayLigth">OpenDayLigth</option>
+                <option value="OVS">Open Virtual Switch Controller</option>
+                <option value="ODL">OpenDayLigth</option>
+                <option value="ONOS">Open Network Operating System</option>
+                <option value="USER">User Controller</option>
               </select>
             </b-container>
 
             <!-- IP Controller -->
-            <b-container id="container-Ip" class="form-group">
+            <b-container
+              id="container-Ip"
+              class="form-group"
+              v-if="userControllerConfig"
+            >
               <label for="labelType" class="mt-1">IP</label>
               <b-input
                 id="inputFancyIpController"
@@ -301,14 +305,18 @@
             </b-container>
 
             <!-- Port Controller -->
-            <b-container id="containerPortController" class="form-group">
+            <b-container
+              id="containerPortController"
+              class="form-group"
+              v-if="userControllerConfig"
+            >
               <label
                 id="labelFancyPuertoController"
                 for="labelType"
                 class="mt-1"
                 >Puerto</label
               >
-              <input
+              <b-input
                 id="inputFancyPortController"
                 type="number"
                 class="form-control text-right"
@@ -316,6 +324,7 @@
                 min="1"
                 v-model="portController"
                 max="65535"
+                :state= "statePortController"
               />
             </b-container>
 
@@ -327,15 +336,15 @@
                 class="mt-1"
                 >Protocolo</label
               >
-              <select
+              <b-input
                 id="optionTypeFancyController"
                 class="form-control form-control"
                 v-model="protocolController"
+                disabled
               >
-                <option value="Ninguno">Ninguno</option>
-                <option value="TCP">TCP</option>
-                <option value="SSL">SSL</option>
-              </select>
+                TCP
+              
+              </b-input>
             </b-container>
           </b-form>
         </b-container>
@@ -440,18 +449,15 @@
                 class="form-control form-control"
                 v-model="typeSwitch"
               >
-                <option value="Ninguno">Ninguno</option>
-                <option value="IVS Switch">IVS Switch</option>
-                <option value="Linux Brigde">Linux Brigde</option>
+                <option value="OVS Kernel">OVS Kernel Switch</option>
                 <option value="OVS Brigde">OVS Brigde</option>
-                <option value="OVS Switch">OVS Switch</option>
                 <option value="User Switch">User Switch</option>
               </select>
             </b-container>
 
             <!-- STP Switch -->
-            <b-row id="containerSTPFancySwitch" class="m-0 pt-3">
-              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+            <!-- <b-row id="containerSTPFancySwitch" class="m-0 pt-3">
+              <b-col class="col-sm-4 col-md-4 col-lg-4 col-xl-4"
                 ><b-form-checkbox
                   id="checkboxSTPFancySwitch"
                   name="checkbox-STPFancySwitch"
@@ -459,13 +465,21 @@
                   unchecked-value="not_stp"
                   v-model="stpSwitch"
                 >
-                  STP Priority:
+                  STP
                 </b-form-checkbox>
               </b-col>
-              <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <b-col class="ml-4 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                <label
+                  for="labelType"
+                  id="labelFancyProtocolSwitch"
+                  class="mt-1"
+                  >Prioridad:</label
+                >
+              </b-col>
+              <b-col class="ml-2 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                 <b-input
                   type="number"
-                  class="p-2 ml-3"
+                  class="p-2 ml-0"
                   id="inputFancySTPPriority"
                   step="4096"
                   min="4096"
@@ -473,10 +487,70 @@
                   v-model="stpPriority"
                 />
               </b-col>
-            </b-row>
+            </b-row> -->
+
+            <!-- Protocol Switch -->
+            <b-container id="containerProtocolSwitch" class="form-group" v-if="protocolSwitch10">
+              <label for="labelType" id="labelFancyProtocolSwitch" class="mt-1"
+                >Protocolo</label
+              >
+              <select
+                id="containerProtocolSwitch"
+                class="form-control form-control"
+                v-model="protocolSwitch"
+              >
+                <option value="OpenFlow10">OpenFlow 1.0</option>
+              </select>
+            </b-container>
+             <!-- Protocol Switch -->
+            <b-container id="containerProtocolSwitch" class="form-group" v-if="protocolSwitchAll">
+              <label for="labelType" id="labelFancyProtocolSwitch" class="mt-1"
+                >Protocolo</label
+              >
+              <select
+                id="containerProtocolSwitch"
+                class="form-control form-control"
+                v-model="protocolSwitch"
+              >
+                <option value="OpenFlow10">OpenFlow 1.0</option>
+                <option value="OpenFlow13">OpenFlow 1.3</option>
+              </select>
+            </b-container>
+
+            <!-- FailMode Switch -->
+            <b-container id="containerFailMode" class="form-group">
+              <label for="labelType" id="labelFancyFailModeSwitch" class="mt-1"
+                >Modelo de Fallas</label
+              >
+              <select
+                id="optionFailModeFancySwitch"
+                class="form-control form-control"
+                v-model="failMode"
+              >
+                <option value="Secure">secure</option>
+                <option value="Standalone">standalone</option>
+              </select>
+            </b-container>
+
+            <!-- Reconnect  Switch -->
+            <b-container id="containerFailMode" class="form-group">
+              <label for="labelType" id="labelReconnectModeSwitch" class="mt-1"
+                >Tiempo de Reconexión (ms)</label
+              >
+              <input
+                id="inputFancyReconnectSwitch"
+                type="number"
+                class="form-control text-right"
+                v-model="reconnectSwitch"
+              />
+            </b-container>
 
             <!-- IP Switch -->
-            <b-container id="containerIPSwitch" class="form-group">
+            <b-container
+              v-if="userSwitchConfig"
+              id="containerIPSwitch"
+              class="form-group"
+            >
               <label id="labelFancyIPSwitch" for="labelType" class="mt-1"
                 >IP</label
               >
@@ -491,11 +565,15 @@
             </b-container>
 
             <!-- Port Switch -->
-            <b-container id="containerDPCTLPort" class="form-group">
+            <b-container
+              v-if="userSwitchConfig"
+              id="containerDPCTLPort"
+              class="form-group"
+            >
               <label id="labelFancyDPCTLPort" for="labelType" class="mt-1"
                 >DPCTL Port</label
               >
-              <input
+              <b-input
                 id="inputFancyDPCTLPort"
                 type="number"
                 class="form-control text-right"
@@ -503,44 +581,16 @@
                 min="1"
                 max="65535"
                 v-model="portSwitch"
+                :state = "stateDpctlPort"
               />
             </b-container>
 
-            <!-- Protocol Switch -->
-            <b-container id="containerProtocolSwitch" class="form-group">
-              <label for="labelType" id="labelFancyProtocolSwitch" class="mt-1"
-                >Protocolo</label
-              >
-              <select
-                id="containerProtocolSwitch"
-                class="form-control form-control"
-                v-model="protocolSwitch"
-              >
-                <option value="OpenFlow 1.2">OpenFlow 1.2</option>
-                <option value="OpenFlow 1.3">OpenFlow 1.3</option>
-                <option value="OpenFlow 1.4">OpenFlow 1.4</option>
-                <option value="OpenFlow 1.5">OpenFlow 1.5</option>
-              </select>
-            </b-container>
-
-            <!-- DataPath Switch -->
-            <b-container id="containerDataPath" class="form-group">
-              <label for="labelType" id="labelFancyProtocolSwitch" class="mt-1"
-                >DataPath</label
-              >
-              <select
-                id="optionDataPathFancySwitch"
-                class="form-control form-control"
-                v-model="dataPath"
-              >
-                <option value="Ninguno" selected>Ninguno</option>
-                <option value="Kernel">kernel</option>
-                <option value="User">user</option>
-              </select>
-            </b-container>
-
             <!-- DataPathID Switch -->
-            <b-container id="containerDataPathID" class="form-group">
+            <!-- <b-container
+              id="containerDataPathID"
+              v-if="userSwitch"
+              class="form-group"
+            >
               <label id="labelFancyDataPathIDSwitch" class="mt-1"
                 >DataPath ID</label
               >
@@ -550,10 +600,14 @@
                 class="form-control text-right"
                 v-model="dataPathId"
               />
-            </b-container>
+            </b-container> -->
 
             <!-- DataPathArguments Switch -->
-            <b-container id="containerOfDataPathArguments" class="form-group">
+            <!-- <b-container
+              id="containerOfDataPathArguments"
+              v-if="userSwitch"
+              class="form-group"
+            >
               <label id="labelFancyDataPathIDSwitch" class="mt-1"
                 >Data Path Arguments</label
               >
@@ -563,38 +617,29 @@
                 class="form-control text-right"
                 v-model="dataPathOpt"
               />
-            </b-container>
-
-            <!-- FailMode Switch -->
-            <b-container id="containerFailMode" class="form-group">
-              <label for="labelType" id="labelFancyFailModeSwitch" class="mt-1"
-                >Modelo de Fallas</label
-              >
-              <select
-                id="optionFailModeFancySwitch"
-                class="form-control form-control"
-                v-model="failMode"
-              >
-                <option value="Ninguno">Ninguno</option>
-                <option value="Secure">secure</option>
-                <option value="Standalone">standalone</option>
-              </select>
-            </b-container>
-            <!-- Reconnect  Switch -->
-            <b-container id="containerFailMode" class="form-group">
-              <label for="labelType" id="labelReconnectModeSwitch" class="mt-1"
-                >Tiempo de Reconexión (ms)</label
-              >
-              <input
-                id="inputFancyReconnectSwitch"
-                type="number"
-                class="form-control text-right"
-                v-model="reconnectSwitch"
-              />
-            </b-container>
+            </b-container> -->
 
             <b-row id="containerCheckBoxOne" class="m-0 pt-3">
-              <b-col class="pl-5 col-sm-6 col-md-6 col-lg-6 col-xl-6"
+              <!-- <b-col class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                <label
+                  for="labelType"
+                  id="labelFancyProtocolSwitch"
+                  class="mt-1"
+                  >DataPath</label
+                >
+              </b-col>
+              <b-col class="pl-0 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <select
+                  disabled
+                  id="optionDataPathFancySwitch"
+                  class="form-control form-control"
+                  v-model="dataPath"
+                >
+                  <option value="Kernel">kernel</option>
+                  <option value="User">user</option>
+                </select> -->
+              <!-- </b-col> -->
+              <b-col class="pl-3 pt-1 col-sm-4 col-md-4 col-lg-4 col-xl-4"
                 ><b-form-checkbox
                   id="InBandFancySwitch"
                   name="checkbox-InBand"
@@ -603,35 +648,6 @@
                   v-model="inBand"
                 >
                   InBand
-                </b-form-checkbox>
-                <b-form-checkbox
-                  id="InNameSpaceFancySwitch"
-                  name="checkbox-inNameSpace"
-                  value="innamespace"
-                  unchecked-value="not_accepted"
-                  v-model="inNameSpace"
-                >
-                  In NameSpace
-                </b-form-checkbox>
-              </b-col>
-              <b-col class="pl-5 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <b-form-checkbox
-                  id="BatchFancySwitch"
-                  name="checkbox-batch"
-                  value="batch"
-                  unchecked-value="not_accepted"
-                  v-model="batch"
-                >
-                  Batch
-                </b-form-checkbox>
-                <b-form-checkbox
-                  id="VerboseFancySwitch"
-                  name="checkbox-verbose"
-                  value="verbose"
-                  unchecked-value="not_accepted"
-                  v-model="verbose"
-                >
-                  Verbose
                 </b-form-checkbox>
               </b-col>
             </b-row>
@@ -729,7 +745,7 @@
           <b-form id="formularioFancyHost" class="p-0">
             <!-- IP Host -->
             <b-container id="containerIPHost" class="form-group">
-              <label id="labelFancyIPHost" class="mt-1">Ruta por Defecto</label>
+              <label id="labelFancyIPHost" class="mt-1">Dirección IP</label>
               <b-input
                 id="inputFancyIPHost"
                 type="text"
@@ -748,14 +764,14 @@
                 class="form-control form-control"
                 v-model="sheduler"
               >
-                <option value="Ninguno">Ninguno</option>
+                <option value="Host">Host</option>
                 <option value="CFS">CFS</option>
                 <option value="RT">RT</option>
               </select>
             </b-container>
 
             <!-- CPU Host -->
-            <b-container id="containerCPULimitHost" class="form-group">
+            <b-container id="containerCPULimitHost" class="form-group" v-if="limitCpuSheduler">
               <label id="labelFancyCpuLimitHost" for="labelType" class="mt-1"
                 >Limite CPU</label
               >
@@ -764,13 +780,13 @@
                 id="inputFancyCpuLimitHost"
                 class="form-control text-right"
                 step="1"
-                min="0"
+                min="1"
                 v-model="limitCpu"
               />
             </b-container>
 
             <!-- CPU Core Host -->
-            <b-container id="containerCPUCoresHost" class="form-group">
+            <b-container id="containerCPUCoresHost" class="form-group" v-if="limitCpuSheduler">
               <label id="labelFancyCPUCoreHost" for="labelType" class="mt-1"
                 >Núcleos CPU</label
               >
@@ -779,7 +795,7 @@
                 id="inputFancyCPUCoresHost"
                 class="form-control text-right"
                 step="1"
-                min="0"
+                min="1"
                 v-model="coreCpu"
               />
             </b-container>
@@ -863,7 +879,7 @@
                   height="30px"
                   class="m-0 d-inline mr-3"
                 />
-                <label id="labelFancyPort" class="p-0">Puerto:</label></b-col
+                <label id="labelFancyPort" class="p-0">IP Puerto:</label></b-col
               >
               <b-col class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <b-input
@@ -873,7 +889,7 @@
                   v-model="ipPort"
                 />
                 <b-row id="containerPort" class="m-0 pt-3 text-rigth">
-                  <b-col class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                  <b-col class="pl-4 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                     <b-button
                       size="sm"
                       variant="success"
@@ -966,7 +982,7 @@
                   type="number"
                   id="inputFancyBandWidthLink"
                   step="1"
-                  min="0"
+                  min="1"
                   max="10000000000000"
                   class="p-2"
                   v-model="bwLink"
@@ -989,7 +1005,7 @@
                   type="number"
                   id="inputFancyDelayLink"
                   step="1"
-                  min="0"
+                  min="1"
                   max="10000000000000"
                   class="p-2"
                   v-model="delayLink"
@@ -1012,7 +1028,7 @@
                   type="number"
                   id="inputFancyJitterLink"
                   step="1"
-                  min="0"
+                  min="1"
                   max="10000000000000"
                   class="p-2"
                   v-model="jitterLink"
@@ -1037,7 +1053,7 @@
                   type="number"
                   id="inputFancyMaxQueueLink"
                   step="1"
-                  min="0"
+                  min="1"
                   max="10000000000000"
                   class="p-2"
                   v-model="queueLink"
@@ -1233,21 +1249,52 @@
         <b-container id="containerForm_IP_xclient">
           <b-form id="formulario_IP_xclient" class="p-0">
             <!-- IP User -->
-            <b-form-group
-              id="containerIP_xclient"
-              class="form-group"
-              description="Solo si usa un servidor X (Use su IP Local)."
-            >
+            <b-form-group id="containerIP_xclient" class="form-group">
+              <label id="labelFancyIP_xclient" class="mt-1"
+                >Dirección Base para Mininet:</label
+              >
+              <b-input
+                id="inputMask_xclient"
+                type="text"
+                class="form-control text-right"
+                placeholder="0   .   0   .   0   .   0"
+                v-model="ipBase"
+                :state="stateIpBase"
+              />
+              <b-form-text id="input-live-help"
+                >Ip para la distribución de las direcciones en la
+                red</b-form-text
+              >
+
+              <label id="labelFancyIP_xclient" class="mt-1"
+                >Máscara de Red</label
+              >
+              <b-input
+                id="inputMask_xclient"
+                type="text"
+                class="form-control text-right"
+                v-model="maskClient"
+                :state = "stateMaskClient"
+              />
+              <b-form-text id="input-live-help"
+                >Máscara de red de la Ip de distribución</b-form-text
+              >
+
               <label id="labelFancyIP_xclient" class="mt-1"
                 >Ruta por Defecto</label
               >
-              <input
+              <b-input
                 id="inputIP_xclient"
                 type="text"
                 class="form-control text-right"
                 placeholder="0   .   0   .   0   .   0"
                 v-model="ipClient"
+                :state="stateIpClient"
               />
+
+              <b-form-text id="input-live-help"
+                >Sólo si usa un servidor X (Use su IP Local).</b-form-text
+              >
             </b-form-group>
 
             <b-row id="containerBtnSave" class="mt-2 p-0 text-right">
@@ -3285,37 +3332,45 @@ export default {
       in_process: false,
       play_activator: true,
       traffic_activator: true,
+      // Validador Ip para inicio de la Emulación de la Red
+      stateIpBase : null,
+      stateIpClient : null,
+      stateMaskClient : null,
 
       // Modelos para Los inputs Modales Elements
       // Modal Host
       ipHost: "",
       stateIpHost: null,
-      sheduler: "Ninguno",
+      sheduler: "Host",
       limitCpu: "",
       coreCpu: "",
       // Modal Switch
-      typeSwitch: "Ninguno",
+      typeSwitch: "OVS Kernel",
+      userSwitch: false,
       stpSwitch: "",
       stpPriority: "",
       ipSwitch: "",
       stateIpSwitch: null,
+      stateDpctlPort: null,
       portSwitch: "",
-      protocolSwitch: "OpenFlow 1.2",
-      dataPath: "Ninguno",
-      dataPathId: "",
-      dataPathOpt: "",
-      failMode: "Ninguno",
+      protocolSwitch: "OpenFlow10",
+      // dataPath: "Kernel",
+      // dataPathId: "",
+      // dataPathOpt: "",
+      failMode: "Secure",
       reconnectSwitch: "",
       inBand: "",
       inNameSpace: "",
       batch: "",
       verbose: "",
       // Modal Controller
-      typeController: "Por Defecto",
+      typeController: "OpenFlow",
       ipController: "",
       stateIpController: null,
       portController: "",
-      protocolController: "Ninguno",
+      statePortController: null,
+      protocolController: "TCP",
+      userController: false,
       // Modal Puerto
       ipPort: "",
       stateIpPort: null,
@@ -3327,6 +3382,8 @@ export default {
       lossLink: "",
       // Modal Ip Usuario
       ipClient: "",
+      ipBase: "10.0.0.0",
+      maskClient: "8",
       // Modal Template Topology
       numHostTopology: "",
       // Modal Generador de Tráfico
@@ -3358,11 +3415,11 @@ export default {
       selectedServertHost: "",
       // Variables Datos Trafico
       textTime: "",
-      stateTime: null,
+      stateTime: false,
       textPacket: "",
-      statePacket: null,
+      statePacket: false,
       textLong: "",
-      stateLong: null,
+      stateLong: false,
       textWindow: "",
       stateWindow: null,
       textBw: "",
@@ -3671,7 +3728,7 @@ export default {
             this.tagElement = "h" + (this.tagHost.length + 1);
             // Reestablece las variables asociadas al Modal Host
             this.ipHost = "";
-            this.sheduler = "Ninguno";
+            this.sheduler = "Host";
             this.limitCpu = "";
             this.coreCpu = "";
             this.openModal("host");
@@ -3695,9 +3752,52 @@ export default {
                   lockRotation: true,
                 });
             }
-            console.log('Activo: '+active.id)
+            console.log("Activo: " + active.id);
+            // Si es el elemento Switch
+            if (active != null && active.id.charAt(0) == "s") {
+              if (
+                this.objectActiveLinkInitial != null &&
+                active.state != "connected" &&
+                this.objectActiveLinkFinal == null
+              ) {
+                this.objectActiveLinkFinal = active;
+                if (this.objectActiveLinkInitial.id.charAt(0) == "c") {
+                  this.selected.set({
+                    x1: this.objectActiveLinkFinal.left + 30,
+                    y1: this.objectActiveLinkFinal.top + 30,
+                    x2: this.objectActiveLinkInitial.left + 30,
+                    y2: this.objectActiveLinkInitial.top + 30,
+                  });
+                  this.objectActiveLinkFinal.controller =
+                    this.objectActiveLinkInitial.id;
+                  // this.objectActiveLinkInitial.state = "connected";
+                  this.objectActiveLinkFinal.state = "connected";
+                  this.objectActiveLinkInitial.line = this.selected;
+                  this.objectActiveLinkFinal.line = this.selected;
+                  this.objectActiveLinkInitial.connection.push(this.selected);
+                  this.objectActiveLinkFinal.connection.push(this.selected);
+                  this.canvas.sendToBack(this.selected);
+                  // this.selected.connectionLink =
+                  //   this.objectActiveLinkInitial.elementContainer +
+                  //   "," +
+                  //   this.objectActiveLinkInitial.elementContainer;
+                  // this.selected.intfName1 =
+                  //   this.objectActiveLinkInitial.elementContainer +
+                  //   "-" +
+                  //   this.objectActiveLinkInitial.id;
+                  // this.selected.intfName2 =
+                  //   this.objectActiveLinkFinal.elementContainer +
+                  //   "-" +
+                  //   this.objectActiveLinkFinal.id;
+                  this.herramienta = "cursor";
+                  this.selected = null;
+                  this.objectActiveLinkInitial = null;
+                  this.objectActiveLinkFinal = null;
+                }
+              }
+            }
             // Si es una Interfaz de Red (Puerto)
-            if (active != null && active.id.charAt(0) == "e") {
+            else if (active != null && active.id.charAt(0) == "e") {
               active.set({
                 opacity: 0.7,
               });
@@ -3736,7 +3836,7 @@ export default {
                 this.objectActiveLinkFinal == null
               ) {
                 this.objectActiveLinkFinal = active;
-                
+
                 // Si el Enlace es de un Switch a Otro Sitch Diferente
                 if (
                   this.objectActiveLinkFinal.elementContainer.charAt(0) ==
@@ -3761,7 +3861,7 @@ export default {
                   this.selected.connectionLink =
                     this.objectActiveLinkInitial.elementContainer +
                     "," +
-                    this.objectActiveLinkInitial.elementContainer;
+                    this.objectActiveLinkFinal.elementContainer;
                   this.selected.intfName1 =
                     this.objectActiveLinkInitial.elementContainer +
                     "-" +
@@ -3774,6 +3874,11 @@ export default {
                   this.selected = null;
                   this.objectActiveLinkInitial = null;
                   this.objectActiveLinkFinal = null;
+                } else if (
+                  this.objectActiveLinkFinal.id.charAt(0) == "s" &&
+                  this.objectActiveLinkInitial.id.charAt(0) == "c"
+                ) {
+                  console.log("AQUI ES!!");
                 }
                 // Si el Enlace es de un Switch a un Host
                 else if (
@@ -3796,7 +3901,7 @@ export default {
                   this.selected.connectionLink =
                     this.objectActiveLinkInitial.elementContainer +
                     "," +
-                    this.objectActiveLinkInitial.elementContainer;
+                    this.objectActiveLinkFinal.elementContainer;
                   this.selected.intfName1 =
                     this.objectActiveLinkInitial.elementContainer +
                     "-" +
@@ -3809,12 +3914,13 @@ export default {
                   this.selected = null;
                   this.objectActiveLinkInitial = null;
                   this.objectActiveLinkFinal = null;
-                }
-                else if( this.objectActiveLinkFinal.elementContainer.charAt(0) ==
+                } else if (
+                  this.objectActiveLinkFinal.elementContainer.charAt(0) ==
                     "s" &&
-                  this.objectActiveLinkInitial.id.charAt(0) == "c"){
-                  console.log('Switch!!')
-                  }
+                  this.objectActiveLinkInitial.id.charAt(0) == "c"
+                ) {
+                  console.log("Switch!!");
+                }
                 // Si el Enlace es de un Host a un Switch
                 else if (
                   this.objectActiveLinkFinal.elementContainer.charAt(0) ==
@@ -3835,7 +3941,7 @@ export default {
                   this.selected.connectionLink =
                     this.objectActiveLinkInitial.elementContainer +
                     "," +
-                    this.objectActiveLinkInitial.elementContainer;
+                    this.objectActiveLinkFinal.elementContainer;
                   this.selected.intfName1 =
                     this.objectActiveLinkInitial.elementContainer +
                     "-" +
@@ -3868,7 +3974,7 @@ export default {
               // this.objectActiveLinkFinal = null;
             } else if (active != null && active.id.charAt(0) == "c") {
               console.log(active);
-              console.log('CONTROLADOR')
+              console.log("CONTROLADOR");
               active.set({
                 opacity: 0.7,
               });
@@ -3884,6 +3990,7 @@ export default {
                 coordenadasEnlace[1] = this.objectActiveLinkInitial.top + 30;
                 coordenadasEnlace[2] = this.objectActiveLinkInitial.left + 30;
                 coordenadasEnlace[3] = this.objectActiveLinkInitial.top + 30;
+
                 var link = this.makeLink(coordenadasEnlace, "controller");
                 this.selected = link;
                 this.canvas.add(link);
@@ -3892,14 +3999,14 @@ export default {
                 active.state != "connected" &&
                 this.objectActiveLinkFinal == null
               ) {
-                this.objectActiveLinkFinal = active
-                console.log('ACTIVEE: ', this.objectActiveLinkFinal)
+                this.objectActiveLinkFinal = active;
+                console.log("ACTIVEE: ", this.objectActiveLinkFinal);
                 this.selected.set({
                   x2: this.objectActiveLinkFinal.x2,
                   y2: this.objectActiveLinkFinal.y2,
                 });
 
-                this.canvas.remove(this.selected)
+                this.canvas.remove(this.selected);
                 this.herramienta = "cursor";
                 this.selected = null;
                 this.objectActiveLinkInitial = null;
@@ -4100,7 +4207,7 @@ export default {
               this.tagElement = tagActive;
               if (tagActive.charAt(0) == "h") {
                 if (objectActive.ipHost) {
-                  this.ipHost = objectActive.iPHost;
+                  this.ipHost = objectActive.ipHost;
                 }
                 if (objectActive.sheduler) {
                   this.sheduler = objectActive.sheduler;
@@ -4143,8 +4250,8 @@ export default {
                 if (objectActive.failMode) {
                   this.failMode = objectActive.failMode;
                 }
-                if (objectActive.reconnectedSwitch) {
-                  this.reconnectedSwitch = objectActive.reconnectedSwitch;
+                if (objectActive.reconnectSwitch) {
+                  this.reconnectSwitch = objectActive.reconnectSwitch;
                 }
                 if (objectActive.inBand) {
                   this.inBand = objectActive.inBand;
@@ -4163,13 +4270,13 @@ export default {
                 if (objectActive.type) {
                   this.typeController = objectActive.type;
                 }
-                if (objectActive.iPController) {
-                  this.ipController = objectActive.iPController;
+                if (objectActive.ipController) {
+                  this.ipController = objectActive.ipController;
                 }
                 if (objectActive.portController) {
                   this.portController = objectActive.portController;
                 }
-                if (objectActive.protocl) {
+                if (objectActive.protocol) {
                   this.protocolController = objectActive.protocol;
                 }
                 this.openModal("controller");
@@ -4315,34 +4422,38 @@ export default {
     closeModal(mod) {
       if (mod == "host") {
         this.ipHost = "";
-        this.sheduler = "Ninguno";
+        this.sheduler = "Host";
         this.limitCpu = "";
         this.coreCpu = "";
         return this.$bvModal.hide("modal-host");
       }
       if (mod == "switch") {
-        this.typeSwitch = "Ninguno";
+        this.typeSwitch = "OVS Kernel";
         this.stpSwitch = "";
         this.stpPriority = "";
         this.ipSwitch = "";
         this.portSwitch = "";
-        this.protocolSwitch = "OpenFlow 1.2";
-        this.dataPath = "Ninguno";
-        this.dataPathId = "";
-        this.dataPathOpt = "";
-        this.failMode = "Ninguno";
+        this.protocolSwitch = "OpenFlow10";
+        // this.dataPath = "Kernel";
+        // this.dataPathId = "";
+        // this.dataPathOpt = "";
+        this.failMode = "Secure";
         this.reconnectSwitch = "";
         this.inBand = "";
         this.inNameSpace = "";
         this.batch = "";
         this.verbose = "";
+        this.stateIpSwitch = null
+        this.stateDpctlPort = null
         return this.$bvModal.hide("modal-switch");
       }
       if (mod == "controller") {
-        this.typeController = "Por Defecto";
+        this.typeController = "OpenFlow";
         this.ipController = "";
         this.portController = "";
-        this.protocolController = "Ninguno";
+        this.protocolController = "TCP";
+        this.stateIpController = null
+        this.statePortController = null
         return this.$bvModal.hide("modal-controller");
       }
       if (mod == "port") {
@@ -4359,6 +4470,9 @@ export default {
         return this.$bvModal.hide("modal-template");
       }
       if (mod == "play") {
+        this.stateIpBase = null
+        this.stateIpClient = null
+        this.stateMaskClient = null
         return this.$bvModal.hide("modal-IpUser");
       }
       if (mod == "traffic") {
@@ -4448,8 +4562,8 @@ export default {
           if (obj.failMode != "Ninguno" && obj.failMode != undefined) {
             element["failMode"] = obj.failMode;
           }
-          if (obj.reconnectedSwitch != "" && obj.reconnectSwitch != undefined) {
-            element["reconnectedSwitch"] = obj.reconnectedSwitch;
+          if (obj.reconnectSwitch != "" && obj.reconnectSwitch != undefined) {
+            element["reconnectSwitch"] = obj.reconnectSwitch;
           }
           if (obj.dataPath != "Ninguno" && obj.dataPath != undefined) {
             element["dataPath"] = obj.dataPath;
@@ -4467,16 +4581,17 @@ export default {
             element["dpctlPort"] = obj.dpctlPort;
           }
           if (
-            obj.stpSwitch != "" &&
-            obj.stpSwitch != undefined &&
-            obj.stpSwitch != "not_stp"
+            obj.stp != "" &&
+            obj.stp != undefined &&
+            obj.stp != "not_stp"
           ) {
-            element["stp"] = obj.stpSwitch;
+            element["stp"] = obj.stp;
           }
+          
           if (obj.stpPriority != "" && obj.stpPriority != undefined) {
             element["stpPriority"] = obj.stpPriority;
           }
-          if (obj.type != "Ninguno" && obj.type != undefined) {
+          if (obj.type != "" && obj.type != undefined) {
             element["type"] = obj.type;
           }
           if (obj.controller != "" && obj.controller != undefined) {
@@ -4564,45 +4679,76 @@ export default {
     },
 
     starEmulation() {
+      this.netWork = {}
+      this.elements = []
       this.loadInfoElements();
       this.llenarListaHost();
       var ipClient = this.ipClient;
-      this.netWork["items"] = this.elements;
-      this.netWork["IpClient"] = ipClient;
+      var ipBase = this.ipBase;
+      var maskClient = this.maskClient;
+      if(this.ipBase != ''){
+        if(this.validateIp(this.ipBase)){
+          this.stateIpBase = true
+        }else{
+          this.stateIpBase = false
+        }
+      }else{
+        this.stateIpBase = false
+      }
 
-      console.log("Network Info");
-      console.log(this.netWork);
-      var json = JSON.stringify(this.netWork);
-      this.closeModal("play");
-      this.in_process = true;
-      this.errorServer = false;
-      this.alertText = "Creando la Red...";
-      this.openModal("done");
-      axios
-        .post(this.path, this.netWork)
-        .then((response) => {
-          var validator = Object.keys(response.data).includes("red");
+      if(this.maskClient != '' && this.maskClient >=1 && this.maskClient <=30){
+        this.stateMaskClient = true
+      }else{
+        this.stateMaskClient = false
+      }
 
-          if (validator == true) {
-            this.in_process = false;
-            this.alertText = "Red Creada Exitosamente.";
-            this.play_activator = false;
-            // this.openModal("done");
-          } else {
+      if(this.ipClient != '' && this.validateIp(this.ipClient)){
+        this.stateIpClient = true
+      }else{
+        this.stateIpClient = false
+      }
+      if(this.stateIpBase === true && this.stateMaskClient === true && this.stateIpClient ===true){
+        this.netWork["items"] = this.elements;
+        this.netWork["IpClient"] = ipClient;
+        this.netWork["ipBase"] = ipBase;
+        this.netWork["maskClient"] = maskClient;
+
+        console.log("Network Info");
+        console.log(this.netWork);
+        var json = JSON.stringify(this.netWork);
+        this.closeModal("play");
+        this.in_process = true;
+        this.errorServer = false;
+        this.alertText = "Creando la Red...";
+        this.openModal("done");
+        axios
+          .post(this.path, this.netWork)
+          .then((response) => {
+            var validator = Object.keys(response.data).includes("red");
+
+            if (validator == true) {
+              this.in_process = false;
+              this.alertText = "Red Creada Exitosamente.";
+              this.play_activator = false;
+              // this.openModal("done");
+            } else {
+              this.alertText = "Error en la Creación de la Red.";
+              this.in_process = false;
+              var error = data["Error"];
+              this.serverText = "Error: " + String(error);
+              this.errorServer = true;
+              // this.openModal("done");
+            }
+          })
+          .catch((error) => {
             this.alertText = "Error en la Creación de la Red.";
             this.in_process = false;
-            var error = data["Error"];
-            this.serverText = "Error: " + String(error);
+            this.serverText = "Error: Failed to Connect";
             this.errorServer = true;
-            // this.openModal("done");
-          }
-        })
-        .catch((error) => {
-          this.alertText = "Error en la Creación de la Red.";
-          this.in_process = false;
-          this.serverText = "Error: Failed to Connect";
-          this.errorServer = true;
-        });
+          });
+      }
+    
+      
     },
 
     stopEmulation() {
@@ -5534,7 +5680,14 @@ export default {
       if (ip.search(patronIp) !== 0) {
         return false;
       } else {
-        return true;
+        var validate = ip.split('.')
+        if(parseInt(validate[0])>0 && parseInt(validate[0])<= 255 && parseInt(validate[1])<= 255 && parseInt(validate[2])<= 255 && parseInt(validate[3])<= 255 ){
+          return true;
+        }else{
+          return false
+        }
+        
+        
       }
     },
     // Actualiza o Inserta un elemento con sus opciones
@@ -5567,7 +5720,7 @@ export default {
           this.closeModal("host");
           // Reiniciar Variables a su estado Inicial
           this.ipHost = "";
-          this.sheduler = "Ninguno";
+          this.sheduler = "Host";
           this.limitCpu = "";
           this.coreCpu = "";
         }
@@ -5581,10 +5734,20 @@ export default {
             this.stateIpSwitch = false;
           }
         } else {
-          this.stateIpSwitch = true;
+          this.stateIpSwitch = false;
+        }
+        if(this.dpctlPort !='' && parseInt(this.portSwitch) >= 1 && parseInt(this.portSwitch) <= 65535){
+          this.stateDpctlPort = true
+        }else{
+          this.stateDpctlPort = false
         }
 
-        if (this.stateIpSwitch == true || this.stateIpSwitch == null) {
+        if(this.typeSwitch != 'User Switch'){
+          this.stateDpctlPort = true
+          this.stateIpSwitch = true
+        }
+
+        if (this.stateIpSwitch == true && this.stateDpctlPort == true) {
           if (this.action != "visor") {
             this.armElement("s");
             this.tagSwitch.push(this.tagElement);
@@ -5592,14 +5755,13 @@ export default {
           this.canvas.forEachObject((obj) => {
             if (obj.id == this.tagElement) {
               obj.verbose = this.verbose;
-              obj.batch = this.batch;
               obj.inNameSpace = this.inNameSpace;
               obj.inBand = this.inBand;
               obj.reconnectSwitch = this.reconnectSwitch;
               obj.failMode = this.failMode;
-              obj.dataPathOpt = this.dataPathOpt;
-              obj.dataPathId = this.dataPathId;
-              obj.dataPath = this.dataPath;
+              // obj.dataPathOpt = this.dataPathOpt;
+              // obj.dataPathId = this.dataPathId;
+              // obj.dataPath = this.dataPath;
               obj.protocol = this.protocolSwitch;
               obj.dpctlPort = this.portSwitch;
               obj.ipSwitch = ipSwitchOk;
@@ -5609,37 +5771,49 @@ export default {
             }
           });
           this.closeModal("switch");
-          // Reiniciar variables a su estado Inicial
-          this.typeSwitch = "Ninguno";
-          this.stpSwitch = "";
-          this.stpPriority = "";
-          this.ipSwitch = "";
-          this.portSwitch = "";
-          this.protocolSwitch = "OpenFlow 1.2";
-          this.dataPath = "Ninguno";
-          this.dataPathId = "";
-          this.dataPathOpt = "";
-          this.failMode = "Ninguno";
-          this.reconnectSwitch = "";
-          this.inBand = "";
-          this.inNameSpace = "";
-          this.batch = "";
-          this.verbose = "";
         }
       } else if (this.tagElement.charAt(0) == "c") {
-        var ipControllerOk = "";
-        if (this.ipController != "") {
-          if (validateIp(this.ipController)) {
-            ipControllerOk = this.ipController;
-            this.stateIpController = true;
+        if (this.userController == true) {
+          var ipControllerOk = "";
+          if (this.ipController != "") {
+            if (this.validateIp(this.ipController)) {
+              ipControllerOk = this.ipController;
+              this.stateIpController = true;
+            } else {
+              this.stateIpController = false;
+            }
           } else {
-            this.stateIpcontroller = false;
+            this.stateIpController = false;
+          }
+          if(this.portController != '' && this.portController >= 1 && this.portController <=65535){
+            this.statePortController = true
+          }else{
+            this.statePortController = false
+          }
+
+          if(this.typeController != 'USER'){
+            this.stateIpController = true
+            this.statePortController = true
+          }
+
+          if (
+            this.stateIpController == true && this.statePortController == true
+          ) {
+            if (this.action != "visor") {
+              this.armElement("c");
+              this.tagController.push(this.tagElement);
+            }
+            this.canvas.forEachObject((obj) => {
+              if (obj.id && obj.id === this.tagElement) {
+                obj.type = this.typeController;
+                obj.ipController = ipControllerOk;
+                obj.portController = this.portController;
+                obj.protocol = this.protocolController;
+              }
+            });
+            this.closeModal("controller");
           }
         } else {
-          this.stateIpController = true;
-        }
-
-        if (this.stateIpSwitch == true || this.stateIpSwitch == null) {
           if (this.action != "visor") {
             this.armElement("c");
             this.tagController.push(this.tagElement);
@@ -5653,11 +5827,6 @@ export default {
             }
           });
           this.closeModal("controller");
-          // Reiniciar Variables a su estado Inicial
-          this.typeController = "Por Defecto";
-          this.ipController = "";
-          this.portController = "";
-          this.protocolController = "Ninguno";
         }
       }
       // Este no es para un puerto eth sino para el Link que contiene la opcion de agregar o no un puerto esta en addPort()
@@ -5809,6 +5978,10 @@ export default {
           transparentCorners: false,
           selectable: true,
           id: this.tagElement,
+          type: this.typeSwitch,
+          protocol: this.protocolSwitch,
+          // dataPath: this.dataPath,
+          failMode: this.failMode,
           connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
         });
 
@@ -6145,8 +6318,11 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
+            protocol: 'OpenFlow10',
+            // dataPath: "Kernel",
+            failMode: 'Secure',
+            type: 'OVS Kernel',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
           });
 
           // Creación de lineas por cada enlace
@@ -6236,8 +6412,9 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
+            type: "OpenFlow",
+            protocol: "TCP",
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
           });
 
           connection.type = "association";
@@ -6366,6 +6543,10 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
+            type: 'OVS Kernel',
+            protocol: 'OpenFlow10',
+            // dataPath: "Kernel",
+            failMode: 'Secure',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
             type: null,
           });
@@ -6558,7 +6739,8 @@ export default {
             selectable: true,
             id: tag,
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
+            type: "OpenFlow",
+            protocol: "TCP",
           });
 
           for (var i = 0; i < this.numHost; i++) {
@@ -6577,17 +6759,12 @@ export default {
             groupController.connection.push(link);
             // Agrega la asociacion del controlador y el switch al arreglo del la red
             this.canvas.forEachObject((obj) => {
-              
-              for(var o = 0; o<= this.tagSwitch.length-1; o ++){
-              if (obj.id == String(this.tagSwitch[o])) {
-                obj.controller = tag;
-                link.swLoad.push(
-                  String(this.tagSwitch[o])
-                );
+              for (var o = 0; o <= this.tagSwitch.length - 1; o++) {
+                if (obj.id == String(this.tagSwitch[o])) {
+                  obj.controller = tag;
+                  link.swLoad.push(String(this.tagSwitch[o]));
+                }
               }
-
-              }
-              
             });
           }
 
@@ -6702,6 +6879,10 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
+            type: 'OVS Kernel',
+            protocol: 'OpenFlow10',
+            // dataPath: "Kernel",
+            failMode: 'Secure',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
             type: null,
           });
@@ -6893,8 +7074,9 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
+            type: "OpenFlow",
+            protocol: "TCP",
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
           });
 
           for (var i = 0; i < this.numHost; i++) {
@@ -6913,19 +7095,13 @@ export default {
             groupController.connection.push(link);
             // Agrega la asociacion del controlador y el switch al arreglo del la red
             this.canvas.forEachObject((obj) => {
-              
-              for(var o = 0; o<= this.tagSwitch.length-1; o ++){
-              if (obj.id == String(this.tagSwitch[o])) {
-                obj.controller = tag;
-                link.swLoad.push(
-                  String(this.tagSwitch[o])
-                );
+              for (var o = 0; o <= this.tagSwitch.length - 1; o++) {
+                if (obj.id == String(this.tagSwitch[o])) {
+                  obj.controller = tag;
+                  link.swLoad.push(String(this.tagSwitch[o]));
+                }
               }
-
-              }
-              
             });
-
           }
 
           for (var i = 0; i < this.numHost; i++) {
@@ -7475,14 +7651,14 @@ export default {
           objHost[s].position = "terminal";
           objSwitch[s].link = link;
           objHost[s].link = link;
-        
- //Emparejamiento
+
+          //Emparejamiento
           link.connectionLink =
             objSwitch[s].elementContainer + "," + objHost[s].elementContainer;
           link.intfName1 =
             objSwitch[s].elementContainer + "-" + objSwitch[s].id;
           link.intfName2 = objHost[s].elementContainer + "-" + objHost[s].id;
-}
+        }
         // **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- ** **--** --** -- ** -- ** -- **
 
         id0 = [];
@@ -8186,28 +8362,37 @@ export default {
         this.infoModal = [];
         info["Valor"] = "Tipo";
         info["Descripción"] =
-          "Permite seleccionar la entidad lógica de control (Controlador SDN) encargada de traducir las peticiones de las aplicaciones a las rutas de datos, dando a la capa de aplicación una visión abstracta de la red mediante estadísticas y posibles eventos.";
+          "Permite seleccionar la entidad lógica de control (Controlador SDN) encargada de traducir las peticiones de las aplicaciones a las rutas de datos, dando a la capa de aplicación una visión abstracta de la red mediante estadísticas y posibles eventos. Todos los controladores exeptuando el controlador definido por el usuario estan ejecutandose en el puerto 6633";
         this.infoModal.push(info);
         info = {};
         info["Valor"] = "OpenFlow Reference Implementation:";
         info["Descripción"] =
           "Controlador software OpenFlow lógicamente centralizado que permite modificar el comportamiento de los dispositivos de red a través de un conjunto de instrucciones de reenvío definidas.";
         this.infoModal.push(info);
-        info = {};
-        info["Valor"] = "NOX:";
-        info["Descripción"] =
-          "Plataforma de control de red, que proporciona una interfaz programática de alto nivel para la gestión y el desarrollo de aplicaciones de control de red.";
-        this.infoModal.push(info);
+
         info = {};
         info["Valor"] = "OVS: Open vSwitch Controller.";
         info["Descripción"] =
           "Software de código abierto, diseñado para ser utilizado como un switch virtual en entornos de servidores virtualizados. Es el encargado de reenviar el tráfico entre diferentes máquinas virtuales (VMs) en el mismo host físico y también reenviar el tráfico entre las máquinas virtuales y la red física.";
         this.infoModal.push(info);
+
         info = {};
         info["Valor"] = "ODL: OpenDayLight  Controller.";
         info["Descripción"] =
           " Proyecto colaborativo de código abierto, que implementa una plataforma para la creación de redes definidas por software para la supervisión de dispositivos de red abierta y centralizada.";
         this.infoModal.push(info);
+
+        info = {};
+        info["Valor"] = "User Controller.";
+        info["Descripción"] =
+          "Controlador externo definindo por el usuario el cual se puede configurar con la dirección y el puerto en dónde este controlador se encuentre alojado";
+        this.infoModal.push(info);
+        info = {};
+        info["Valor"] = "ONOS: Open Network Operating System Controller.";
+        info["Descripción"] =
+          " Proyecto colaborativo de código abierto, que implementa una plataforma para la creación de un sistema operativo de redes definidas por software para la supervisión de dispositivos de red abierta y centralizada.";
+        this.infoModal.push(info);
+
         info = {};
         info["Valor"] = "Dirección IP";
         info["Descripción"] =
@@ -8321,6 +8506,50 @@ export default {
       this.actualTool = this.herramienta;
       console.log(this.actualTool);
       return this.actualTool;
+    },
+
+    userSwitchConfig() {
+      if (this.typeSwitch == "User Switch") {
+        // this.dataPath = "User";
+        return (this.userSwitch = true);
+      } else {
+        // this.dataPath = "Kernel";
+        return (this.userSwitch = false);
+      }
+    },
+
+    protocolSwitch10(){
+      if(this.typeSwitch == 'OVS Kernel'){
+        return true
+
+      }else{
+        return false
+      }
+    },
+    protocolSwitchAll(){
+      if(this.typeSwitch != 'OVS Kernel'){
+        return true
+      }else{
+        return false
+      }
+
+    },
+    userControllerConfig() {
+      if (this.typeController == "USER") {
+        return (this.userController = true);
+      } else {
+        return (this.userController = false);
+      }   
+
+    },
+    limitCpuSheduler(){
+      if(this.sheduler != "Host"){
+        this.limitCpu = 1
+        return true
+      }else{
+        this.limitCpu= ''
+        return false
+      }
     },
     //En el Modal de Trafico identifica el modo de traffico seleccionado y habilita la seleccion de host en el modo especifico
     specifficTrafficMode() {
