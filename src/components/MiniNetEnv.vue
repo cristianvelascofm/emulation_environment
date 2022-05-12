@@ -4,7 +4,7 @@
     <b-container id="menu-bar-emulator" class="col-12">
       <b-dropdown id="Archivo" list text="Archivo" variant="light">
         <b-dropdown-item id="nuevo" class="p-1">Nuevo</b-dropdown-item>
-        <b-dropdown-item id="abrir" class="p-1">Abrir</b-dropdown-item>
+        <b-dropdown-item id="abrir" @click="loadNetwork" class="p-1">Abrir</b-dropdown-item>
         <b-dropdown
           dropright
           list
@@ -26,8 +26,8 @@
             >Lineal</b-dropdown-item
           >
         </b-dropdown>
-        <b-dropdown-item id="guardar" class="p-1">Guardar</b-dropdown-item>
-        <b-dropdown-item id="salir" class="p-1">Salir</b-dropdown-item>
+        <b-dropdown-item id="guardar" class="p-1" @click="saveWork">Guardar</b-dropdown-item>
+        <b-dropdown-item id="salir" class="p-1" @click="$router.push('/')">Salir</b-dropdown-item>
       </b-dropdown>
       <b-dropdown
         id="dropdown-1"
@@ -449,7 +449,6 @@
                 class="form-control form-control"
                 v-model="typeSwitch"
               >
-                <option value="OVS Kernel">OVS Kernel Switch</option>
                 <option value="OVS Brigde">OVS Brigde</option>
                 <option value="User Switch">User Switch</option>
               </select>
@@ -3323,10 +3322,11 @@ export default {
 
     return {
       // Dirección del Servidor de Mininet - IMPORTANTE DEFINIR!!!
-      // path: "http://10.55.6.188:5000/",
-      path: "http://192.168.56.103:5000/",
+      path: "http://10.55.6.188:5000/",
+      //path: "http://192.168.56.103:5000/",
       //Variable id Herramienta seleccionada (barra lateral izquierda - Barra de Elementos de Red)
       herramienta: "cursor",
+
 
       // Variables para la activacion de botones, funciones y alertas
       in_process: false,
@@ -3345,7 +3345,7 @@ export default {
       limitCpu: "",
       coreCpu: "",
       // Modal Switch
-      typeSwitch: "OVS Kernel",
+      typeSwitch: "OVS Brigde",
       userSwitch: false,
       stpSwitch: "",
       stpPriority: "",
@@ -3615,6 +3615,7 @@ export default {
   },
 
   methods: {
+    
     initCanvas() {
       //Declaracion de la variable Fabric para el lienzo Canvas
       const ref = this.$refs.canvas;
@@ -4428,7 +4429,7 @@ export default {
         return this.$bvModal.hide("modal-host");
       }
       if (mod == "switch") {
-        this.typeSwitch = "OVS Kernel";
+        this.typeSwitch = "OVS Brigde";
         this.stpSwitch = "";
         this.stpPriority = "";
         this.ipSwitch = "";
@@ -4633,7 +4634,7 @@ export default {
           if (obj.queue != "" && obj.queue != undefined) {
             element["queue"] = obj.queue;
           }
-          if (obj.jitter != "" && obj.jitterUdp != undefined) {
+          if (obj.jitter != "" && obj.jitter != undefined) {
             element["jitter"] = obj.jitter;
           }
           if (obj.delay != "" && obj.delay != undefined) {
@@ -4676,6 +4677,31 @@ export default {
           this.elements.push(element);
         }
       });
+    },
+
+    saveWork(){
+      var all_elements={}
+      this.canvas.forEachObject((obj) =>{
+      all_elements[obj.id]= obj
+      })
+      console.log('AAAAA: ')
+      console.log(all_elements)
+    },
+
+    saveNetwork(){
+      var actual_state_canvas= JSON.stringify(this.canvas.toJSON())
+      this.saved_canvas = actual_state_canvas
+      console.log('Saved:')
+      console.log(this.saved_canvas)
+    },
+    
+    loadNetwork(){
+      console.log('CANVAS')
+      console.log(this.canvas)
+      console.log(this.saved_canvas)
+      this.canvas.loadFromJSON(this.saved_canvas);
+		  this.canvas.renderAll();
+
     },
 
     starEmulation() {
@@ -5211,13 +5237,14 @@ export default {
                       );
 
                       var totalNumBytes = valActualNumBytes + valorSumar;
+                      console.log('TT: '+ totalNumBytes)
                       trafficValuesServer[llave + "_num_bytes"] = totalNumBytes;
                     } else {
                       trafficValuesServer[llave + "_num_bytes"] = parseInt(
                         data[k]["speciffic"][t]["n_bytes"]
                       );
                     }
-
+                    console.log('RR '+JSON.stringify(trafficValuesServer))
                     //Valores Bits por Segundo
                     if (
                       Object.keys(trafficValuesServer).includes(
@@ -5251,19 +5278,20 @@ export default {
 
                   promTotalBytesTxServer = totalBytesTx / counter;
                   promBitsPerSecondServer = bitsPerSecond / counter;
-
+                  console.log('AA: '+numTotalTempos)
                   for (var o in trafficValuesServer) {
                     for (var q = 0; q < numTotalTempos; q++) {
                       if (String(o) == "t_" + String(q) + "_num_bytes") {
-                        this.datosYNumBytesServer[q] = trafficValues[o];
+                        this.datosYNumBytesServer[q] = trafficValuesServer[o];
                       }
                       if (String(o) == "t_" + String(q) + "_bits_per_second") {
-                        this.datosYBitsPerSecondServer[q] = trafficValues[o];
+                        this.datosYBitsPerSecondServer[q] = trafficValuesServer[o];
                       }
                     }
                   }
                 }
               }
+              console.log('ZZ : '+ JSON.stringify(this.datosYNumBytesServer))
               //Eje X
               // var numLabels = time_e / interval;
               for (var i = 0; i <= numTotalTempos; i++) {
@@ -5374,6 +5402,7 @@ export default {
           this.totalBytesTcp = this.totalBytesTcpclient;
           this.promTotalBytesTcp = this.promTotalBytesTcpClient;
           this.promBitsPerSecondTcp = this.promBitsPerSecondTcpClient;
+          
 
           this.chartdata = {
             labels: this.labelsGraphic,
@@ -5457,33 +5486,51 @@ export default {
           var longServerBits = this.datosYBitsPerSecondServer.length;
           var longClientBits = this.datosYBitsPerSecond.length;
 
+          console.log('DATOS CL: '+ this.datosYNumBytes)
+          console.log('DATOS SV: '+ this.datosYNumBytesServer)
+
           //Suma los datos Totales de Numero de Bytes del Cliente y Servidor
           if (longClient > longServer) {
             for (var i = 0; i < longClient; i++) {
               if (i >= longServer) {
                 var total = this.datosYNumBytes[i] + 0;
                 totalDatosYNumBytes[i] = total;
+                console.log('* '+i+' - '+totalDatosYNumBytes[i])
               } else {
                 var total =
                   this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
                 totalDatosYNumBytes[i] = total;
+                console.log('** '+i+' - '+totalDatosYNumBytes[i])
               }
             }
           } else if (longClient < longServer) {
             for (var i = 0; i < longServer; i++) {
               if (i >= longClient) {
+                if(this.datosYNumBytesServer[i] >= 0){
                 var total = this.datosYNumBytesServer[i] + 0;
-                totalDatosYNumBytes[i] = total;
+                totalDatosYNumBytes.push(total);
+                console.log('*** '+i+' - '+totalDatosYNumBytes[i])
+                }else{
+                  
+                }
               } else {
+                if(this.datosYNumBytesServer[i] >= 0 && this.datosYNumBytesServer[i] != undefined){
                 var total =
                   this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
-                totalDatosYNumBytes[i] = total;
+                //totalDatosYNumBytes[i] = total;
+                  totalDatosYNumBytes.push(total);
+                console.log('**** '+i+' - '+totalDatosYNumBytes[i])
+                }else{
+
+                }
+                
               }
             }
           } else {
             for (var i = 0; i < longClient; i++) {
               var total = this.datosYNumBytes[i] + this.datosYNumBytesServer[i];
               totalDatosYNumBytes[i] = total;
+              console.log('***** '+i+' - '+totalDatosYNumBytes[i])
             }
           }
           //Suma los datos Totales de Numero de Bits por Segundo del Cliente y Servidor
@@ -5502,14 +5549,23 @@ export default {
           } else if (longClientBits < longServerBits) {
             for (var i = 0; i < longServerBits; i++) {
               if (i >= longClientBits) {
+                if(this.datosYBitsPerSecondServer[i] >= 0){
                 var total = this.datosYBitsPerSecondServer[i] + 0;
-                totalDatosYBitsPerSecond[i] = total;
+                totalDatosYBitsPerSecond.push(total);
+                }else{
+
+                }
               } else {
+                if(this.datosYBitsPerSecondServer[i] >= 0 && this.datosYBitsPerSecondServer[i] != undefined){
                 var total =
                   this.datosYBitsPerSecond[i] +
                   this.datosYBitsPerSecondServer[i];
-                totalDatosYBitsPerSecond[i] = total;
+                totalDatosYBitsPerSecond.push(total);
+                }else{
+
+                }
               }
+
             }
           } else {
             for (var i = 0; i < longClient; i++) {
@@ -5519,11 +5575,15 @@ export default {
             }
           }
           // Calulo de Totales y Promedio Generales del Tráfico
+          console.log('Total: '+totalDatosYNumBytes)
           var totalBytesTcpTotal = 0;
           var promTotalBytesTcpTotal = 0;
           var promTotalBitsPerSecondTcpTotal = 0;
-
+          console.log('Datos Nun Bytes '+ totalDatosYNumBytes.length)
           for (var i = 0; i < totalDatosYNumBytes.length; i++) {
+            
+            console.log('TBytes: '+ i +' - '+ totalDatosYNumBytes[i])
+            
             totalBytesTcpTotal = totalBytesTcpTotal + totalDatosYNumBytes[i];
           }
           for (var i = 0; i < totalDatosYBitsPerSecond.length; i++) {
@@ -5532,6 +5592,7 @@ export default {
           }
 
           this.totalBytesTcp = totalBytesTcpTotal;
+          console.log('Total butes'+totalBytesTcpTotal)
           this.promTotalBytesTcp =
             totalBytesTcpTotal / totalDatosYNumBytes.length;
           this.promBitsPerSecondTcp =
@@ -6321,7 +6382,7 @@ export default {
             protocol: 'OpenFlow10',
             // dataPath: "Kernel",
             failMode: 'Secure',
-            type: 'OVS Kernel',
+            type: 'OVS Brigde',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
           });
 
@@ -6543,12 +6604,11 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
-            type: 'OVS Kernel',
+            type: 'OVS Brigde',
             protocol: 'OpenFlow10',
             // dataPath: "Kernel",
             failMode: 'Secure',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
           });
 
           var port = new Image();
@@ -6879,12 +6939,11 @@ export default {
             transparentCorners: false,
             selectable: true,
             id: tag,
-            type: 'OVS Kernel',
+            type: 'OVS Brigde',
             protocol: 'OpenFlow10',
             // dataPath: "Kernel",
             failMode: 'Secure',
             connection: [], // Contiene todos los enlaces del grupo (son los mismos enlaces del elemento (connectionLine[]))
-            type: null,
           });
 
           var port = new Image();
@@ -7260,6 +7319,9 @@ export default {
             );
             this.canvas.add(link);
             this.canvas.sendToBack(link);
+            console.log('S: '+s)
+            console.log(objSwitch)
+            console.log(objHost)
 
             objSwitch[s].state = "connected";
             objSwitch[s].position = "initial";
@@ -8098,10 +8160,7 @@ export default {
         info["Valor"] = "Tipo";
         info["Descripción"] =
           "Permite seleccionar el tipo de dispositivo virtual encargado de la conexión de maquinas virtules y periféricos a la red con el fin de comunicarse entre sí y con otras redes." +
-          "  IVS: Indigo Virtual Switch. Conmutador virtual OpenFlow puro diseñado para un alto rendimiento y una administración mínima. Está construido sobre la plataforma Indigo, que proporciona un núcleo común para muchos conmutadores virtuales." +
-          "  Linux Brigde: Puente de Linux que se comporta como un conmutador de red, reenviando paquetes entre interfaces de red virtuales que están conectadas a él. Por lo general, se usa para reenviar paquetes en enrutadores virtuales, puertas de enlace o entre máquinas virtuales y espacios de nombres de red en un host." +
-          "  OVS Bridge: Open vSwitch bridge. Puente diseñado para  comunicar un switch virtual en entornos de servidores virtualizados." +
-          "  OVS: Open vSwitch. Software de código abierto, diseñado para ser utilizado como un switch virtual en entornos de servidores virtualizados. Es el encargado de reenviar el tráfico entre diferentes máquinas virtuales (VMs)." +
+          "  Open Virtual Switch: Open vSwitch bridge. Puente diseñado para  comunicar un switch virtual en entornos de servidores virtualizados." +
           "  User Switch.";
         this.infoModal.push(info);
         info = {};
@@ -8519,7 +8578,7 @@ export default {
     },
 
     protocolSwitch10(){
-      if(this.typeSwitch == 'OVS Kernel'){
+      if(this.typeSwitch == 'OVS Brigde'){
         return true
 
       }else{
@@ -8527,7 +8586,7 @@ export default {
       }
     },
     protocolSwitchAll(){
-      if(this.typeSwitch != 'OVS Kernel'){
+      if(this.typeSwitch != 'OVS Brigde'){
         return true
       }else{
         return false
